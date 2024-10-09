@@ -1,0 +1,12 @@
+.draggable {
+    cursor: grab;
+}
+
+.dragging {
+    cursor: grabbing;
+    border: 1px solid black;
+}
+
+.droppable {
+    border: 1px solid black;
+}
