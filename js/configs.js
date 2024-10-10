@@ -10,32 +10,70 @@ const config = {
         0: {
             category: "environmental",
             icon: "&#127777",
-            typeDescription: "Temperature Sensor",
+            description: "Temperature Sensor",
+            values: 'continuous',
+            unit: "&#8451" // degrees celcious
         },
         1: {
             category: "environmental",
             icon: "&#128167",
-            typeDescription: "Humidity Sensor",
+            description: "Humidity Sensor",
+            values: 'continuous',
+            unit: "%"
         },
         2: {
             category: "environmental",
             icon: "&#9760",
-            typeDescription: "Air Quality Sensor",
+            description: "Air Quality Sensor",
+            values: 'binary',
+            value_map: {
+                0: {
+                    text: "Non-toxic",
+                    color: "blue"
+                },
+                1: {
+                    text: "Toxic",
+                    color: "lawngreen"
+                }
+            }
         },
         3: {
             category: "security",
             icon: "&#128065",
-            typeDescription: "Infrared Sensor",
+            description: "Infrared Sensor",
+            values: 'binary',
+            value_map: {
+                0: {
+                    text: "No threat",
+                    color: "green"
+                },
+                1: {
+                    text: "Threat",
+                    color: "red"
+                }
+            }
         },
         4: {
             category: "control",
             icon: "&#128161",
-            typeDescription: "Light Control",
+            description: "Light Control",
+            values: 'binary'
         },
         5: {
             category: "security",
             icon: "&#128274",
-            typeDescription: "Door/Window Status",
+            description: "Door/Window Status",
+            values: 'binary',
+            value_map: {
+                0: {
+                    text: "Closed",
+                    color: "green"
+                },
+                1: {
+                    text: "Open",
+                    color: "red"
+                }
+            }
         },
     },
     refreshTime: 5000 // milliseconds

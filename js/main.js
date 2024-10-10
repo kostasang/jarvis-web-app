@@ -109,55 +109,13 @@ function designDevice(device) {
     state_block = device_box.querySelector('.sensor-state');
     data_block = device_box.querySelector('.sensor-data');
 
-    switch(parseInt(device.sensor_type))
-    {
-        case 0:
-            data_block.innerHTML = String(device.sensor_data) + config.icons.degreesCelcious;
-            break;
-        case 1:
-            data_block.innerHTML = String(device.sensor_data) + '%';
-            break;
-        case 2:
-            if (device.sensor_data == 1)
-            {
-                data_block.innerHTML = 'Toxic';
-                data_block.style.color = 'lawngreen';
-            }
-            else if(device.sensor_data == 0)
-            {
-                data_block.innerHTML = 'Non-toxic';
-                data_block.style.color = 'blue';
-
-            }
-            break;
-        case 3:
-            if (sensor_data.data == 1)
-            {
-                data_block.innerHTML = 'Threat';
-                data_block.style.color = 'red';
-            }
-            else
-            {
-                data_block.innerHTML = 'No threat';
-                data_block.style.color = 'green';
-            }
-            break;
-        case 4:
-            break;
-        case 5:
-            data_block.style.display = 'block';
-
-            if (device.sensor_data == 1)
-            {
-                data_block.innerHTML = 'Threat';
-                data_block.style.color = 'red';
-            }
-            else
-            {
-                data_block.innerHTML = 'No threat';
-                data_block.style.color = 'green';
-            }
-            break;        
+    let device_config = config.devices[device.sensor_type];
+    if (device_config.values === 'continuous') {
+        data_block.innerHTML = String(device.sensor_data) + device_config.unit;
+    }
+    else if (device_config.values === 'binary') {
+        data_block.innerHTML = device_config.value_map[device.sensor_data].text;
+        data_block.style.color = device_config.value_map[device.sensor_data].color;
     }
     return device_box;
 }
