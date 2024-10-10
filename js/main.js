@@ -114,8 +114,8 @@ function designDevice(device) {
         data_block.innerHTML = String(device.sensor_data) + device_config.unit;
     }
     else if (device_config.values === 'binary') {
-        data_block.innerHTML = device_config.value_map[device.sensor_data].text;
-        data_block.style.color = device_config.value_map[device.sensor_data].color;
+        data_block.innerHTML = device_config.valueMap[device.sensor_data].text;
+        data_block.style.color = device_config.valueMap[device.sensor_data].color;
     }
     return device_box;
 }

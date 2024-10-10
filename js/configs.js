@@ -26,7 +26,7 @@ const config = {
             icon: "&#9760",
             description: "Air Quality Sensor",
             values: 'binary',
-            value_map: {
+            valueMap: {
                 0: {
                     text: "Non-toxic",
                     color: "blue"
@@ -42,7 +42,7 @@ const config = {
             icon: "&#128065",
             description: "Infrared Sensor",
             values: 'binary',
-            value_map: {
+            valueMap: {
                 0: {
                     text: "No threat",
                     color: "green"
@@ -64,7 +64,7 @@ const config = {
             icon: "&#128274",
             description: "Door/Window Status",
             values: 'binary',
-            value_map: {
+            valueMap: {
                 0: {
                     text: "Closed",
                     color: "green"
