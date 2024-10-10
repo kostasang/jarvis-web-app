@@ -3,6 +3,10 @@
 async function renameRoom(clicked_button) {
     // Rename room
     let new_name = prompt("Give room's new name");
+    if (new_name === null || new_name === '' || new_name === 'null') {
+        alert('Invalid name');
+        return;
+    }
     let room = clicked_button.closest('.room');
     let room_id = room.id;
     let user_hubs = await getHubs();
@@ -44,6 +48,7 @@ async function removeRoom(clicked_button) {
 async function addRoom() {
     let name = prompt('Give room name');
     if (name === null || name === '' || name === 'null') {
+        alert('Invalid name');
         return;
     }
     let user_hubs = await getHubs()
