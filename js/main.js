@@ -195,6 +195,10 @@ async function refreshData() {
 
 $(async function() {
 
+    if (localStorage.getItem('accessToken') === null) {
+        location.href = '../index.html';
+    }
+
     await placeRooms();
     await placeDevices();
     logTime();

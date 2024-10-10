@@ -209,3 +209,67 @@ async function removeDeviceFromArea(device_id) {
         console.error('Error:', error);
     });
 }
+
+async function logOut() {
+    const apiUrl = config.apiBaseUrl + '/logout';
+    return fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+            'accept': 'application/json',
+            'Authorization': 'Bearer ' + token
+        }
+    })
+    .then(response => { 
+        if (!response.ok) {
+            throw new Error('Failed to log out.');
+        }
+        return;
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
+
+
+async function me() {
+    const apiUrl = config.apiBaseUrl + '/me';
+    return fetch(apiUrl, {
+        method: 'GET',
+        headers: {
+            'accept': 'application/json',
+            'Authorization': 'Bearer ' + token
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Failed to get user info.');
+        }
+        return response.json();
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
+
+async function changePassword(currentPassword, newPassword) {
+    const apiUrl = config.apiBaseUrl + '/update_password';
+    const params = new URLSearchParams();
+    params.append('current_password', currentPassword);
+    params.append('new_password', newPassword);
+    return fetch(`${apiUrl}?${params.toString()}`, {
+        method: 'PUT',
+        headers: {
+            'accept': '*/*',
+            'Authorization': 'Bearer ' + token
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Failed to change password.');
+        }
+        return response;
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}

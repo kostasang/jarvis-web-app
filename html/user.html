@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+
+<html>
+
+    <head>
+        <title>User Info</title>
+        <link rel='stylesheet' href='../css/style.css'>
+        <link rel='stylesheet' href='../css/login.css'>
+        <link rel='stylesheet' href='../css/user.css'>
+        <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.js" type="text/javascript"></script>
+    </head>
+
+    <body>
+
+        <header class='header'>
+            <nav>
+                <div class='header-div'>
+                    <a href="main.html">System</a> 
+                </div>
+
+                <div class='header-div'>
+                    <a href="../index.html" onclick="logOutButton(this)">Logout</a> 
+                </div>
+
+                <div class='header-div'>
+                    <a href="contact.html" target="_blank">Contact</a>
+                </div>
+
+            </nav>
+        </header>
+
+        <section id="user-info-section">
+            <div id="user-info">
+                <h2>User Information</h2>
+                <p><strong>ID:</strong> <span id="user-id"></span></p>
+                <p><strong>Name:</strong> <span id="user-name"></span></p>
+                <p><strong>Email:</strong> <span id="user-email"></span></p>
+                <p><strong>Registration Date:</strong> <span id="user-registration-date"></span></p>
+                
+                <!-- Toggle button for password change form -->
+                <button id="toggle-password-change-btn">Change Password</button>
+
+                <!-- Password change form, initially hidden -->
+                <div id="change-password-container" style="display: none;">
+                    <form id="change-password-form">
+                        <div class="form-group">
+                            <label for="current-password">Current Password:</label>
+                            <input type="password" id="current-password" name="current-password" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="new-password">New Password:</label>
+                            <input type="password" id="new-password" name="new-password" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="confirm-password">Confirm New Password:</label>
+                            <input type="password" id="confirm-password" name="confirm-password" required>
+                        </div>
+
+                        <button type="submit">Change Password</button>
+                    </form>
+                    <p id="password-change-message" class="message"></p> <!-- For success/error messages -->
+                </div>
+            </div>
+        </section>
+
+        <footer class="footer">
+            <p>Copyright &copy; 2020, Jarvis Home System</p>
+        </footer>
+
+        <script src="../js/configs.js"></script>
+        <script src="../js/api.js"></script>
+        <script src="../js/logout.js"></script>
+        <script src="../js/user.js"></script>
+
+    </body>
+
+</html>
