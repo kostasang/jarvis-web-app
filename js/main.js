@@ -111,7 +111,8 @@ function designDevice(device) {
 
     let device_config = config.devices[device.sensor_type];
     if (device_config.values === 'continuous') {
-        data_block.innerHTML = String(device.sensor_data) + device_config.unit;
+        let data = parseFloat(device.sensor_data).toFixed(device_config.round);
+        data_block.innerHTML = String(data) + device_config.unit;
     }
     else if (device_config.values === 'binary') {
         data_block.innerHTML = device_config.valueMap[device.sensor_data].text;

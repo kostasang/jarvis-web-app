@@ -12,14 +12,16 @@ const config = {
             icon: "&#127777",
             description: "Temperature Sensor",
             values: 'continuous',
-            unit: "&#8451" // degrees celcious
+            unit: "&#8451", // degrees celcious
+            round: 1
         },
         1: {
             category: "environmental",
             icon: "&#128167",
             description: "Humidity Sensor",
             values: 'continuous',
-            unit: "%"
+            unit: "%",
+            round: 1
         },
         2: {
             category: "environmental",
