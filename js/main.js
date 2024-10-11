@@ -30,10 +30,10 @@ async function removeRoom(clicked_button) {
     let hub_id = user_hubs[0].hub_id;
     deleteArea(hub_id, room_id)
     .then(() => {
-        room_sensors = room.querySelector('.room-sensors').children;
+        let room_sensors = room.querySelector('.room-sensors').children;
         for (let i=0; i<room_sensors.length; i++)
         {
-            let sensor = room_sensors[i];
+            let sensor = room_sensors[i].cloneNode(true);
             let sensor_category = config.devices[sensor.getAttribute('data-type')].category;
             let category_div = document.querySelector(`.sensor-category[id='${sensor_category}']`);
             category_div.appendChild(sensor);
