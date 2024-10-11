@@ -64,7 +64,7 @@ const config = {
         5: {
             category: "security",
             icon: "&#128274",
-            description: "Door/Window Status",
+            description: "Door / Window Status Sensor",
             values: 'binary',
             valueMap: {
                 0: {

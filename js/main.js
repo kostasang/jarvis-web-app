@@ -101,6 +101,7 @@ function designDevice(device) {
     let device_box = template.content.cloneNode(true);
     device_box.querySelector('.sensor').id = device.sensor_id;
     device_box.querySelector('.sensor').setAttribute('data-type', device.sensor_type);
+    device_box.querySelector('.description-tooltip').innerHTML = config.devices[device.sensor_type].description;
     device_box.querySelector('.nickname-tooltip').innerHTML = "&#8226 Nickname: " + String(device.sensor_nickname);
     device_box.querySelector('.id-tooltip').innerHTML = "&#8226 ID: " + device.sensor_id;
     device_box.querySelector('.time-tooltip').innerHTML = device.last_timestamp.replace('T', ' ');

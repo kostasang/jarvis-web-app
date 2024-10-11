@@ -206,6 +206,12 @@
     opacity: 1;
 }
 
+.description-tooltip {
+    margin-bottom: 10px;
+    align-self: center;
+    font-weight: bold;
+}
+
 .id-tooltip {
     margin-top: 10px;
 }
