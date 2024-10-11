@@ -55,7 +55,7 @@
 }
 
 
-.sensor-data
+.sensor-content
 {
     display: flex;
     flex-direction: row;
@@ -121,25 +121,6 @@
     font-weight: bold;
 }
 
-.rem-sensor-btn
-{
-    background-color: darkred;
-    color: #f6f6f6;
-    border-style: none;
-    border-radius: 5px;
-    height: 22px;
-    width: 22px;
-    font-weight: bolder;
-    font-size: larger;
-    margin: 0.5px 0.5px 0.5px 0.5px;
-
-}
-
-.rem-sensor-btn::after
-{
-    content: '-';
-}
-
 .rename-sensor-btn
 {
     background-color: green;
@@ -168,24 +149,7 @@
     margin: 0.5px 0.5px 0.5px 0.5px;
 }
 
-.move-sensor-btn
-{
-    background-color: blue;
-    color: #f6f6f6;
-    border-style: none;
-    border-radius: 5px;
-    height: 22px;
-    width: 22px;
-    font-weight: bolder;
-    margin: 0.5px 0.5px 0.5px 0.5px;
-}
-
-.move-sensor-btn::after
-{
-    content: '>';
-}
-
-.rem-sensor-btn:hover, .rename-sensor-btn:hover, .act-sensor-btn:hover, .move-sensor-btn
+.rename-sensor-btn:hover, .act-sensor-btn:hover
 {
     cursor: pointer;
 }
