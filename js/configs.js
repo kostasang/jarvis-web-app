@@ -1,5 +1,5 @@
 const config = {
-    apiBaseUrl: "http://localhost:5000",
+    apiBaseUrl: "https://jarvis-core.ddns.net",
     icons: {
         play: "&#9654",
         stop: "&#9724",
