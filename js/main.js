@@ -143,7 +143,7 @@ async function placeDevices() {
 function logTime() {
     // Log the time of the last refresh
     let time_box = document.getElementById('refresh-time');
-    time_box.innerHTML = 'Last refreshed at: ' + new Date().toLocaleTimeString();
+    time_box.innerHTML = 'Last refreshed at: ' + new Date().toLocaleTimeString('it-IT');
 }
 
 async function refreshData() {
