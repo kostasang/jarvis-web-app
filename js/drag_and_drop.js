@@ -1,4 +1,10 @@
 function dragSensor(event) {
+    
+    // Determine if it's a touch event
+    if (event.type === "touchstart") {
+        event = event.touches[0];  // Access the first touch point
+    }
+
     event.dataTransfer.setData('sensor-id', event.currentTarget.id);
     event.dataTransfer.setData('sensor-type', event.currentTarget.getAttribute('data-type'));
     event.currentTarget.classList.add('dragging');
@@ -23,6 +29,11 @@ function dragLeave(event) {
 
 function dropToRoom(event) {
     event.preventDefault();
+
+    if (event.type === "touchend") {
+        event = event.changedTouches[0];
+    }
+
     let sensorId = event.dataTransfer.getData('sensor-id');
     let sensorDiv = document.getElementById(sensorId);
     let areaBox = event.currentTarget;
@@ -37,6 +48,11 @@ function dropToRoom(event) {
 
 function dropToAvailable(event) {
     event.preventDefault();
+
+    if (event.type === "touchend") {
+        event = event.changedTouches[0];
+    }
+
     let sensorId = event.dataTransfer.getData('sensor-id');
     let sensorType = event.dataTransfer.getData('sensor-type');
     let sensorCategory = config.devices[sensorType].category;
@@ -49,3 +65,17 @@ function dropToAvailable(event) {
         categoryDiv.classList.remove('droppable');
     })
 }
+
+function handleTouchMove(event) {
+    event.preventDefault();
+    const touch = event.touches[0];
+    const draggedElement = document.querySelector(".dragging"); // Track the currently dragging element
+
+    if (draggedElement) {
+        draggedElement.style.left = `${touch.pageX}px`;
+        draggedElement.style.top = `${touch.pageY}px`;
+    }
+}
+
+// Example usage
+document.addEventListener('touchmove', handleTouchMove);
