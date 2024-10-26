@@ -49,3 +49,25 @@ function dropToAvailable(event) {
         categoryDiv.classList.remove('droppable');
     })
 }
+
+function initializeDragAndDrop() {
+    
+    let sensorTemplate = document.getElementById('sensor-template').content.firstElementChild.cloneNode(true);
+    sensorTemplate.setAttribute("draggable", "true");
+    sensorTemplate.setAttribute("ondragstart", "dragSensor(event)");
+    sensorTemplate.setAttribute("ondragend", "dragEndSensor(event)");
+    document.getElementById('sensor-template').content.firstElementChild.replaceWith(sensorTemplate);
+
+    let roomTemplate = document.getElementById('room-template').content.firstElementChild.cloneNode(true);
+    roomTemplate.setAttribute("ondragover", "dragOver(event)");
+    roomTemplate.setAttribute("ondragenter", "dragEnter(event)");
+    roomTemplate.setAttribute("ondragleave", "dragLeave(event)");
+    roomTemplate.setAttribute("ondrop", "dropToRoom(event)");
+    document.getElementById('room-template').content.firstElementChild.replaceWith(roomTemplate);
+
+
+    document.getElementById("available-sensors-box").addEventListener("dragover", dragOver);
+    document.getElementById("available-sensors-box").addEventListener("dragenter", dragEnter);
+    document.getElementById("available-sensors-box").addEventListener("dragleave", dragLeave);
+    document.getElementById("available-sensors-box").addEventListener("drop", dropToAvailable);
+}

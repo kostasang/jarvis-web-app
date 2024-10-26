@@ -158,7 +158,17 @@ async function refreshData() {
     logTime();
 }
 
+function isMobileDevice() {
+    return /Mobi|Android/i.test(navigator.userAgent);
+}
+
 $(async function() {
+    
+    if (isMobileDevice()) {
+        initializeTapToSelect();
+    } else {
+        initializeDragAndDrop();
+    }
 
     if (localStorage.getItem('accessToken') === null) {
         location.href = '../index.html';
