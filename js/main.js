@@ -1,4 +1,5 @@
-// Hash table of icons based on type
+let userHubs = null;
+let hubId = null;
 
 async function renameRoom(clicked_button) {
     // Rename room
@@ -9,9 +10,7 @@ async function renameRoom(clicked_button) {
     }
     let room = clicked_button.closest('.room');
     let room_id = room.id;
-    let user_hubs = await getHubs();
-    let hub_id = user_hubs[0].hub_id;
-    renameArea(hub_id, room_id, new_name)
+    renameArea(hubId, room_id, new_name)
     .then(() => {
         room.id = new_name;
         room.querySelector('.room-title').innerHTML = new_name;
@@ -26,9 +25,7 @@ async function removeRoom(clicked_button) {
     let room = clicked_button.closest('.room');
 
     let room_id = room.id;
-    let user_hubs = await getHubs();
-    let hub_id = user_hubs[0].hub_id;
-    deleteArea(hub_id, room_id)
+    deleteArea(hubId, room_id)
     .then(() => {
         let room_sensors = room.querySelector('.room-sensors').children;
         for (let i=0; i<room_sensors.length; i++)
@@ -51,9 +48,7 @@ async function addRoom() {
         alert('Invalid name');
         return;
     }
-    let user_hubs = await getHubs()
-    let hub_id = user_hubs[0].hub_id;
-    createArea(hub_id, name)
+    createArea(hubId, name)
     .then((response) => {
         let rooms_div = document.getElementById('rooms-box');
         let room_box = document.getElementById('room-template');
@@ -81,9 +76,7 @@ function renameSensor(clicked_button)
 async function placeRooms() {
     // Place created rooms in the DOM when starting the app
     let room_box = document.getElementById('rooms-box');
-    let user_hubs = await getHubs();
-    hub_id = user_hubs[0].hub_id;
-    let rooms = await getRooms(hub_id);
+    let rooms = await getRooms(hubId);
     rooms = rooms.sort((a, b) => a.area_name.localeCompare(b.area_name));
     for (let i=0; i<rooms.length; i++)
     {
@@ -162,6 +155,29 @@ function isMobileDevice() {
     return /Mobi|Android/i.test(navigator.userAgent);
 }
 
+async function hubClaimingLoop() {
+    let success = false;
+    do {
+        hubId = prompt("You have no claimed hubs. Enter your hub's ID");
+        if (!hubId) {
+            alert('Invalid hub ID');
+            continue;
+        }
+        const verificationCode = prompt("Enter your hub's verification code");
+        if (!verificationCode) {
+            alert('Invalid verification code');
+            continue;
+        }
+        try {
+            await claimHub(hubId, verificationCode);
+            alert('Hub claimed successfully!');
+            success = true;
+        } catch (error) {
+            alert('Failed to claim hub, try again');
+        }
+    } while (!success);
+}
+
 $(async function() {
     
     if (isMobileDevice()) {
@@ -172,6 +188,14 @@ $(async function() {
 
     if (localStorage.getItem('accessToken') === null) {
         location.href = '../index.html';
+    }
+
+    userHubs = await getHubs();
+    if (userHubs.length === 0) {
+        await hubClaimingLoop();
+    }
+    else {
+        hubId = userHubs[0].hub_id;
     }
 
     await placeRooms();

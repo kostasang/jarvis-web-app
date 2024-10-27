@@ -41,3 +41,7 @@ document.getElementById('login-form').addEventListener('submit', function(event)
         document.getElementById('error-message').innerText = 'Login failed. Please check your credentials.';
     });
 });
+
+document.getElementById("signup-btn").addEventListener("click", function() {
+    window.location.href = "html/signup.html";
+});

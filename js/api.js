@@ -273,3 +273,24 @@ async function changePassword(currentPassword, newPassword) {
         console.error('Error:', error);
     });
 }
+
+async function claimHub(hubId, verificationCode) {
+    const apiUrl = config.apiBaseUrl + '/claim_hub';
+    const params = new URLSearchParams();
+    params.append('hub_id', hubId);
+    params.append('verification_code', verificationCode.toString());
+    return fetch(`${apiUrl}?${params.toString()}`, {
+        method: 'POST',
+        headers: {
+            'accept': '*/*',
+            'Authorization': 'Bearer ' + token
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(errorData => {
+                throw new Error(errorData.detail); // Throw with the detail message
+            });
+        }
+    })
+}
