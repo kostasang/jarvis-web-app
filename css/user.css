@@ -17,15 +17,30 @@
     text-align: center;
 }
 
+/* Form containers general styling */
+.form-container {
+    margin-top: 20px;
+    padding: 20px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+/* Password change form container theme */
+#change-password-container {
+    background-color: #f0f7ff; /* Light blue background */
+    border: 1px solid #cce5ff;
+}
+
+/* Delete account form container theme */
+#delete-account-container {
+    background-color: #fff5f5; /* Light red background */
+    border: 1px solid #ffdce0;
+}
+
 /* Form container styling inside user-info */
 #change-password-form {
     margin-top: 20px;
-    text-align: left; /* Align form inputs to the left */
-}
-
-#change-password-form h3 {
-    margin-bottom: 10px;
-    color: #333;
+    text-align: left;
 }
 
 /* Form input fields */
@@ -70,10 +85,9 @@
 .message {
     margin-top: 10px;
     font-size: 14px;
-    color: red; /* Default error color */
+    color: red;
 }
 
-/* Success message */
 .message.success {
     color: green;
 }
@@ -96,11 +110,6 @@
     background-color: #0056b3;
 }
 
-/* Hide the password change form by default */
-#change-password-container {
-    margin-top: 20px;
-}
-
 /* Delete Account Button */
 #toggle-delete-account-btn {
     margin-top: 20px;
@@ -119,11 +128,6 @@
     background-color: #c82333;
 }
 
-/* Delete Account Form Container */
-#delete-account-container {
-    margin-top: 20px;
-}
-
 /* Delete Account Form */
 #delete-account-form {
     margin-top: 20px;
@@ -134,7 +138,7 @@
 .confirmation-text {
     margin: 15px 0;
     padding: 10px;
-    background-color: #fff0f0;
+    background-color: rgba(220, 53, 69, 0.1);
     border-radius: 5px;
     font-size: 14px;
     color: #dc3545;
