@@ -100,3 +100,76 @@
 #change-password-container {
     margin-top: 20px;
 }
+
+/* Delete Account Button */
+#toggle-delete-account-btn {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #dc3545;
+    color: white;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: 100%;
+}
+
+#toggle-delete-account-btn:hover {
+    background-color: #c82333;
+}
+
+/* Delete Account Form Container */
+#delete-account-container {
+    margin-top: 20px;
+}
+
+/* Delete Account Form */
+#delete-account-form {
+    margin-top: 20px;
+    text-align: left;
+}
+
+/* Confirmation Text */
+.confirmation-text {
+    margin: 15px 0;
+    padding: 10px;
+    background-color: #fff0f0;
+    border-radius: 5px;
+    font-size: 14px;
+    color: #dc3545;
+    text-align: center;
+}
+
+.confirmation-text p {
+    margin: 0;
+}
+
+/* Delete Account Submit Button */
+#delete-account-form button {
+    width: 100%;
+    padding: 10px;
+    background-color: #dc3545;
+    color: white;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 15px;
+}
+
+#delete-account-form button:hover {
+    background-color: #c82333;
+}
+
+/* Delete Account Message */
+#delete-account-message {
+    margin-top: 10px;
+    font-size: 14px;
+    color: red;
+}
+
+#delete-account-message.success {
+    color: green;
+}

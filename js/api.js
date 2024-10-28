@@ -274,6 +274,24 @@ async function changePassword(currentPassword, newPassword) {
     });
 }
 
+async function deleteUser(password) {
+    const apiUrl = config.apiBaseUrl + '/delete_user';
+    const params = new URLSearchParams();
+    params.append('password', password);
+    return fetch(`${apiUrl}?${params.toString()}`, {
+        method: 'DELETE',
+        headers: {
+            'accept': '*/*',
+            'Authorization': 'Bearer ' + token
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Failed to delete user.');
+        }
+    })
+}
+
 async function claimHub(hubId, verificationCode) {
     const apiUrl = config.apiBaseUrl + '/claim_hub';
     const params = new URLSearchParams();

@@ -1,4 +1,5 @@
 document.getElementById('toggle-password-change-btn').addEventListener('click', function() {
+    document.getElementById('delete-account-container').style.display = 'none';
     const passwordFormContainer = document.getElementById('change-password-container');
     if (passwordFormContainer.style.display === 'none') {
         passwordFormContainer.style.display = 'block';
@@ -6,6 +7,17 @@ document.getElementById('toggle-password-change-btn').addEventListener('click', 
         passwordFormContainer.style.display = 'none';
     }
 });
+
+document.getElementById('toggle-delete-account-btn').addEventListener('click', function() {
+    document.getElementById('change-password-container').style.display = 'none';
+    const passwordFormContainer = document.getElementById('delete-account-container');
+    if (passwordFormContainer.style.display === 'none') {
+        passwordFormContainer.style.display = 'block';
+    } else {
+        passwordFormContainer.style.display = 'none';
+    }
+});
+
 
 document.getElementById('change-password-form').addEventListener('submit', async function(event) {
     event.preventDefault(); // Prevent the form from submitting the traditional way
@@ -43,6 +55,27 @@ document.getElementById('change-password-form').addEventListener('submit', async
     }
 });
 
+document.getElementById('delete-account-form').addEventListener('submit', async function(event) {
+    event.preventDefault(); // Prevent the form from submitting the traditional way
+
+    const password = document.getElementById('delete-confirm-password').value;
+    const messageElem = document.getElementById('delete-account-message');
+
+    // Make an API request to delete the user
+    try {
+        await deleteUser(password);
+        messageElem.textContent = "Account deleted successfully! Logging out ...";
+        messageElem.classList.add('success');
+        await new Promise(r => setTimeout(r, 3000));
+        await logOut();
+        localStorage.removeItem('accessToken');
+        location.href = '../index.html';
+    } catch (error) {
+        console.error('Error:', error);
+        messageElem.textContent = "Failed to delete account. Please try again.";
+        messageElem.classList.remove('success');
+    }
+});
 
 async function getUserInfo() {
     userData = await me()
