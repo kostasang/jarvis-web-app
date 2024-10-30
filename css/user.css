@@ -55,7 +55,8 @@
     color: #555;
 }
 
-.form-group input[type="password"] {
+.form-group input[type="password"],
+.form-group input[type="email"] {
     width: 100%;
     padding: 8px;
     font-size: 16px;
@@ -175,5 +176,63 @@
 }
 
 #delete-account-message.success {
+    color: green;
+}
+
+/* Email change form container theme */
+#change-email-container {
+    background-color: #f0f7ff; /* Same light blue background as password change */
+    border: 1px solid #cce5ff;
+}
+
+/* Email change form */
+#change-email-form {
+    margin-top: 20px;
+    text-align: left;
+}
+
+/* Button styling for toggling the email change form */
+#toggle-email-change-btn {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #007BFF;
+    color: white;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: 100%;
+}
+
+#toggle-email-change-btn:hover {
+    background-color: #0056b3;
+}
+
+/* Email change form button */
+#change-email-form button {
+    width: 100%;
+    padding: 10px;
+    background-color: #4CAF50;
+    color: white;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#change-email-form button:hover {
+    background-color: #45a049;
+}
+
+/* Email change message */
+#email-change-message {
+    margin-top: 10px;
+    font-size: 14px;
+    color: red;
+}
+
+#email-change-message.success {
     color: green;
 }

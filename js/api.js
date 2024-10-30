@@ -274,6 +274,29 @@ async function changePassword(currentPassword, newPassword) {
     });
 }
 
+async function changeEmail(password, newEmail) {
+    const apiUrl = config.apiBaseUrl + '/update_email';
+    const params = new URLSearchParams();
+    params.append('password', password);
+    params.append('new_email', newEmail);
+    return fetch(`${apiUrl}?${params.toString()}`, {
+        method: 'PUT',
+        headers: {
+            'accept': '*/*',
+            'Authorization': 'Bearer ' + token
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Failed to change email.');
+        }
+        return response;
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
+
 async function deleteUser(password) {
     const apiUrl = config.apiBaseUrl + '/delete_user';
     const params = new URLSearchParams();

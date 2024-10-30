@@ -63,6 +63,27 @@
                     <p id="password-change-message" class="message"></p>
                 </div>
 
+                <!-- Email Change Section -->
+                <button id="toggle-email-change-btn">Change Email</button>
+
+                <!-- Email change form, initially hidden -->
+                <div id="change-email-container" class="form-container" style="display: none;">
+                    <form id="change-email-form">
+                        <div class="form-group">
+                            <label for="current-password-email">Password:</label>
+                            <input type="password" id="current-password-email" name="current-password-email" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="new-email">New Email:</label>
+                            <input type="email" id="new-email" name="new-email" required>
+                        </div>
+
+                        <button type="submit">Change Email</button>
+                    </form>
+                    <p id="email-change-message" class="message"></p>
+                </div>
+
                 <!-- Delete Account Section -->
                 <button id="toggle-delete-account-btn">Delete Account</button>
 
