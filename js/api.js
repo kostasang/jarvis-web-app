@@ -335,3 +335,43 @@ async function claimHub(hubId, verificationCode) {
         }
     })
 }
+
+
+async function declareLostPassword(email) {
+    const apiUrl = config.apiBaseUrl + '/declare_lost_password';
+    const params = new URLSearchParams();
+    params.append('email', email);
+    return fetch(`${apiUrl}?${params.toString()}`, {
+        method: 'POST',
+        headers: {
+            'accept': '*/*'
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(errorData => {
+                throw new Error(errorData.detail); // Throw with the detail message
+            });
+        }
+    })
+}
+
+async function resetPassword(verificationToken, newPassword) {
+    const apiUrl = config.apiBaseUrl + '/reset_password';
+    const params = new URLSearchParams();
+    params.append('verification_token', verificationToken);
+    params.append('new_password', newPassword);
+    return fetch(`${apiUrl}?${params.toString()}`, {
+        method: 'PUT',
+        headers: {
+            'accept': '*/*'
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(errorData => {
+                throw new Error(errorData.detail); // Throw with the detail message
+            });
+        }
+    })
+}

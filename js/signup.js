@@ -12,6 +12,13 @@ document.getElementById('signup-form').addEventListener('submit', function(event
         return;
     }
 
+    // Validate password strength (add your own criteria)
+    if (password.length < 8) {
+        document.getElementById('msg').style.color = 'red';
+        document.getElementById('msg').innerText = 'Password needs to be at least 8 characters long.';
+        return;
+    }
+
     // Assuming the API endpoint is something like https://api.example.com/login
     const apiUrl = config.apiBaseUrl + '/create_user';
 
