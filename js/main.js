@@ -3,7 +3,7 @@ let hubId = null;
 
 async function renameRoom(clicked_button) {
     // Rename room
-    let new_name = prompt("Give room's new name");
+    let new_name = prompt("Provide a new name for the room.");
     if (new_name === null || new_name === '' || new_name === 'null') {
         alert('Invalid name');
         return;
@@ -12,7 +12,6 @@ async function renameRoom(clicked_button) {
     let room_id = room.id;
     renameArea(hubId, room_id, new_name)
     .then(() => {
-        room.id = new_name;
         room.querySelector('.room-title').innerHTML = new_name;
     })
     .catch((error) => {
@@ -38,12 +37,12 @@ async function removeRoom(clicked_button) {
         room.parentElement.removeChild(room);
     })
     .catch((error) => {
-        alert('Failed to remove room');
+        alert('Failed to remove room!');
     });
 }
 
 async function addRoom() {
-    let name = prompt('Give room name');
+    let name = prompt('Provide a room name.');
     if (name === null || name === '' || name === 'null') {
         alert('Invalid name');
         return;
@@ -58,7 +57,7 @@ async function addRoom() {
         rooms_div.appendChild(room_box);
     })
     .catch((error) => {
-        alert('Failed to create room, room already exists');
+        alert('Failed to create room, room already exists!');
     });
 }
 
@@ -136,7 +135,7 @@ async function placeDevices() {
 function logTime() {
     // Log the time of the last refresh
     let time_box = document.getElementById('refresh-time');
-    time_box.innerHTML = 'Last refreshed at: ' + new Date().toLocaleTimeString('it-IT');
+    time_box.innerHTML = 'Last refresh: ' + new Date().toLocaleTimeString('it-IT');
 }
 
 async function refreshData() {
@@ -158,12 +157,12 @@ function isMobileDevice() {
 async function hubClaimingLoop() {
     let success = false;
     do {
-        hubId = prompt("You have no claimed hubs. Enter your hub's ID");
+        hubId = prompt("You have no claimed hubs. Enter your hub's ID.");
         if (!hubId) {
             alert('Invalid hub ID');
             continue;
         }
-        const verificationCode = prompt("Enter your hub's verification code");
+        const verificationCode = prompt("Enter your hub's verification code.");
         if (!verificationCode) {
             alert('Invalid verification code');
             continue;
