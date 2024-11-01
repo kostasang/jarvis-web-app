@@ -17,6 +17,9 @@
     display: flex;
     font-size: larger;
     justify-content: center;
+    color: #333; /* Darker title color */
+    font-weight: bold;
+    padding: 10px 0;
 }
 
 #space-box-func
@@ -38,20 +41,22 @@
     display: flex;
     background-color: #fff;
     flex-direction: column;
-    border: 2px solid #f0f0f0;
     border-radius: 10px;
     padding: 10px;
     width: 25em;
     margin: 5px;
+    border: 1px solid #ddd; /* Subtle border color */
+    transition: box-shadow 0.3s;
 }
 
-/*.room:hover
-{
-    box-shadow: 0px 10px 50px gray;
-}*/
+.room:hover {
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); /* Add shadow on hover */
+}
 
 .room-title
 {
+    color: #333;
+    padding: 5px;
     display: flex;
     font-size: 22px;
     font-weight: bold;
@@ -197,4 +202,16 @@
 {
     margin-top: 1.5em;
     font-style: italic;
+}
+
+#new-room-btn, #refresh-btn, .rename-room-btn, .rem-room-btn {
+    transition: background-color 0.3s;
+}
+
+#new-room-btn:hover, .rename-room-btn:hover, .rem-room-btn:hover {
+    background-color: #5f9ea0; /* Subtle aqua color */
+}
+
+#refresh-btn:hover {
+    background-color: #1e90ff; /* Lighter blue for hover */
 }

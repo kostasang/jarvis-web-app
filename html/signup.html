@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-
-<html>
+<html lang="en">
 
 <head>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jarvis Sign Up</title>
     <link rel="icon" type="image/x-icon" href="../assets/images/favicon.png">
@@ -24,14 +24,18 @@
     </header>
 
     <section id="signup-form-section">
+        <h2>Sign Up to Jarvis</h2>
         <form id="signup-form">
             <input id="username" type="text" name="username" placeholder="Enter username" required>
             <input id="email" type="email" name="email" placeholder="Enter email" required>
             <input id="password" type="password" name="password" placeholder="Enter password" required>
             <input id="confirm-password" type="password" name="confirm_password" placeholder="Confirm password" required>
             <button type="submit" id="signup-btn">Sign Up</button>
+            <div class="back-to-login">
+                <a href="../index.html">Back to Login</a>
+            </div>
         </form>
-        <div id="msg"></div>
+        <div id="msg"></div> <!-- Positioned below the signup button -->
     </section>
 
     <footer class="footer">

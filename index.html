@@ -1,32 +1,31 @@
 <!DOCTYPE html>
+<html lang="en">
 
-<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jarvis Log In</title>
+    <link rel="icon" type="image/x-icon" href="assets/images/favicon.png">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/login.css">
+</head>
 
-    <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title> Jarvis Log In</title>
-        <link rel="manifest" href="js/manifest.json">
-        <link rel="icon" type="image/x-icon" href="assets/images/favicon.png">
-        <link rel='stylesheet' href='css/style.css'>
-        <link rel='stylesheet' href='css/login.css'>
-    </head>
+<body>
 
-    <body>
+    <header class="header">
+        <nav>
+            <div class="header-div">
+                <a href="index.html">Home</a>
+            </div>
+            <div class="header-div">
+                <a href="html/contact.html" target="_blank">Contact</a>
+            </div>
+        </nav>
+    </header>
 
-        <header class='header'>
-            <nav>
-                <div class='header-div'>
-                    <a href="index.html">Home</a> 
-                </div>
-
-                <div class='header-div'>
-                    <a href="html/contact.html" target="_blank">Contact</a>
-                </div>
-
-            </nav>
-        </header>
-
-        <section id="login-form-section">
+    <section id="login-section">
+        <div id="login-info">
+            <h2>Log In to Jarvis</h2>
             <form id="login-form">
                 <input id="username" type="text" name="username" placeholder="Enter username" required>
                 <input id="password" type="password" name="password" placeholder="Enter password" required>
@@ -39,15 +38,16 @@
                 </div>
             </form>
             <div id="error-message"></div>
-        </section>
+        </div>
+    </section>
 
-        <footer class="footer">
-            <p>Copyright &copy; 2024, Jarvis Home System</p>
-        </footer>
+    <footer class="footer">
+        <p>Copyright &copy; 2024, Jarvis Home System</p>
+    </footer>
 
-        <script src="js/configs.js"></script>
-        <script src='js/login.js'></script>
+    <script src="js/configs.js"></script>
+    <script src="js/login.js"></script>
 
-    </body>
+</body>
 
 </html>

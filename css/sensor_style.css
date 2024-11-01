@@ -8,6 +8,12 @@
     align-self: center;
     margin: 2px;
     font-weight: 300;
+    border: 1px solid #ddd; /* Subtle border color */
+    transition: box-shadow 0.3s;
+}
+
+.sensor:hover {
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); /* Add shadow on hover */
 }
 
 /* Temprature sensor coloring*/
@@ -170,11 +176,12 @@
 .tooltip .sensor-metadata {
     visibility: hidden;
     width: 100%;
-    background-color: #555;
-    color: #fff;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: #f9f9f9;
     text-align: left;
-    padding: 10px;
+    padding: 15px;
     border-radius: 6px;
+    font-size: 0.9em;
   
     /* Position the tooltip text */
     position: absolute;
@@ -197,7 +204,7 @@
     margin-left: -5px;
     border-width: 5px;
     border-style: solid;
-    border-color: #555 transparent transparent transparent;
+    border-color: rgba(0, 0, 0, 0.8) transparent transparent transparent;
 }
 
 /* Show the tooltip text when you mouse over the tooltip container */
@@ -218,4 +225,12 @@
 
 .time-tooltip {
     margin-top: 10px;
+}
+
+.rename-sensor-btn, .act-sensor-btn {
+    transition: background-color 0.3s;
+}
+
+.rename-sensor-btn:hover {
+    background-color: #4682b4;
 }
