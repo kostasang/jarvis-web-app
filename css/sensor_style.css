@@ -70,42 +70,21 @@
     width: 75%;
 }
 
-.sensor-func
-{
-    display: flex;
-    justify-content: center;
-    width: 25%;
-    flex-wrap: wrap;
-    align-content: center;
-    margin-left: 5px;
-}
-
-
-.type
+.sensor-type
 {
     display: flex;
     flex-direction: column;
     justify-content: space-around;
-    font-size: xx-large;
+    font-size: large;
+    align-items: center;
 }
-/*
-.id
-{
-    display: flex;
-    flex-direction: column;
-    justify-content: space-around;
-}
-
-.id-icon
-{
-    margin-bottom: 4px;
-}*/
 
 .sensor-data-state
 {
     display: flex;
     flex-direction: column;
     justify-content: space-around;
+    align-items: center;
 }
 
 .sensor[data-type="0"] .sensor-state,
@@ -127,23 +106,6 @@
     font-weight: bold;
 }
 
-.rename-sensor-btn
-{
-    background-color: green;
-    color: #f6f6f6;
-    border-style: none;
-    border-radius: 5px;
-    height: 22px;
-    width: 22px;
-    font-weight: bolder;
-    margin: 0.5px 0.5px 0.5px 0.5px;
-}
-
-.rename-sensor-btn::after
-{
-    content: '~';
-}
-
 .act-sensor-btn
 {
     background-color: brown;
@@ -155,7 +117,7 @@
     margin: 0.5px 0.5px 0.5px 0.5px;
 }
 
-.rename-sensor-btn:hover, .act-sensor-btn:hover
+.act-sensor-btn:hover
 {
     cursor: pointer;
 }
@@ -227,10 +189,6 @@
     margin-top: 10px;
 }
 
-.rename-sensor-btn, .act-sensor-btn {
+.act-sensor-btn {
     transition: background-color 0.3s;
-}
-
-.rename-sensor-btn:hover {
-    background-color: #4682b4;
 }

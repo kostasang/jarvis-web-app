@@ -2,6 +2,15 @@ let selectedSensor = null;
 
 function selectSensor(event) {
     event.stopPropagation();
+
+    // Close dropdown menus
+    document.querySelectorAll('.sensor-dropdown-menu').forEach(menu => {
+        menu.style.display = 'none';
+    });
+    document.querySelectorAll('.room-dropdown-menu').forEach(menu => {
+        menu.style.display = 'none';
+    });
+
     if (selectedSensor) {
         // Deselect if another sensor was previously selected
         selectedSensor.classList.remove("selected");

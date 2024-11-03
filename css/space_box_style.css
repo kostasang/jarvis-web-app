@@ -71,87 +71,6 @@
     color: #333;
 }
 
-.room-func
-{
-    display: flex;
-    justify-content: center;
-
-}
-
-.add-sens-btn
-{
-    background-color: green;
-    color: #f6f6f6;
-    border-style: none;
-    border-radius: 10px;
-    height: 30px;
-    width: 30px;
-    font-weight: bolder;
-    font-size: larger;
-    margin: 5px 0.5px 5px 0.5px;
-
-}
-
-.add-sens-btn::after
-{
-    content: '+';
-}
-
-.add-sens-btn:hover
-{
-    cursor: pointer;
-}
-
-.rem-room-btn
-{
-    background-color: darkred;
-    color: #f6f6f6;
-    border-style: none;
-    border-radius: 10px;
-    height: 30px;
-    width: 30px;
-    font-weight: bolder;
-    font-size: larger;
-    margin: 5px 0.5px 5px 0.5px;
-
-}
-
-.rem-room-btn::after
-{
-    content: 'x';
-}
-
-.rem-room-btn:hover
-{
-    cursor: pointer;
-}
-
-
-
-.rename-room-btn
-{
-    background-color: grey;
-    color: #f6f6f6;
-    border-style: none;
-    border-radius: 10px;
-    height: 30px;
-    width: 30px;
-    font-weight: bolder;
-    font-size: larger;
-    margin: 5px 0.5px 5px 0.5px;
-
-}
-
-.rename-room-btn::after
-{
-    content: '~';
-}
-
-.rename-room-btn:hover
-{
-    cursor: pointer;
-}
-
 .room-sensors
 {
     display: flex;
@@ -210,11 +129,11 @@
     font-style: italic;
 }
 
-#new-room-btn, #refresh-btn, .rename-room-btn, .rem-room-btn {
+#new-room-btn, #refresh-btn {
     transition: background-color 0.3s;
 }
 
-#new-room-btn:hover, .rename-room-btn:hover, .rem-room-btn:hover {
+#new-room-btn:hover {
     background-color: #5f9ea0; /* Subtle aqua color */
 }
 

@@ -100,7 +100,7 @@
                     <div class="room-title">Room Name</div> <!-- Centered title -->
                     <div class="room-options" onclick="toggleRoomMenu(this)">▼</div> <!-- Right-aligned icon -->
                 </div>
-                <ul class="dropdown-menu">
+                <ul class="room-dropdown-menu">
                     <li onclick="renameRoom(this)">Rename Room</li>
                     <li onclick="removeRoom(this)">Remove Room</li>
                 </ul>
@@ -123,9 +123,12 @@
                         <div class="sensor-data"></div>
                     </div>
                 </div>
-                <div class="sensor-func">
-                    <button class="rename-sensor-btn" onclick="renameSensorSensor(this)"></button>
-                </div>
+                <!-- Dropdown toggle button for sensor options -->
+                <div class="sensor-options" onclick="toggleSensorMenu(event, this)">⋮</div>
+                <!-- Dropdown menu -->
+                <ul class="sensor-dropdown-menu">
+                    <li onclick="renameSensor(this)">Rename Sensor</li>
+                </ul>
             </div>
         </template>
 
