@@ -10,7 +10,8 @@
         <link rel='stylesheet' href='../css/style.css'> 
         <link rel='stylesheet' href='../css/sensor_style.css'>
         <link rel='stylesheet' href="../css/drag_and_drop.css">
-        <link rel='stylesheet' href="../css/tap_and_drop.css">       
+        <link rel='stylesheet' href="../css/tap_and_drop.css">
+        <link rel='stylesheet' href="../css/dropdown-menu-style.css">
         <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.js" type="text/javascript"></script>
         
@@ -95,13 +96,15 @@
 
         <template id="room-template">
             <div class="room", id="room-id">
-                <div class="room-title">room-name</div>
-                <div class="room-func">
-                    <button class="rename-room-btn", onclick="renameRoom(this)"></button>
-                    <button class="rem-room-btn" onclick="removeRoom(this)"></button>
+                <div class="room-header">
+                    <div class="room-title">Room Name</div> <!-- Centered title -->
+                    <div class="room-options" onclick="toggleRoomMenu(this)">▼</div> <!-- Right-aligned icon -->
                 </div>
-                <div class="room-sensors">
-                </div>
+                <ul class="dropdown-menu">
+                    <li onclick="renameRoom(this)">Rename Room</li>
+                    <li onclick="removeRoom(this)">Remove Room</li>
+                </ul>
+                <div class="room-sensors"></div>
             </div>
         </template>
 
@@ -121,7 +124,7 @@
                     </div>
                 </div>
                 <div class="sensor-func">
-                    <button class="rename-sensor-btn" onclick="renameSensor(this)"></button>
+                    <button class="rename-sensor-btn" onclick="renameSensorSensor(this)"></button>
                 </div>
             </div>
         </template>
@@ -130,6 +133,7 @@
         <script src="../js/api.js"></script>
         <script src="../js/drag_and_drop.js"></script>
         <script src="../js/tap_and_drop.js"></script>
+        <script src="../js/dropdown-menu.js"></script>
         <script src='../js/main.js'></script>
         <script src='../js/logout.js'></script>
 

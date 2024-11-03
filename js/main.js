@@ -62,7 +62,7 @@ async function addRoom() {
 }
 
 function renameSensor(clicked_button)
-{
+{   
     let nickname = prompt('Give sensor nickname');
     let sensor = clicked_button.closest('.sensor');
     let sensor_id = sensor.id;

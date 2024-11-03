@@ -1,0 +1,43 @@
+/* Right-aligned options icon */
+.room-options {
+    cursor: pointer;
+    padding: 4px;
+    color: #666;
+    font-size: 1.2em;
+}
+
+/* Hover effect for the options icon */
+.room-options:hover {
+    background-color: #eaeaea;
+    border-radius: 4px;
+}
+
+/* Dropdown menu styling */
+.dropdown-menu {
+    display: none; /* Hidden by default */
+    top: 100%;
+    right: 0; /* Aligns dropdown with options icon */
+    background-color: #f9f9f9;;
+    border-radius: 6px;
+    padding: 8px 0;
+    list-style-type: none;
+    margin: 0;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+    min-width: 140px;
+    z-index: 1000;
+}
+
+.dropdown-menu li {
+    padding: 10px 16px;
+    font-size: 0.9em;
+    cursor: pointer;
+    color: #333;
+}
+
+.dropdown-menu li:hover {
+    background-color: #f1f1f1;
+}
+
+.dropdown-menu li + li {
+    border-top: 1px solid #eee;
+}
