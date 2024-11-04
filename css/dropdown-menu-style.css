@@ -50,6 +50,12 @@
     font-size: 1.5em;
 }
 
+/* Hover effect for the options icon */
+.sensor-options:hover {
+    background-color: inherit;
+    border-radius: 4px;
+}
+
 .sensor-dropdown-menu {
     display: none; /* Hidden by default */
     position: absolute;
