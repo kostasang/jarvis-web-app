@@ -10,8 +10,14 @@ async function getHubs() {
         }
     })
     .then(response => {
+        if (response.status === 401) { 
+            // If unauthorized, redirect to login
+            localStorage.removeItem('accessToken');
+            window.location.href = '../index.html';
+            return null;
+        }
         if (!response.ok) {
-            throw new Error('Failed to get hubs.');
+            throw new Error('Failed to get devices.');
         }
         return response.json();
     })
@@ -53,8 +59,14 @@ async function getDevices() {
         }
     })
     .then(response => {
+        if (response.status === 401) { 
+            // If unauthorized, redirect to login
+            localStorage.removeItem('accessToken');
+            window.location.href = '../index.html';
+            return null;
+        }
         if (!response.ok) {
-            throw new Error('Failed to get areas.');
+            throw new Error('Failed to get devices.');
         }
         return response.json();
     })
