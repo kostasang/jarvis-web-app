@@ -114,6 +114,23 @@ function designDevice(device) {
     return device_box;
 }
 
+function refreshDevice(device) {
+    // Refresh device data, state and time
+    let device_box = document.getElementById(device.sensor_id);
+    device_box.querySelector('.time-tooltip').innerHTML = device.last_timestamp.replace('T', ' ');
+
+    data_block = device_box.querySelector('.sensor-data');
+    let device_config = config.devices[device.sensor_type];
+    if (device_config.values === 'continuous') {
+        let data = parseFloat(device.sensor_data).toFixed(device_config.round);
+        data_block.innerHTML = String(data) + device_config.unit;
+    }
+    else if (device_config.values === 'binary') {
+        data_block.innerHTML = device_config.valueMap[device.sensor_data].text;
+        data_block.style.color = device_config.valueMap[device.sensor_data].color;
+    }
+}
+
 async function placeDevices() {
     // Place created sensors in the DOM when starting the app
     let devices = await getDevices();
@@ -143,9 +160,7 @@ async function refreshData() {
     let devices = await getDevices();
     for (let i=0; i<devices.length; i++)
     {
-        device_box = document.getElementById(devices[i].sensor_id);
-        new_device_box = designDevice(devices[i]);
-        device_box.replaceWith(new_device_box);
+        refreshDevice(devices[i]);
     }
     logTime();
 }
