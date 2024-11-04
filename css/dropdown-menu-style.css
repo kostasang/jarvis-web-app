@@ -1,5 +1,7 @@
 /* Right-aligned options icon */
 .room-options {
+    position: absolute;
+    right: 8px;
     cursor: pointer;
     padding: 4px;
     color: #666;

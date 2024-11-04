@@ -55,17 +55,16 @@
 
 /* Container for the room title and options icon */
 .room-header {
+    position: relative;
     display: flex;
     align-items: center;
-    justify-content: space-between; /* Pushes title to center, icon to the right */
+    justify-content: center; /* Pushes title to center, icon to the right */
     padding: 8px;
     border-bottom: 1px solid #ddd;
 }
 
 /* Centered title */
 .room-title {
-    flex: 1; /* Allows title to occupy central space */
-    text-align: center;
     font-weight: bold;
     font-size: larger;
     color: #333;
@@ -77,11 +76,6 @@
     flex-direction: column;
     text-align: center;
     margin-top: 7px;
-}
-
-.sensor
-{
-    margin: 5px
 }
 
 #new-room-btn
