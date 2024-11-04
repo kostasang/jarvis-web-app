@@ -14,6 +14,9 @@ function toggleRoomMenu(event, optionsIcon) {
     document.querySelectorAll('.room-dropdown-menu').forEach(menuItem => {
         if (menuItem !== menu) menuItem.style.display = 'none';
     });
+    document.querySelectorAll('.sensor-dropdown-menu').forEach(menuItem => {
+        menuItem.style.display = 'none';
+    });
 
     // Toggle the visibility of the dropdown menu
     menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
@@ -30,9 +33,13 @@ function toggleSensorMenu(event, optionsIcon) {
 
 
     const menu = optionsIcon.nextElementSibling;
+
     // Close any other open dropdowns
     document.querySelectorAll('.sensor-dropdown-menu').forEach(menuItem => {
         if (menuItem !== menu) menuItem.style.display = 'none';
+    });
+    document.querySelectorAll('.room-dropdown-menu').forEach(menuItem => {
+        menuItem.style.display = 'none';
     });
 
     // Toggle the visibility of the clicked dropdown menu
