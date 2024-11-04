@@ -1,4 +1,5 @@
-function toggleRoomMenu(optionsIcon) {
+function toggleRoomMenu(event, optionsIcon) {
+    event.stopPropagation();
 
     // If a sensor is selected, deselect it
     const selectedSensor = document.querySelector('.sensor.selected');
