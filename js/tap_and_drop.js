@@ -11,11 +11,16 @@ function selectSensor(event) {
         menu.style.display = 'none';
     });
 
-    if (selectedSensor) {
+    if (selectedSensor && selectedSensor !== event.currentTarget) {
         // Deselect if another sensor was previously selected
         selectedSensor.classList.remove("selected");
     }
     selectedSensor = event.currentTarget;
+    if (selectedSensor.classList.contains("selected")) {
+        selectedSensor.classList.remove("selected");
+        selectedSensor = null;
+        return;
+    }
     selectedSensor.classList.add("selected");
 }
 
