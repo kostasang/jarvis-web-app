@@ -31,6 +31,11 @@ function moveToRoom(event) {
     let sensorDiv = document.getElementById(sensorId);
     let areaBox = event.currentTarget;
     let areaId = event.currentTarget.id;
+    if (sensorDiv.parentElement.parentElement.id === areaId) {
+        sensorDiv.classList.remove('selected');
+        selectedSensor = null;
+        return;
+    }
     assignDeviceToArea(sensorId, areaId)
     .then(() => {
         sensorDiv.parentElement.removeChild(sensorDiv);
@@ -47,6 +52,11 @@ function moveToAvailable(event) {
     let sensorType = selectedSensor.getAttribute('data-type');
     let sensorCategory = config.devices[sensorType].category;
     let sensorDiv = document.getElementById(sensorId);
+    if (sensorDiv.parentElement.classList.contains('sensor-category')) {
+        sensorDiv.classList.remove('selected');
+        selectedSensor = null;
+        return;
+    }
     removeDeviceFromArea(sensorId)
     .then(() => {
         sensorDiv.parentElement.removeChild(sensorDiv);
