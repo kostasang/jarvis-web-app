@@ -21,7 +21,7 @@ const config = {
             description: "Humidity Sensor",
             values: 'continuous',
             unit: "%",
-            round: 1
+            round: 0
         },
         2: {
             category: "environmental",
@@ -59,7 +59,17 @@ const config = {
             category: "control",
             icon: "&#128161",
             description: "Remote Light Switch",
-            values: 'binary'
+            values: 'binary',
+            valueMap: {
+                0: {
+                    text: "Off",
+                    color: 'black'
+                },
+                1: {
+                    text: "On",
+                    color: 'black'
+                }
+            }
         },
         5: {
             category: "security",
