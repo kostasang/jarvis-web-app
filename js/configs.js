@@ -58,13 +58,13 @@ const config = {
         4: {
             category: "control",
             icon: "&#128161",
-            description: "Light Control",
+            description: "Remote Light Switch",
             values: 'binary'
         },
         5: {
             category: "security",
             icon: "&#128274",
-            description: "Door / Window Status Sensor",
+            description: "Frame Status Sensor",
             values: 'binary',
             valueMap: {
                 0: {
