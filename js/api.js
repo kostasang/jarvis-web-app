@@ -387,3 +387,26 @@ async function resetPassword(verificationToken, newPassword) {
         }
     })
 }
+
+
+async function commandDevice(sensorId, sensorData, sensorState) {
+    const apiUrl = config.apiBaseUrl + '/command_device';
+    const params = new URLSearchParams();
+    params.append('sensor_id', sensorId);
+    params.append('sensor_data', sensorData);
+    params.append('sensor_state', sensorState);
+    return fetch(`${apiUrl}?${params.toString()}`, {
+        method: 'POST',
+        headers: {
+            'accept': '*/*',
+            'Authorization': 'Bearer ' + token
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(errorData => {
+                throw new Error(errorData.detail); // Throw with the detail message
+            });
+        }
+    })
+}

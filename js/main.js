@@ -111,6 +111,18 @@ function designDevice(device) {
         data_block.innerHTML = device_config.valueMap[device.sensor_data].text;
         data_block.style.color = device_config.valueMap[device.sensor_data].color;
     }
+
+    // Handle control device
+    // TODO: Add more generic way to handle control devices
+    if (device_config.category === 'control') {
+        let controlButton = device_box.querySelector('.control-sensor-btn');
+        if (device.sensor_data == 1) {
+            controlButton.innerHTML = config.icons.stop;
+        }
+        else {
+            controlButton.innerHTML = config.icons.play;
+        }
+    }
     return device_box;
 }
 
@@ -128,6 +140,18 @@ function refreshDevice(device) {
     else if (device_config.values === 'binary') {
         data_block.innerHTML = device_config.valueMap[device.sensor_data].text;
         data_block.style.color = device_config.valueMap[device.sensor_data].color;
+    }
+
+    // Handle control device
+    // TODO: Add more generic way to handle control devices
+    if (device_config.category === 'control') {
+        let controlButton = device_box.querySelector('.control-sensor-btn');
+        if (device.sensor_data == 1) {
+            controlButton.innerHTML = config.icons.stop;
+        }
+        else {
+            controlButton.innerHTML = config.icons.play;
+        }
     }
 }
 

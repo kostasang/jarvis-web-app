@@ -41,25 +41,17 @@
     background-color: rgba(70, 100, 100, 0.2);
 }
 
-.sensor[data-type="5"]
-{
-    background-color: rgba(240, 116, 0, 0.2);
-}
-
 /* Control sensor coloring*/
 
 .sensor[data-type="4"]
 {
-    background-color: rgba(26, 224, 85, 0.2);
+    background-color: rgba(196, 193, 11, 0.2);
 }
 
-/* Misc sensor coloring*/
-
-.sensor[data-type="7"]
+.sensor[data-type="5"]
 {
-    background-color: rgba(247, 231, 14, 0.2);
+    background-color: rgba(240, 116, 0, 0.2);
 }
-
 
 .sensor-content
 {
@@ -94,32 +86,39 @@
     display: none;
 }
 
-.sensor[data-type="2"] .sensor-state {
-    font-weight: bold;
-}
-
 .sensor[data-type="0"] .sensor-data,
 .sensor[data-type="1"] .sensor-data,
 .sensor[data-type="2"] .sensor-data,
 .sensor[data-type="3"] .sensor-data,
+.sensor[data-type="4"] .sensor-data,
 .sensor[data-type="5"] .sensor-data {
     font-weight: bold;
 }
 
-.act-sensor-btn
-{
-    background-color: brown;
-    color: #f6f6f6;
-    border-style: none;
-    border-radius: 5px;
-    height: 22px;
-    width: 80%;
-    margin: 0.5px 0.5px 0.5px 0.5px;
+.sensor[data-type="0"] .control-sensor-btn,
+.sensor[data-type="1"] .control-sensor-btn,
+.sensor[data-type="2"] .control-sensor-btn,
+.sensor[data-type="3"] .control-sensor-btn,
+.sensor[data-type="5"] .control-sensor-btn {
+    display: none;
 }
 
-.act-sensor-btn:hover
-{
+.sensor[data-type="4"] .control-sensor-btn {
+    display: block;
+}
+
+.control-sensor-btn {
     cursor: pointer;
+    padding: 4px;
+    right: 8px; /* Adjust to align it to the right edge of the sensor box */
+    top: 8px; /* Adjust to align vertically as needed */
+    font-size: 1.3em;
+}
+
+/* Hover effect for the options icon */
+.control-sensor-btn:hover {
+    background-color: inherit;
+    border-radius: 4px;
 }
 
 .tooltip {
@@ -182,8 +181,4 @@
 
 .time-tooltip {
     margin-top: 10px;
-}
-
-.act-sensor-btn {
-    transition: background-color 0.3s;
 }
