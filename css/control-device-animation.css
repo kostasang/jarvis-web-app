@@ -22,3 +22,21 @@
     75% { transform: translateX(-5px); }
     100% { transform: translateX(0); }
 }
+
+/* Style for the warning icon */
+.warning-icon {
+    position: absolute;
+    top: 50%;
+    left: 10%;
+    transform: translate(-50%, -50%);
+    font-size: 24px;
+    color: rgba(255, 0, 0, 0.8); /* Red color for warning */
+    opacity: 0; /* Hidden by default */
+    transition: opacity 0.3s ease;
+    pointer-events: none; /* Prevents it from capturing clicks */
+}
+
+/* Show warning icon when there’s an error */
+.sensor.shake .warning-icon {
+    opacity: 1; /* Visible during the shake animation */
+}
