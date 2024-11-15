@@ -1,5 +1,6 @@
 const config = {
     apiBaseUrl: "https://jarvis-core.ddns.net",
+    websockerBaseUrl: "wss://jarvis-core.ddns.net",
     icons: {
         play: "&#9654",
         stop: "&#9724",

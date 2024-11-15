@@ -239,11 +239,44 @@ $(async function() {
     await placeRooms();
     await placeDevices();
     logTime();
+
+    /* Websocket method */
+
+    const ws = new WebSocket(
+        `${config.websockerBaseUrl}/get_live_notifications?token=${localStorage.getItem('accessToken')}`
+    );
+
+    ws.onopen = function(event) {
+        console.log("WebSocket connection established");
+    };
+    
+    ws.onmessage = function(event) {
+        console.log("Message from server: ", event.data);
+        refreshData();
+    };
+    
+    ws.onclose = function(event) {
+        console.log("Disconnected from WebSocket server");
+        logOut()
+        .then(() => {
+            localStorage.removeItem('accessToken');
+            location.href = '../index.html';
+        });
+    };
+    
+    ws.onerror = function(error) {
+        console.error("WebSocket error: ", error);
+        logOut()
+        .then(() => {
+            localStorage.removeItem('accessToken');
+            location.href = '../index.html';
+        });
+    };
     
     /* Long polling method */
 
-    setInterval(function() {
-        refreshData();
-    },
-    config.refreshTime);
+    // setInterval(function() {
+    //     refreshData();
+    // },
+    // config.refreshTime);
 });
