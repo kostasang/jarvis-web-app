@@ -16,7 +16,6 @@
 
 /* Dropdown menu styling */
 .room-dropdown-menu {
-    position: absolute;
     display: none; /* Hidden by default */
     top: 100%;
     right: 0; /* Aligns dropdown with options icon */

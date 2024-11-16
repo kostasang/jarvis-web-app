@@ -1,6 +1,5 @@
 .sensor
 {
-    position: relative;
     display: flex;
     justify-content: space-around;
     border-radius: 7px;
