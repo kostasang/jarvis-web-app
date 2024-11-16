@@ -1,5 +1,6 @@
 .sensor
 {
+    position: relative;
     display: flex;
     justify-content: space-around;
     border-radius: 7px;
@@ -8,8 +9,11 @@
     align-self: center;
     margin: 2px;
     font-weight: 300;
-    border: 1px solid #ddd; /* Subtle border color */
-    transition: box-shadow 0.3s;
+    transition: 
+        border 0.3s ease, 
+        background-color 0.3s ease, 
+        box-shadow 0.3s ease, 
+        transform 0.3s ease;
 }
 
 .sensor:hover {
@@ -143,7 +147,6 @@
     border-radius: 8px;
     font-size: 0.9em;
     position: absolute;
-    z-index: 1;
     bottom: 125%;
     left: 50%;
     transform: translateX(-50%);

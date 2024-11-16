@@ -16,6 +16,7 @@
 
 /* Dropdown menu styling */
 .room-dropdown-menu {
+    position: absolute;
     display: none; /* Hidden by default */
     top: 100%;
     right: 0; /* Aligns dropdown with options icon */
@@ -64,7 +65,6 @@
     top: 100%; /* Position below the sensor options icon */
     right: 0;
     background-color: #f9f9f9;
-    border: 1px solid #ddd;
     border-radius: 6px;
     padding: 8px 0;
     list-style-type: none;

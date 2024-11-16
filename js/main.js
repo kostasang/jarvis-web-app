@@ -266,17 +266,10 @@ $(async function() {
     
     ws.onerror = function(error) {
         console.error("WebSocket error: ", error);
-        logOut()
-        .then(() => {
-            localStorage.removeItem('accessToken');
-            location.href = '../index.html';
-        });
+        /* Long polling method if websocker fails*/
+        setInterval(function() {
+            refreshData();
+        },
+        config.refreshTime);
     };
-    
-    /* Long polling method */
-
-    // setInterval(function() {
-    //     refreshData();
-    // },
-    // config.refreshTime);
 });
