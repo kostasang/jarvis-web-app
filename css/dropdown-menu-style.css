@@ -6,6 +6,11 @@
     padding: 4px;
     color: #666;
     font-size: 1.2em;
+    transition: transform 0.5s ease;
+}
+
+.room-options.rotated {
+    transform: rotate(90deg);
 }
 
 /* Hover effect for the options icon */
@@ -14,19 +19,28 @@
     border-radius: 4px;
 }
 
-/* Dropdown menu styling */
 .room-dropdown-menu {
-    display: none; /* Hidden by default */
+    visibility: hidden; /* Hidden by default */
+    opacity: 0;
+    max-height: 0;
+    overflow: hidden;
+    transition: opacity 0.5s ease, max-height 0.5s ease, visibility 0.5s ease;
     top: 100%;
     right: 0; /* Aligns dropdown with options icon */
-    background-color: #f9f9f9;;
+    background-color: #f9f9f9;
     border-radius: 6px;
-    padding: 8px 0;
+    padding: 0px 0;
     list-style-type: none;
     margin: 0;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Subtle shadow */
     min-width: 140px;
     z-index: 1000;
+}
+
+.room-dropdown-menu.show {
+    visibility: visible;
+    opacity: 1;
+    max-height: 200px; /* Adjust based on the content */
 }
 
 .room-dropdown-menu li {
@@ -59,9 +73,11 @@
 }
 
 .sensor-dropdown-menu {
-    display: none; /* Hidden by default */
+    visibility: hidden;
     position: absolute;
+    opacity: 0;
     top: 100%; /* Position below the sensor options icon */
+    transition: visibility 0.5s ease, opacity 0.5s ease;
     right: 0;
     background-color: #f9f9f9;
     border-radius: 6px;
@@ -73,6 +89,11 @@
     z-index: 1000;
 }
 
+.sensor-dropdown-menu.show {
+    visibility: visible;
+    opacity: 1;
+}
+
 .sensor-dropdown-menu li {
     padding: 10px 16px;
     font-size: 0.9em;
@@ -82,4 +103,8 @@
 
 .sensor-dropdown-menu li:hover {
     background-color: #e6e6e6;
+}
+
+.sensor-dropdown-menu li + li {
+    border-top: 1px solid #eee;
 }

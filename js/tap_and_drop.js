@@ -5,10 +5,10 @@ function selectSensor(event) {
 
     // Close dropdown menus
     document.querySelectorAll('.sensor-dropdown-menu').forEach(menu => {
-        menu.style.display = 'none';
+        menu.classList.remove('show');
     });
     document.querySelectorAll('.room-dropdown-menu').forEach(menu => {
-        menu.style.display = 'none';
+        menu.classList.remove('show');
     });
 
     if (selectedSensor && selectedSensor !== event.currentTarget) {

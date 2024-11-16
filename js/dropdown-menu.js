@@ -11,15 +11,18 @@ function toggleRoomMenu(event, optionsIcon) {
     const menu = optionsIcon.parentElement.nextElementSibling;
 
     // Close any other open dropdowns
+    // Close any other open dropdowns
     document.querySelectorAll('.room-dropdown-menu').forEach(menuItem => {
-        if (menuItem !== menu) menuItem.style.display = 'none';
+        if (menuItem !== menu) {
+            menuItem.classList.remove('show');
+        }
     });
     document.querySelectorAll('.sensor-dropdown-menu').forEach(menuItem => {
-        menuItem.style.display = 'none';
+        menuItem.classList.remove('show');
     });
 
     // Toggle the visibility of the dropdown menu
-    menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
+    menu.classList.toggle('show');
 }
 
 function toggleSensorMenu(event, optionsIcon) {
@@ -36,27 +39,26 @@ function toggleSensorMenu(event, optionsIcon) {
 
     // Close any other open dropdowns
     document.querySelectorAll('.sensor-dropdown-menu').forEach(menuItem => {
-        if (menuItem !== menu) menuItem.style.display = 'none';
+        if (menuItem !== menu) menuItem.classList.remove('show');
     });
     document.querySelectorAll('.room-dropdown-menu').forEach(menuItem => {
-        menuItem.style.display = 'none';
+        menuItem.classList.remove('show');
     });
 
     // Toggle the visibility of the clicked dropdown menu
-    menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
+    menu.classList.toggle('show');
 }
 
 // Close the menus if clicking outside
 document.addEventListener('click', function (event) {
     if (!event.target.closest('.sensor-options')) {
         document.querySelectorAll('.sensor-dropdown-menu').forEach(menu => {
-            menu.style.display = 'none';
+            menu.classList.remove('show');
         });
     }
     if (!event.target.closest('.room-header') && !event.target.closest('.room-dropdown-menu')) {
         document.querySelectorAll('.room-dropdown-menu').forEach(menu => {
-            menu.style.display = 'none';
+            menu.classList.remove('show');
         });
     }
 });
-

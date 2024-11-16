@@ -61,8 +61,9 @@ async function addRoom() {
     });
 }
 
-function renameSensor(clicked_button)
+function renameSensor(event, clicked_button)
 {   
+    event.stopPropagation();
     let nickname = prompt('Give sensor nickname');
     let sensor = clicked_button.closest('.sensor');
     let sensor_id = sensor.id;
@@ -171,6 +172,11 @@ async function placeDevices() {
             room.querySelector(".room-sensors").appendChild(device);
         }
     }
+}
+
+async function showHistory(event, clicked_button) {
+    event.stopPropagation();
+    return;
 }
 
 function logTime() {
