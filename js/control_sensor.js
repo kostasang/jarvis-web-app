@@ -16,10 +16,10 @@ function commandDeviceButton(event, clickedButton) {
     }
     // Close any other open dropdowns
     document.querySelectorAll('.room-dropdown-menu').forEach(menuItem => {
-        menuItem.style.display = 'none';
+        menuItem.classList.remove('show');
     });
     document.querySelectorAll('.sensor-dropdown-menu').forEach(menuItem => {
-        menuItem.style.display = 'none';
+        menuItem.classList.remove('show');
     });
 
     transmittedValue = (currentValue == 'On') ? 0 : 1;
