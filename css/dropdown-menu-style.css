@@ -72,7 +72,7 @@
     position: absolute;
     opacity: 0;
     top: 100%; /* Position below the sensor options icon */
-    transition: visibility 0.5s ease, opacity 0.5s ease;
+    transition: visibility 0.2s ease, opacity 0.2s ease;
     right: 0;
     background-color: #f9f9f9;
     border-radius: 6px;

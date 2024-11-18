@@ -19,10 +19,22 @@
 
 /* Form containers general styling */
 .form-container {
+    visibility: hidden;
+    opacity: 0;
+    max-height: 0px;
+    transition: opacity 0.5s ease, max-height 0.5s ease, visibility 0.5s ease;
     margin-top: 20px;
-    padding: 20px;
+    margin-bottom: 0px;
+    padding: 0px 20px 0px;
     border-radius: 8px;
     transition: all 0.3s ease;
+}
+
+.form-container.show {
+    visibility: visible;
+    opacity: 1;
+    max-height: 500px;
+    margin-bottom: 20px;
 }
 
 /* Password change form container theme */
@@ -113,7 +125,6 @@
 
 /* Delete Account Button */
 #toggle-delete-account-btn {
-    margin-top: 20px;
     padding: 10px;
     background-color: #dc3545;
     color: white;
@@ -193,7 +204,6 @@
 
 /* Button styling for toggling the email change form */
 #toggle-email-change-btn {
-    margin-top: 20px;
     padding: 10px;
     background-color: #007BFF;
     color: white;

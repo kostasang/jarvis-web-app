@@ -1,34 +1,16 @@
 document.getElementById('toggle-password-change-btn').addEventListener('click', function() {
-    document.getElementById('change-email-container').style.display = 'none';
-    document.getElementById('delete-account-container').style.display = 'none';
     const passwordFormContainer = document.getElementById('change-password-container');
-    if (passwordFormContainer.style.display === 'none') {
-        passwordFormContainer.style.display = 'block';
-    } else {
-        passwordFormContainer.style.display = 'none';
-    }
+    passwordFormContainer.classList.toggle('show');
 });
 
 document.getElementById('toggle-email-change-btn').addEventListener('click', function() {
-    document.getElementById('change-password-container').style.display = 'none';
-    document.getElementById('delete-account-container').style.display = 'none';
-    const passwordFormContainer = document.getElementById('change-email-container');
-    if (passwordFormContainer.style.display === 'none') {
-        passwordFormContainer.style.display = 'block';
-    } else {
-        passwordFormContainer.style.display = 'none';
-    }
+    const emailFormContainer = document.getElementById('change-email-container');
+    emailFormContainer.classList.toggle('show');
 });
 
 document.getElementById('toggle-delete-account-btn').addEventListener('click', function() {
-    document.getElementById('change-password-container').style.display = 'none';
-    document.getElementById('change-email-container').style.display = 'none';
-    const passwordFormContainer = document.getElementById('delete-account-container');
-    if (passwordFormContainer.style.display === 'none') {
-        passwordFormContainer.style.display = 'block';
-    } else {
-        passwordFormContainer.style.display = 'none';
-    }
+    const deletionFormContainer = document.getElementById('delete-account-container');
+    deletionFormContainer.classList.toggle('show');
 });
 
 
