@@ -19,22 +19,22 @@
     </head>
 
     <body>
-        <header class='header'>
+        <header class="header">
             <nav>
-                <div class='header-div'>
-                    <a href="user.html">User</a> 
+                <div class="hamburger-menu" id="hamburger-menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
                 </div>
-
-                <div class='header-div'>
-                    <a href="../index.html" onclick="logOutButton(this)">Logout</a> 
-                </div>
-
-                <div class='header-div'>
-                    <a href="contact.html" target="_blank">Contact</a>
-                </div>
-
             </nav>
         </header>
+        <div class="side-panel" id="side-panel">
+            <h2>Menu</h2>
+            <a href="user.html">User</a>
+            <a href="../index.html" onclick="logOutButton(this)">Logout</a>
+            <a href="contact.html" target="_blank">Contact</a>
+        </div>
+        <div class="overlay" id="overlay"></div>
 
         <section>
             <div id="space-box">
@@ -138,6 +138,7 @@
         </template>
 
         <script src="../js/configs.js"></script>
+        <script src="../js/header.js"></script>
         <script src="../js/api.js"></script>
         <script src="../js/drag_and_drop.js"></script>
         <script src="../js/tap_and_drop.js"></script>

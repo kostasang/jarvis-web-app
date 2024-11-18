@@ -14,14 +14,19 @@
 
     <header class="header">
         <nav>
-            <div class="header-div">
-                <a href="index.html">Home</a>
-            </div>
-            <div class="header-div">
-                <a href="html/contact.html" target="_blank">Contact</a>
+            <div class="hamburger-menu" id="hamburger-menu">
+                <span></span>
+                <span></span>
+                <span></span>
             </div>
         </nav>
     </header>
+    <div class="side-panel" id="side-panel">
+        <h2>Menu</h2>
+        <a href="index.html">Home</a>
+        <a href="html/contact.html" target="_blank">Contact</a>
+    </div>
+    <div class="overlay" id="overlay"></div>
 
     <section id="login-section">
         <div id="login-info">
@@ -46,6 +51,7 @@
     </footer>
 
     <script src="js/configs.js"></script>
+    <script src="js/header.js"></script>
     <script src="js/login.js"></script>
 
 </body>

@@ -1,8 +1,9 @@
 #user-info-section {
+    height: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 50vh; /* Adjusts height to center vertically within the page */
+    min-height: 80vh; /* Adjusts height to center vertically within the page */
     background-color: #f9f9f9;
     padding: 20px;
 }
