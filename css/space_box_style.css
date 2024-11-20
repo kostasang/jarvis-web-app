@@ -99,6 +99,9 @@
 
 #refresh-btn
 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     background-color: blue;
     color: #f6f6f6;
     font-size: large;

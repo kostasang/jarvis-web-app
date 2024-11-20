@@ -112,6 +112,10 @@
 }
 
 .control-sensor-btn {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     cursor: pointer;
     padding: 4px;
     font-size: 1.3rem;
