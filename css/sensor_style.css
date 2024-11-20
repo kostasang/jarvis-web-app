@@ -114,9 +114,7 @@
 .control-sensor-btn {
     cursor: pointer;
     padding: 4px;
-    right: 8px; /* Adjust to align it to the right edge of the sensor box */
-    top: 8px; /* Adjust to align vertically as needed */
-    font-size: 1.3em;
+    font-size: 1.1em;
 }
 
 /* Hover effect for the options icon */
