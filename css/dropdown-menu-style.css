@@ -56,9 +56,7 @@
 .sensor-options {
     cursor: pointer;
     padding: 4px;
-    right: 8px; /* Adjust to align it to the right edge of the sensor box */
-    top: 8px; /* Adjust to align vertically as needed */
-    font-size: 1.5em;
+    font-size: 1.5rem;
 }
 
 /* Hover effect for the options icon */
