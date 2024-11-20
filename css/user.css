@@ -110,7 +110,7 @@
 #toggle-password-change-btn {
     margin-top: 20px;
     padding: 10px;
-    background-color: #007BFF;
+    background-color: #333;
     color: white;
     font-size: 16px;
     border: none;
@@ -121,7 +121,7 @@
 }
 
 #toggle-password-change-btn:hover {
-    background-color: #0056b3;
+    background-color: black;
 }
 
 /* Delete Account Button */
@@ -206,7 +206,7 @@
 /* Button styling for toggling the email change form */
 #toggle-email-change-btn {
     padding: 10px;
-    background-color: #007BFF;
+    background-color: #333;
     color: white;
     font-size: 16px;
     border: none;
@@ -217,7 +217,7 @@
 }
 
 #toggle-email-change-btn:hover {
-    background-color: #0056b3;
+    background-color: black;
 }
 
 /* Email change form button */
