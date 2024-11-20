@@ -84,6 +84,10 @@ a {
     }
 }
 
+.side-panel .icon {
+    margin-right: 0.5em;
+}
+
 .side-panel h2 {
     margin-top: 0;
     color: #f6f6f6;
@@ -92,7 +96,8 @@ a {
 }
 
 .side-panel a {
-    display: block;
+    display: flex;
+    align-items: center;
     margin: 10px 0;
     color: #f6f6f6;
     padding: 10px;

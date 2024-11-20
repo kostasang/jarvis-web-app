@@ -118,7 +118,7 @@ function designDevice(device) {
     if (device_config.category === 'control') {
         let controlButton = device_box.querySelector('.control-sensor-btn');
         if (device.sensor_data == 1) {
-            controlButton.innerHTML = config.icons.stop;
+            controlButton.innerHTML = config.icons.pause;
         }
         else {
             controlButton.innerHTML = config.icons.play;
@@ -148,7 +148,7 @@ function refreshDevice(device) {
     if (device_config.category === 'control') {
         let controlButton = device_box.querySelector('.control-sensor-btn');
         if (device.sensor_data == 1) {
-            controlButton.innerHTML = config.icons.stop;
+            controlButton.innerHTML = config.icons.pause;
         }
         else {
             controlButton.innerHTML = config.icons.play;

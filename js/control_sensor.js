@@ -27,14 +27,14 @@ function commandDeviceButton(event, clickedButton) {
     commandDevice(deviceId, transmittedValue, 0)
     .then(() => {
         // Animation for transition
-        device.classList.add("pulse");
-        setTimeout(() => device.classList.remove("pulse"), 400);
+        clickedButton.classList.add("pulse");
+        setTimeout(() => clickedButton.classList.remove("pulse"), 400);
         // Get the new sensor data after the command is sent
         setTimeout(() => {refreshData()}, 1500);
     })
     .catch((error) => {
         // Animation for error
-        device.classList.add("shake");
-        setTimeout(() => device.classList.remove("shake"), 300);
+        clickedButton.classList.add("shake");
+        setTimeout(() => clickedButton.classList.remove("shake"), 300);
     });
 }

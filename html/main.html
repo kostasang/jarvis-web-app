@@ -13,8 +13,8 @@
         <link rel='stylesheet' href="../css/tap_and_drop.css">
         <link rel='stylesheet' href="../css/dropdown-menu-style.css">
         <link rel='stylesheet' href="../css/control-device-animation.css">
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
         <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.js" type="text/javascript"></script>
         
     </head>
 
@@ -30,9 +30,9 @@
         </header>
         <div class="side-panel" id="side-panel">
             <h2>Menu</h2>
-            <a href="user.html">User</a>
-            <a href="../index.html" onclick="logOutButton(this)">Logout</a>
-            <a href="contact.html" target="_blank">Contact</a>
+            <a href="user.html"><i class="material-icons icon" >account_circle</i>User</a>
+            <a href="../index.html" onclick="logOutButton(this)"><i class="material-icons icon" >logout</i>Logout</a>
+            <a href="contact.html" target="_blank"><i class="material-icons icon" >import_contacts</i>Contact</a>
         </div>
         <div class="overlay" id="overlay"></div>
 
@@ -50,8 +50,8 @@
                         <button id="new-room-btn" onclick="addRoom()">
                             +
                         </button>
-                        <button id="refresh-btn" onclick="refreshData()">
-                            &#8635
+                        <button class="material-icons" id="refresh-btn" onclick="refreshData()">
+                            refresh
                         </button>
                     </div>
                     
@@ -125,7 +125,7 @@
                     </div>
                 </div>
                 <!-- Control sensor button -->
-                <div class="control-sensor-btn" onclick="commandDeviceButton(event, this)">play</div>
+                <div class="control-sensor-btn material-icons" onclick="commandDeviceButton(event, this)">play</div>
                 <!-- Dropdown toggle button for sensor options -->
                 <div class="sensor-options" onclick="toggleSensorMenu(event, this)">⋮</div>
                 <!-- Dropdown menu -->

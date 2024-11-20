@@ -107,15 +107,10 @@
     display: none;
 }
 
-.sensor[data-type="4"] .control-sensor-btn {
-    display: block;
-}
-
 .control-sensor-btn {
     display: flex;
-    flex-direction: column;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
     cursor: pointer;
     padding: 4px;
     font-size: 1.3rem;
