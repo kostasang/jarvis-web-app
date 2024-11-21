@@ -1,6 +1,31 @@
 let userHubs = null;
 let hubId = null;
 
+async function renameArea(clicked_button) {
+    // Rename area
+    let newName = prompt("Provide a new name for the area.");
+    if (newName === null || newName === '' || newName === 'null') {
+        alert('Invalid name');
+        return;
+    }
+    setHubNickname(hubId, newName)
+    .then(() => {
+        document.getElementById('space-box-name').innerHTML = newName;
+    })
+    .catch((error) => {
+        console.log(error);
+        alert('Failed to rename area.');
+    });
+}
+
+async function getHubInfo(clicked_button) {
+    // Get hub information
+    let hubInfo = await getHubs();
+    hubInfo = hubInfo[0];
+    let hubInfoString = `Hub ID: ${hubInfo.hub_id}\nHub Name: ${hubInfo.hub_nickname}`;
+    alert(hubInfoString);
+}
+
 async function renameRoom(clicked_button) {
     // Rename room
     let new_name = prompt("Provide a new name for the room.");
@@ -185,14 +210,25 @@ function logTime() {
     time_box.innerHTML = 'Last refresh: ' + new Date().toLocaleTimeString('it-IT');
 }
 
-async function refreshData() {
-    // Refresh the data of the sensors
-    let devices = await getDevices();
-    for (let i=0; i<devices.length; i++)
-    {
-        refreshDevice(devices[i]);
-    }
-    logTime();
+async function refreshData(event, clickedButton) {
+    getDevices()
+    .then((devices) => {
+        if (clickedButton !== undefined) {
+            clickedButton.classList.add("pulse");
+            setTimeout(() => clickedButton.classList.remove("pulse"), 400);
+        }
+        for (let i=0; i<devices.length; i++)
+        {
+            refreshDevice(devices[i]);
+        }
+        logTime();
+    })
+    .catch((error) => {
+        if (clickedButton !== undefined) {
+            clickedButton.classList.add("shake");
+            setTimeout(() => clickedButton.classList.remove("shake"), 400);
+        }
+    });
 }
 
 function isMobileDevice() {
@@ -240,6 +276,11 @@ $(async function() {
     }
     else {
         hubId = userHubs[0].hub_id;
+        hubNickname = userHubs[0].hub_nickname;
+        if (hubNickname === null) {
+            hubNickname = 'Space Overview';
+        }
+        document.getElementById('space-box-name').innerHTML = hubNickname;
     }
 
     await placeRooms();

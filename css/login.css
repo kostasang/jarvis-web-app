@@ -65,7 +65,7 @@
 /* Error message */
 #error-message {
     color: red;
-    margin-top: 10px;
+    margin-top: 15px;
 }
 
 /* Reset password link styling */
@@ -74,13 +74,20 @@
     margin-top: 15px;
 }
 
-#reset-password-link {
+.contact-container {
+    text-align: center;
+}
+
+
+#reset-password-link,
+#contact-link {
     color: #666666; /* Medium gray */
     text-decoration: none;
     font-size: 14px;
 }
 
-#reset-password-link:hover {
+#reset-password-link:hover,
+#contact-link:hover {
     color: #333333; /* Darker gray on hover */
     text-decoration: underline;
 }

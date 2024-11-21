@@ -13,21 +13,13 @@
         <link rel='stylesheet' href="../css/tap_and_drop.css">
         <link rel='stylesheet' href="../css/dropdown-menu-style.css">
         <link rel='stylesheet' href="../css/control-device-animation.css">
+        <link rel='stylesheet' href="../css/floating-buttons.css">
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
         <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
         
     </head>
 
     <body>
-        <header class="header">
-            <nav>
-                <div class="hamburger-menu" id="hamburger-menu">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </div>
-            </nav>
-        </header>
         <div class="side-panel" id="side-panel">
             <h2>Menu</h2>
             <a href="user.html"><i class="material-icons icon" >account_circle</i>User</a>
@@ -39,20 +31,16 @@
         <section>
             <div id="space-box">
                     <div id="space-box-title">
-                        <h1>Space Overview</h1>
+                        <h1 id="space-box-name" class="space-options" onclick="toggleSpaceMenu(event, this)"></h1>
                     </div>
+                    <ul class="space-dropdown-menu">
+                        <li onclick="renameArea(this)">Rename Area</li>
+                        <li onclick="addRoom()">Add Room</li>
+                        <li onclick="getHubInfo()">Hub Info</li>
+                    </ul>
                     
                     <div id="rooms-box">
                         
-                    </div>
-
-                    <div id="space-box-func">
-                        <button id="new-room-btn" onclick="addRoom()">
-                            +
-                        </button>
-                        <button class="material-icons" id="refresh-btn" onclick="refreshData()">
-                            refresh
-                        </button>
                     </div>
                     
                     <p id="refresh-time">Last refresh:</p>
@@ -93,6 +81,17 @@
 
 
             </div>
+        </section>
+
+        <section id="floating-menu">
+            <div class="hamburger-menu" id="hamburger-menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <button id="floating-refresh-btn" onclick="refreshData(event, this)">
+                <i class="material-icons icon">refresh</i>
+            </button>
         </section>
 
         <template id="room-template">
@@ -138,7 +137,7 @@
         </template>
 
         <script src="../js/configs.js"></script>
-        <script src="../js/header.js"></script>
+        <script src="../js/floating-menu.js"></script>
         <script src="../js/api.js"></script>
         <script src="../js/drag_and_drop.js"></script>
         <script src="../js/tap_and_drop.js"></script>

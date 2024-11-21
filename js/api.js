@@ -410,3 +410,24 @@ async function commandDevice(sensorId, sensorData, sensorState) {
         }
     })
 }
+
+async function setHubNickname(hubId, nickname) {
+    const apiUrl = config.apiBaseUrl + '/set_hub_nickname';
+    const params = new URLSearchParams();
+    params.append('hub_id', hubId);
+    params.append('hub_nickname', nickname);
+    return fetch(`${apiUrl}?${params.toString()}`, {
+        method: 'POST',
+        headers: {
+            'accept': '*/*',
+            'Authorization': 'Bearer ' + token
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(errorData => {
+                throw new Error(errorData.detail); // Throw with the detail message
+            });
+        }
+    })
+}

@@ -15,22 +15,28 @@
 #space-box-title
 {
     display: flex;
-    font-size: larger;
     justify-content: center;
+    align-items: center;
+    font-size: larger;
     color: #333; /* Darker title color */
     font-weight: bold;
-    padding: 10px 0;
+    margin-top: 1em;
+    height: fit-content;
+    padding-bottom: 8px;
+    margin-left: 8px;
+    margin-right: 8px;
+    border-bottom: 1px solid #ddd;
 }
 
-#space-box-func
-{
-    display: flex;
-    justify-content: center;
-    margin-top: 1.5em;
+#space-box-name {
+    width: fit-content;
+    margin: 0;
+    text-align: center;
 }
 
 #rooms-box
 {
+    margin-top: 1em;
     display: flex;
     flex-wrap: wrap;
     justify-content: space-around;
@@ -78,62 +84,8 @@
     margin-top: 7px;
 }
 
-#new-room-btn
-{
-    background-color: green;
-    color: #f6f6f6;
-    padding: 8px;
-    border-radius: 10px;
-    border-style: none;
-    margin: 2px;
-    width: 35px;
-    height: 35px;
-    font-weight: bolder;
-    font-size: larger;
-}
-
-#new-room-btn:hover
-{
-    cursor: pointer;
-}
-
-#refresh-btn
-{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background-color: blue;
-    color: #f6f6f6;
-    font-size: large;
-    padding: 8px;
-    border-radius: 10px;
-    border-style: none;
-    margin: 2px;
-    width: 35px;
-    height: 35px;
-    font-weight: bolder;
-    font-size: larger;
-}
-
-#refresh-btn:hover
-{
-    cursor: pointer;
-}
-
 #refresh-time
 {
     margin-top: 1.5em;
     font-style: italic;
-}
-
-#new-room-btn, #refresh-btn {
-    transition: background-color 0.3s;
-}
-
-#new-room-btn:hover {
-    background-color: #5f9ea0; /* Subtle aqua color */
-}
-
-#refresh-btn:hover {
-    background-color: #1e90ff; /* Lighter blue for hover */
 }
