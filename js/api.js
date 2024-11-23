@@ -50,7 +50,7 @@ async function getRooms(hub_id) {
 }
 
 async function getDevices() {
-    const apiUrl = config.apiBaseUrl + '/get_devices_data';
+    const apiUrl = config.apiBaseUrl + '/get_devices_latest_data';
     return fetch(apiUrl, {
         method: 'GET',
         headers: {
@@ -78,8 +78,8 @@ async function getDevices() {
 async function setDeviceNickname(device_id, nickname) {
     const apiUrl = config.apiBaseUrl + '/set_device_nickname';
     const params = new URLSearchParams();
-    params.append('sensor_id', device_id);
-    params.append('sensor_nickname', nickname);
+    params.append('device_id', device_id);
+    params.append('device_nickname', nickname);
 
     return fetch(`${apiUrl}?${params.toString()}`, {
         method: 'POST',
@@ -179,7 +179,7 @@ async function assignDeviceToArea(device_id, area_id) {
     // Assign the given device to the given area
     const apiUrl = config.apiBaseUrl + '/assign_device_to_area';
     const params = new URLSearchParams();
-    params.append('sensor_id', device_id);
+    params.append('device_id', device_id);
     params.append('area_id', area_id);
     return fetch(`${apiUrl}?${params.toString()}`, {
         method: 'POST',
@@ -203,7 +203,7 @@ async function removeDeviceFromArea(device_id) {
     // Remove the given device from its assigned area
     const apiUrl = config.apiBaseUrl + '/remove_device_from_area';
     const params = new URLSearchParams();
-    params.append('sensor_id', device_id);
+    params.append('device_id', device_id);
     return fetch(`${apiUrl}?${params.toString()}`, {
         method: 'DELETE',
         headers: {
@@ -389,12 +389,12 @@ async function resetPassword(verificationToken, newPassword) {
 }
 
 
-async function commandDevice(sensorId, sensorData, sensorState) {
+async function commandDevice(deviceId, deviceData, deviceState) {
     const apiUrl = config.apiBaseUrl + '/command_device';
     const params = new URLSearchParams();
-    params.append('sensor_id', sensorId);
-    params.append('sensor_data', sensorData);
-    params.append('sensor_state', sensorState);
+    params.append('device_id', deviceId);
+    params.append('device_data', deviceData);
+    params.append('device_state', deviceState);
     return fetch(`${apiUrl}?${params.toString()}`, {
         method: 'POST',
         headers: {

@@ -6,9 +6,9 @@
         <title> Jarvis</title>
         <link rel="icon" type="image/x-icon" href="../assets/images/favicon.png">
         <link rel='stylesheet' href='../css/space_box_style.css'>
-        <link rel='stylesheet' href='../css/available_sensors_box_style.css'>    
+        <link rel='stylesheet' href='../css/available_devices_box_style.css'>    
         <link rel='stylesheet' href='../css/style.css'> 
-        <link rel='stylesheet' href='../css/sensor_style.css'>
+        <link rel='stylesheet' href='../css/device_style.css'>
         <link rel='stylesheet' href="../css/drag_and_drop.css">
         <link rel='stylesheet' href="../css/tap_and_drop.css">
         <link rel='stylesheet' href="../css/dropdown-menu-style.css">
@@ -48,30 +48,30 @@
         </section>
 
         <section>
-            <div id=available-sensors-box>
+            <div id=available-devices-box>
 
-                <div id="available-sensors-box-title">
-                    <h2>Available Sensors</h2>
+                <div id="available-devices-box-title">
+                    <h2>Available Devices</h2>
                 </div>
 
-                <div id="sensorlist">
+                <div id="devicelist">
 
-                    <div class="sensor-category" id="environmental">
+                    <div class="device-category" id="environmental">
                         <div class="category-title">Enviromental</div>
                 
                     </div>
 
-                    <div class="sensor-category" id="security">
+                    <div class="device-category" id="security">
                         <div class="category-title">Security</div>
                 
                     </div>
 
-                    <div class="sensor-category" id="control">
+                    <div class="device-category" id="control">
                         <div class="category-title">Control</div>
                 
                     </div>
 
-                    <div class="sensor-category" id="miscellaneous">
+                    <div class="device-category" id="miscellaneous">
                         <div class="category-title">Miscellaneous</div>
                 
                     </div>
@@ -104,32 +104,32 @@
                     <li onclick="renameRoom(this)">Rename Room</li>
                     <li onclick="removeRoom(this)">Remove Room</li>
                 </ul>
-                <div class="room-sensors"></div>
+                <div class="room-devices"></div>
             </div>
         </template>
 
-        <template id="sensor-template">
-            <div class="sensor tooltip draggable", id="sensor-id" data-type="sensor-type">
-                <div class="sensor-metadata">
+        <template id="device-template">
+            <div class="device tooltip draggable", id="device-id" data-type="device-type">
+                <div class="device-metadata">
                     <div class="description-tooltip">Place device description here</div>
                     <div class="nickname-tooltip">&#8226 Nickname: </div>
                     <div class="id-tooltip">&#8226 Id: </div>
                     <div class="time-tooltip"></div>
                 </div>
-                <div class="sensor-content">
-                    <div class="sensor-type">Place icon here</div>
-                    <div class="sensor-data-state">
-                        <div class="sensor-state"></div>
-                        <div class="sensor-data"></div>
+                <div class="device-content">
+                    <div class="device-type">Place icon here</div>
+                    <div class="device-data-state">
+                        <div class="device-state"></div>
+                        <div class="device-data"></div>
                     </div>
                 </div>
-                <!-- Control sensor button -->
-                <div class="control-sensor-btn material-icons" onclick="commandDeviceButton(event, this)">play</div>
-                <!-- Dropdown toggle button for sensor options -->
-                <div class="sensor-options" onclick="toggleSensorMenu(event, this)">⋮</div>
+                <!-- Control device button -->
+                <div class="control-device-btn material-icons" onclick="commandDeviceButton(event, this)">play</div>
+                <!-- Dropdown toggle button for device options -->
+                <div class="device-options" onclick="toggleDeviceMenu(event, this)">⋮</div>
                 <!-- Dropdown menu -->
-                <ul class="sensor-dropdown-menu">
-                    <li onclick="renameSensor(event, this)">Rename Sensor</li>
+                <ul class="device-dropdown-menu">
+                    <li onclick="renameDevice(event, this)">Rename Device</li>
                     <li onclick="showHistory(event, this)">Show History</li>
                 </ul>
                 <div class="warning-icon">⚠️</div>
@@ -142,7 +142,7 @@
         <script src="../js/drag_and_drop.js"></script>
         <script src="../js/tap_and_drop.js"></script>
         <script src="../js/dropdown-menu.js"></script>
-        <script src="../js/control_sensor.js"></script>
+        <script src="../js/control_device.js"></script>
         <script src='../js/main.js'></script>
         <script src='../js/logout.js'></script>
 

@@ -1,10 +1,10 @@
-function dragSensor(event) {
-    event.dataTransfer.setData('sensor-id', event.currentTarget.id);
-    event.dataTransfer.setData('sensor-type', event.currentTarget.getAttribute('data-type'));
+function dragDevice(event) {
+    event.dataTransfer.setData('device-id', event.currentTarget.id);
+    event.dataTransfer.setData('device-type', event.currentTarget.getAttribute('data-type'));
     event.currentTarget.classList.add('dragging');
 }
 
-function dragEndSensor(event) {
+function dragEndDevice(event) {
     event.currentTarget.classList.remove('dragging');
 }
 
@@ -23,46 +23,46 @@ function dragLeave(event) {
 
 function dropToRoom(event) {
     event.preventDefault();
-    let sensorId = event.dataTransfer.getData('sensor-id');
-    let sensorDiv = document.getElementById(sensorId);
+    let deviceId = event.dataTransfer.getData('device-id');
+    let deviceDiv = document.getElementById(deviceId);
     let areaBox = event.currentTarget;
     let areaId = event.currentTarget.id;
-    if (sensorDiv.parentElement.parentElement.id === areaId) {
+    if (deviceDiv.parentElement.parentElement.id === areaId) {
         return;
     }
-    assignDeviceToArea(sensorId, areaId)
+    assignDeviceToArea(deviceId, areaId)
     .then(() => {
-        sensorDiv.parentElement.removeChild(sensorDiv);
-        areaBox.querySelector('.room-sensors').appendChild(sensorDiv);
+        deviceDiv.parentElement.removeChild(deviceDiv);
+        areaBox.querySelector('.room-devices').appendChild(deviceDiv);
         areaBox.classList.remove('droppable');
     })
 }
 
 function dropToAvailable(event) {
     event.preventDefault();
-    let sensorId = event.dataTransfer.getData('sensor-id');
-    let sensorType = event.dataTransfer.getData('sensor-type');
-    let sensorCategory = config.devices[sensorType].category;
-    let sensorDiv = document.getElementById(sensorId);
+    let deviceId = event.dataTransfer.getData('device-id');
+    let deviceType = event.dataTransfer.getData('device-type');
+    let deviceCategory = config.devices[deviceType].category;
+    let deviceDiv = document.getElementById(deviceId);
     let categoryDiv = event.currentTarget;
-    if (sensorDiv.parentElement.classList.contains('sensor-category')) {
+    if (deviceDiv.parentElement.classList.contains('device-category')) {
         return;
     }
-    removeDeviceFromArea(sensorId)
+    removeDeviceFromArea(deviceId)
     .then(() => {
-        sensorDiv.parentElement.removeChild(sensorDiv);
-        document.querySelector(`.sensor-category#${sensorCategory}`).appendChild(sensorDiv);
+        deviceDiv.parentElement.removeChild(deviceDiv);
+        document.querySelector(`.device-category#${deviceCategory}`).appendChild(deviceDiv);
         categoryDiv.classList.remove('droppable');
     })
 }
 
 function initializeDragAndDrop() {
     
-    let sensorTemplate = document.getElementById('sensor-template').content.firstElementChild.cloneNode(true);
-    sensorTemplate.setAttribute("draggable", "true");
-    sensorTemplate.setAttribute("ondragstart", "dragSensor(event)");
-    sensorTemplate.setAttribute("ondragend", "dragEndSensor(event)");
-    document.getElementById('sensor-template').content.firstElementChild.replaceWith(sensorTemplate);
+    let deviceTemplate = document.getElementById('device-template').content.firstElementChild.cloneNode(true);
+    deviceTemplate.setAttribute("draggable", "true");
+    deviceTemplate.setAttribute("ondragstart", "dragDevice(event)");
+    deviceTemplate.setAttribute("ondragend", "dragEndDevice(event)");
+    document.getElementById('device-template').content.firstElementChild.replaceWith(deviceTemplate);
 
     let roomTemplate = document.getElementById('room-template').content.firstElementChild.cloneNode(true);
     roomTemplate.setAttribute("ondragover", "dragOver(event)");
@@ -72,8 +72,8 @@ function initializeDragAndDrop() {
     document.getElementById('room-template').content.firstElementChild.replaceWith(roomTemplate);
 
 
-    document.getElementById("available-sensors-box").addEventListener("dragover", dragOver);
-    document.getElementById("available-sensors-box").addEventListener("dragenter", dragEnter);
-    document.getElementById("available-sensors-box").addEventListener("dragleave", dragLeave);
-    document.getElementById("available-sensors-box").addEventListener("drop", dropToAvailable);
+    document.getElementById("available-devices-box").addEventListener("dragover", dragOver);
+    document.getElementById("available-devices-box").addEventListener("dragenter", dragEnter);
+    document.getElementById("available-devices-box").addEventListener("dragleave", dragLeave);
+    document.getElementById("available-devices-box").addEventListener("drop", dropToAvailable);
 }
