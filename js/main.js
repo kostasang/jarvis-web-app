@@ -122,7 +122,7 @@ function designDevice(device) {
     device_box.querySelector('.description-tooltip').innerHTML = config.devices[device.device_type].description;
     device_box.querySelector('.nickname-tooltip').innerHTML = "&#8226 Nickname: " + String(device.device_nickname);
     device_box.querySelector('.id-tooltip').innerHTML = "&#8226 ID: " + device.device_id;
-    device_box.querySelector('.time-tooltip').innerHTML = device.time.replace('T', ' ');
+    device_box.querySelector('.time-tooltip').innerHTML = device.time.replace('T', ' ').split('.')[0];
     device_box.querySelector('.device-type').innerHTML = config.devices[device.device_type].icon;
 
     state_block = device_box.querySelector('.device-state');
@@ -155,7 +155,7 @@ function designDevice(device) {
 function refreshDevice(device) {
     // Refresh device data, state and time
     let device_box = document.getElementById(device.device_id);
-    device_box.querySelector('.time-tooltip').innerHTML = device.time.replace('T', ' ');
+    device_box.querySelector('.time-tooltip').innerHTML = device.time.replace('T', ' ').split('.')[0];
 
     data_block = device_box.querySelector('.device-data');
     let device_config = config.devices[device.device_type];
