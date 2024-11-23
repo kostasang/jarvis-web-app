@@ -50,7 +50,7 @@ async function getRooms(hub_id) {
 }
 
 async function getDevices() {
-    const apiUrl = config.apiBaseUrl + '/get_devices_data';
+    const apiUrl = config.apiBaseUrl + '/get_devices_latest_data';
     return fetch(apiUrl, {
         method: 'GET',
         headers: {

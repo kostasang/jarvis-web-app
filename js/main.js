@@ -51,13 +51,13 @@ async function removeRoom(clicked_button) {
     let room_id = room.id;
     deleteArea(hubId, room_id)
     .then(() => {
-        let room_sensors = room.querySelector('.room-sensors').children;
-        for (let i=0; i<room_sensors.length; i++)
+        let room_devices = room.querySelector('.room-devices').children;
+        for (let i=0; i<room_devices.length; i++)
         {
-            let sensor = room_sensors[i].cloneNode(true);
-            let sensor_category = config.devices[sensor.getAttribute('data-type')].category;
-            let category_div = document.querySelector(`.sensor-category[id='${sensor_category}']`);
-            category_div.appendChild(sensor);
+            let device = room_devices[i].cloneNode(true);
+            let device_category = config.devices[device.getAttribute('data-type')].category;
+            let category_div = document.querySelector(`.device-category[id='${device_category}']`);
+            category_div.appendChild(device);
         }
         room.parentElement.removeChild(room);
     })
@@ -86,15 +86,15 @@ async function addRoom() {
     });
 }
 
-function renameSensor(event, clicked_button)
+function renameDevice(event, clicked_button)
 {   
     event.stopPropagation();
-    let nickname = prompt('Give sensor nickname');
-    let sensor = clicked_button.closest('.sensor');
-    let sensor_id = sensor.id;
-    setDeviceNickname(sensor_id, nickname).
+    let nickname = prompt('Give device nickname');
+    let device = clicked_button.closest('.device');
+    let device_id = device.id;
+    setDeviceNickname(device_id, nickname).
         then(() => {
-            sensor.querySelector('.nickname-tooltip').innerHTML = "&#8226 Nickname: " + nickname;
+            device.querySelector('.nickname-tooltip').innerHTML = "&#8226 Nickname: " + nickname;
         })
 }
 
@@ -115,34 +115,34 @@ async function placeRooms() {
 
 function designDevice(device) {
     // Deisng the details of the device
-    let template = document.getElementById('sensor-template');
+    let template = document.getElementById('device-template');
     let device_box = template.content.cloneNode(true);
-    device_box.querySelector('.sensor').id = device.sensor_id;
-    device_box.querySelector('.sensor').setAttribute('data-type', device.sensor_type);
-    device_box.querySelector('.description-tooltip').innerHTML = config.devices[device.sensor_type].description;
-    device_box.querySelector('.nickname-tooltip').innerHTML = "&#8226 Nickname: " + String(device.sensor_nickname);
-    device_box.querySelector('.id-tooltip').innerHTML = "&#8226 ID: " + device.sensor_id;
-    device_box.querySelector('.time-tooltip').innerHTML = device.last_timestamp.replace('T', ' ');
-    device_box.querySelector('.sensor-type').innerHTML = config.devices[device.sensor_type].icon;
+    device_box.querySelector('.device').id = device.device_id;
+    device_box.querySelector('.device').setAttribute('data-type', device.device_type);
+    device_box.querySelector('.description-tooltip').innerHTML = config.devices[device.device_type].description;
+    device_box.querySelector('.nickname-tooltip').innerHTML = "&#8226 Nickname: " + String(device.device_nickname);
+    device_box.querySelector('.id-tooltip').innerHTML = "&#8226 ID: " + device.device_id;
+    device_box.querySelector('.time-tooltip').innerHTML = device.time.replace('T', ' ');
+    device_box.querySelector('.device-type').innerHTML = config.devices[device.device_type].icon;
 
-    state_block = device_box.querySelector('.sensor-state');
-    data_block = device_box.querySelector('.sensor-data');
+    state_block = device_box.querySelector('.device-state');
+    data_block = device_box.querySelector('.device-data');
 
-    let device_config = config.devices[device.sensor_type];
+    let device_config = config.devices[device.device_type];
     if (device_config.values === 'continuous') {
-        let data = parseFloat(device.sensor_data).toFixed(device_config.round);
+        let data = parseFloat(device.device_data).toFixed(device_config.round);
         data_block.innerHTML = String(data) + device_config.unit;
     }
     else if (device_config.values === 'binary') {
-        data_block.innerHTML = device_config.valueMap[device.sensor_data].text;
-        data_block.style.color = device_config.valueMap[device.sensor_data].color;
+        data_block.innerHTML = device_config.valueMap[device.device_data].text;
+        data_block.style.color = device_config.valueMap[device.device_data].color;
     }
 
     // Handle control device
     // TODO: Add more generic way to handle control devices
     if (device_config.category === 'control') {
-        let controlButton = device_box.querySelector('.control-sensor-btn');
-        if (device.sensor_data == 1) {
+        let controlButton = device_box.querySelector('.control-device-btn');
+        if (device.device_data == 1) {
             controlButton.innerHTML = config.icons.pause;
         }
         else {
@@ -154,25 +154,25 @@ function designDevice(device) {
 
 function refreshDevice(device) {
     // Refresh device data, state and time
-    let device_box = document.getElementById(device.sensor_id);
-    device_box.querySelector('.time-tooltip').innerHTML = device.last_timestamp.replace('T', ' ');
+    let device_box = document.getElementById(device.device_id);
+    device_box.querySelector('.time-tooltip').innerHTML = device.time.replace('T', ' ');
 
-    data_block = device_box.querySelector('.sensor-data');
-    let device_config = config.devices[device.sensor_type];
+    data_block = device_box.querySelector('.device-data');
+    let device_config = config.devices[device.device_type];
     if (device_config.values === 'continuous') {
-        let data = parseFloat(device.sensor_data).toFixed(device_config.round);
+        let data = parseFloat(device.device_data).toFixed(device_config.round);
         data_block.innerHTML = String(data) + device_config.unit;
     }
     else if (device_config.values === 'binary') {
-        data_block.innerHTML = device_config.valueMap[device.sensor_data].text;
-        data_block.style.color = device_config.valueMap[device.sensor_data].color;
+        data_block.innerHTML = device_config.valueMap[device.device_data].text;
+        data_block.style.color = device_config.valueMap[device.device_data].color;
     }
 
     // Handle control device
     // TODO: Add more generic way to handle control devices
     if (device_config.category === 'control') {
-        let controlButton = device_box.querySelector('.control-sensor-btn');
-        if (device.sensor_data == 1) {
+        let controlButton = device_box.querySelector('.control-device-btn');
+        if (device.device_data == 1) {
             controlButton.innerHTML = config.icons.pause;
         }
         else {
@@ -182,19 +182,19 @@ function refreshDevice(device) {
 }
 
 async function placeDevices() {
-    // Place created sensors in the DOM when starting the app
+    // Place created devices in the DOM when starting the app
     let devices = await getDevices();
-    devices = devices.sort((a, b) => a.sensor_id.localeCompare(b.sensor_id));
+    devices = devices.sort((a, b) => a.device_id.localeCompare(b.device_id));
     for (let i=0; i<devices.length; i++)
     {
         let device = designDevice(devices[i]);
         if (devices[i].area_id === null) {
-            let category = document.getElementById(config.devices[devices[i].sensor_type].category);
+            let category = document.getElementById(config.devices[devices[i].device_type].category);
             category.appendChild(device);
         }
         else {
             let room = document.getElementById(devices[i].area_id);
-            room.querySelector(".room-sensors").appendChild(device);
+            room.querySelector(".room-devices").appendChild(device);
         }
     }
 }

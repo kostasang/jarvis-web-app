@@ -53,7 +53,7 @@
     border-top: 1px solid #eee;
 }
 
-.sensor-options {
+.device-options {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -64,16 +64,16 @@
 }
 
 /* Hover effect for the options icon */
-.sensor-options:hover {
+.device-options:hover {
     background-color: inherit;
     border-radius: 4px;
 }
 
-.sensor-dropdown-menu {
+.device-dropdown-menu {
     visibility: hidden;
     position: absolute;
     opacity: 0;
-    top: 100%; /* Position below the sensor options icon */
+    top: 100%; /* Position below the device options icon */
     transition: visibility 0.2s ease, opacity 0.2s ease;
     right: 0;
     background-color: #f9f9f9;
@@ -86,23 +86,23 @@
     z-index: 1000;
 }
 
-.sensor-dropdown-menu.show {
+.device-dropdown-menu.show {
     visibility: visible;
     opacity: 1;
 }
 
-.sensor-dropdown-menu li {
+.device-dropdown-menu li {
     padding: 10px 16px;
     font-size: 0.9em;
     color: #333;
     cursor: pointer;
 }
 
-.sensor-dropdown-menu li:hover {
+.device-dropdown-menu li:hover {
     background-color: #e6e6e6;
 }
 
-.sensor-dropdown-menu li + li {
+.device-dropdown-menu li + li {
     border-top: 1px solid #eee;
 }
 

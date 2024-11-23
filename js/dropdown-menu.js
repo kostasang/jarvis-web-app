@@ -1,16 +1,16 @@
 function toggleSpaceMenu(event, optionsIcon) {
     event.stopPropagation();
 
-    // If a sensor is selected, deselect it
-    const selectedSensor = document.querySelector('.sensor.selected');
-    if (selectedSensor) {
-        selectedSensor.classList.remove("selected");
+    // If a device is selected, deselect it
+    const selectedDevice = document.querySelector('.device.selected');
+    if (selectedDevice) {
+        selectedDevice.classList.remove("selected");
     }
 
     // Select the dropdown menu within the same room container
     const menu = optionsIcon.parentElement.nextElementSibling;
     
-    document.querySelectorAll('.sensor-dropdown-menu').forEach(menuItem => {
+    document.querySelectorAll('.device-dropdown-menu').forEach(menuItem => {
         menuItem.classList.remove('show');
     });
 
@@ -22,10 +22,10 @@ function toggleSpaceMenu(event, optionsIcon) {
 function toggleRoomMenu(event, optionsIcon) {
     event.stopPropagation();
 
-    // If a sensor is selected, deselect it
-    const selectedSensor = document.querySelector('.sensor.selected');
-    if (selectedSensor) {
-        selectedSensor.classList.remove("selected");
+    // If a device is selected, deselect it
+    const selectedDevice = document.querySelector('.device.selected');
+    if (selectedDevice) {
+        selectedDevice.classList.remove("selected");
     }
 
     // Select the dropdown menu within the same room container
@@ -37,7 +37,7 @@ function toggleRoomMenu(event, optionsIcon) {
             menuItem.classList.remove('show');
         }
     });
-    document.querySelectorAll('.sensor-dropdown-menu').forEach(menuItem => {
+    document.querySelectorAll('.device-dropdown-menu').forEach(menuItem => {
         menuItem.classList.remove('show');
     });
 
@@ -45,20 +45,20 @@ function toggleRoomMenu(event, optionsIcon) {
     menu.classList.toggle('show');
 }
 
-function toggleSensorMenu(event, optionsIcon) {
+function toggleDeviceMenu(event, optionsIcon) {
     event.stopPropagation();
 
-    // If a sensor is selected, deselect it
-    const selectedSensor = document.querySelector('.sensor.selected');
-    if (selectedSensor) {
-        selectedSensor.classList.remove("selected");
+    // If a device is selected, deselect it
+    const selectedDevice = document.querySelector('.device.selected');
+    if (selectedDevice) {
+        selectedDevice.classList.remove("selected");
     }
 
 
     const menu = optionsIcon.nextElementSibling;
 
     // Close any other open dropdowns
-    document.querySelectorAll('.sensor-dropdown-menu').forEach(menuItem => {
+    document.querySelectorAll('.device-dropdown-menu').forEach(menuItem => {
         if (menuItem !== menu) menuItem.classList.remove('show');
     });
     document.querySelectorAll('.room-dropdown-menu').forEach(menuItem => {
@@ -78,8 +78,8 @@ document.addEventListener('click', function (event) {
         });
     }
 
-    if (!event.target.closest('.sensor-options')) {
-        document.querySelectorAll('.sensor-dropdown-menu').forEach(menu => {
+    if (!event.target.closest('.device-options')) {
+        document.querySelectorAll('.device-dropdown-menu').forEach(menu => {
             menu.classList.remove('show');
         });
     }

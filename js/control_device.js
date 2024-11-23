@@ -4,21 +4,21 @@ function commandDeviceButton(event, clickedButton) {
     const device = clickedButton.parentElement;
     const deviceId = device.getAttribute('id');
     const currentValue = device
-        .querySelector('.sensor-content')
-        .querySelector('.sensor-data-state')
-        .querySelector('.sensor-data')
+        .querySelector('.device-content')
+        .querySelector('.device-data-state')
+        .querySelector('.device-data')
         .innerHTML;
 
-    // If a sensor is selected, deselect it
-    const selectedSensor = document.querySelector('.sensor.selected');
-    if (selectedSensor) {
-        selectedSensor.classList.remove("selected");
+    // If a device is selected, deselect it
+    const selectedDevice = document.querySelector('.device.selected');
+    if (selectedDevice) {
+        selectedDevice.classList.remove("selected");
     }
     // Close any other open dropdowns
     document.querySelectorAll('.room-dropdown-menu').forEach(menuItem => {
         menuItem.classList.remove('show');
     });
-    document.querySelectorAll('.sensor-dropdown-menu').forEach(menuItem => {
+    document.querySelectorAll('.device-dropdown-menu').forEach(menuItem => {
         menuItem.classList.remove('show');
     });
 
@@ -29,7 +29,7 @@ function commandDeviceButton(event, clickedButton) {
         // Animation for transition
         clickedButton.classList.add("pulse");
         setTimeout(() => clickedButton.classList.remove("pulse"), 400);
-        // Get the new sensor data after the command is sent
+        // Get the new device data after the command is sent
         setTimeout(() => {refreshData()}, 1500);
     })
     .catch((error) => {

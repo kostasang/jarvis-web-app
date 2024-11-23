@@ -37,6 +37,6 @@
 }
 
 /* Show warning icon when there’s an error */
-.sensor.shake .warning-icon {
+.device.shake .warning-icon {
     opacity: 1; /* Visible during the shake animation */
 }

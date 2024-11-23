@@ -1,4 +1,4 @@
-#available-sensors-box
+#available-devices-box
 {
     display: flex;
     background-color: #f6f6f6;
@@ -12,14 +12,14 @@
     flex-direction: column;
 }
 
-#available-sensors-box-title
+#available-devices-box-title
 {
     display: flex;
     font-size: larger;
     justify-content: center;
 }
 
-#sensorlist
+#devicelist
 {
     display: flex;
     flex-direction: row;
@@ -27,7 +27,7 @@
     justify-content: space-around;
 }
 
-.sensor-category
+.device-category
 {
     display: flex;
     flex-direction: column;
@@ -52,12 +52,12 @@
 }
 
 @media (max-width: 768px) {
-    #sensorlist {
+    #devicelist {
         flex-direction: column;
         align-items: center;
     }
 
-    .sensor-category {
+    .device-category {
         width: 90%; /* Make categories take up full width on smaller screens */
     }
 }
