@@ -199,11 +199,6 @@ async function placeDevices() {
     }
 }
 
-async function showHistory(event, clicked_button) {
-    event.stopPropagation();
-    return;
-}
-
 function logTime() {
     // Log the time of the last refresh
     let time_box = document.getElementById('refresh-time');
