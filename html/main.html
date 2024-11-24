@@ -14,6 +14,7 @@
         <link rel='stylesheet' href="../css/dropdown-menu-style.css">
         <link rel='stylesheet' href="../css/control-device-animation.css">
         <link rel='stylesheet' href="../css/floating-buttons.css">
+        <link rel='stylesheet' href="../css/device-history-plot.css">
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
         <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
         
@@ -83,6 +84,17 @@
             </div>
         </section>
 
+        <div id="history-modal" class="modal">
+            <div class="modal-content">
+              <div id="history-plot"></div>
+              <div id="history-controls">
+                  <label for="time-window">Time Window (hours): </label>
+                  <input id="time-window" type="number" min="1" max="48" value="1" onchange="updateHistoryPlot()">
+                  <span class="close-button" onclick="closeHistoryModal()">&times;</span>
+              </div>
+            </div>
+          </div>
+
         <section id="floating-menu">
             <div class="hamburger-menu" id="hamburger-menu">
                 <span></span>
@@ -135,7 +147,7 @@
                 <div class="warning-icon">⚠️</div>
             </div>
         </template>
-
+        <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
         <script src="../js/configs.js"></script>
         <script src="../js/floating-menu.js"></script>
         <script src="../js/api.js"></script>
@@ -143,6 +155,7 @@
         <script src="../js/tap_and_drop.js"></script>
         <script src="../js/dropdown-menu.js"></script>
         <script src="../js/control_device.js"></script>
+        <script src="../js/device-history-plot.js"></script>
         <script src='../js/main.js'></script>
         <script src='../js/logout.js'></script>
 

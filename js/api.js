@@ -431,3 +431,26 @@ async function setHubNickname(hubId, nickname) {
         }
     })
 }
+
+async function getDeviceHistory(deviceId, timeWindow) {
+    const apiUrl = config.apiBaseUrl + '/get_device_history';
+    const params = new URLSearchParams();
+    params.append('device_id', deviceId);
+    params.append('time_window', timeWindow);
+    return fetch(`${apiUrl}?${params.toString()}`, {
+        method: 'GET',
+        headers: {
+            'accept': 'application/json',
+            'Authorization': 'Bearer ' + token
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(response.statusText);
+        }
+        return response.json();
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}

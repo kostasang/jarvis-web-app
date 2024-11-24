@@ -13,7 +13,7 @@ const config = {
             icon: "&#127777",
             description: "Temperature Sensor",
             values: 'continuous',
-            unit: "&#8451", // degrees celcious
+            unit: "℃", // degrees celcious
             round: 1
         },
         1: {
