@@ -113,6 +113,7 @@ function renderHistoryPlot(deviceId, deviceType, times, values) {
 
 function closeHistoryModal() {
     document.getElementById("time-window").value = 1;
+    document.getElementById('time-window-value').innerText = 1;
     document.getElementById('history-modal').style.display = 'none';
     enableScroll();
 }
