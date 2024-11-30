@@ -17,8 +17,9 @@ async function showHistory(event, clicked_button) {
     });
 }
 
-async function updateHistoryPlot(clicked_button) {
-    const timeWindow = document.getElementById("time-window").value;
+async function updateHistoryPlot(slider) {
+    const timeWindow = slider.value;
+    document.getElementById('time-window-value').innerText = slider.value;
     const deviceId = document.getElementById('history-plot').data[0].name.split(': ')[1];
 
     // Get Device History
