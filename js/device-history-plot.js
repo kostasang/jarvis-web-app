@@ -1,5 +1,6 @@
 async function showHistory(event, clicked_button) {
     event.stopPropagation();
+    disableScroll();
     const device = clicked_button.closest('.device');
     const deviceId = device.id;
     const deviceType = device.getAttribute('data-type');
@@ -113,4 +114,13 @@ function renderHistoryPlot(deviceId, deviceType, times, values) {
 function closeHistoryModal() {
     document.getElementById("time-window").value = 1;
     document.getElementById('history-modal').style.display = 'none';
+    enableScroll();
+}
+
+function disableScroll() {
+    document.body.style.overflow = 'hidden';
+}
+
+function enableScroll() {
+    document.body.style.overflow = 'auto';
 }
