@@ -1,9 +1,8 @@
 #user-info-section {
-    height: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 80vh; /* Adjusts height to center vertically within the page */
+    min-height: 80vh;
     background-color: #f9f9f9;
     padding: 20px;
 }
@@ -13,9 +12,46 @@
     padding: 30px;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    max-width: 400px;
+    max-width: 500px;
     width: 100%;
+    text-align: left;
+    font-family: 'Arial', sans-serif;
+}
+
+#user-info h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #333;
     text-align: center;
+}
+
+.user-info-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.user-info-item i {
+    font-size: 20px;
+    color: #555;
+    margin-right: 10px;
+}
+
+.user-info-item span {
+    font-size: 15px;
+    color: #555;
+    font-family: 'Courier New', Courier, monospace; /* Monospaced font for IDs */
+}
+
+.user-info-item span[title] {
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.user-info-item strong {
+    font-weight: bold;
+    color: #333;
+    margin-right: 5px;
 }
 
 /* Form containers general styling */

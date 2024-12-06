@@ -253,14 +253,16 @@ async function me() {
         }
     })
     .then(response => {
+        if (response.status === 401) {
+            localStorage.removeItem('accessToken');
+            window.location.href = '../index.html';
+            return null;
+        }
         if (!response.ok) {
             throw new Error('Failed to get user info.');
         }
         return response.json();
     })
-    .catch(error => {
-        console.error('Error:', error);
-    });
 }
 
 async function changePassword(currentPassword, newPassword) {
