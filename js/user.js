@@ -105,7 +105,7 @@ async function getUserInfo() {
         document.getElementById('user-id').innerHTML = data.user_id;
         document.getElementById('user-name').innerHTML = data.username;
         document.getElementById('user-email').innerHTML = data.email;
-        document.getElementById('user-registration-date').innerHTML = data.date_registered.replace('T', ' ');
+        document.getElementById('user-registration-date').innerHTML = data.date_registered.replace('T', ' ').split('.')[0];
     });
 } 
 
