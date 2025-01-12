@@ -1,6 +1,7 @@
 const config = {
     apiBaseUrl: "https://jarvis-core.ddns.net",
     websockerBaseUrl: "wss://jarvis-core.ddns.net",
+    webrtcBaseUrl: "https://jarvis-core.ddns.net:8889",
     icons: {
         play: "play_arrow",
         pause: "pause",
