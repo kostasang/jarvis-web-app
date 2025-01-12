@@ -1,3 +1,15 @@
+function updateNoCameraMessage() {
+    const cameraPanel = document.getElementById("camera-panel");
+    const noCameraMessage = document.getElementById("no-camera-message");
+
+    // Show or hide the message based on the number of children in the camera panel
+    if (cameraPanel.children.length === 0) {
+        noCameraMessage.style.display = "block"; // Show message
+    } else {
+        noCameraMessage.style.display = "none"; // Hide message
+    }
+}
+
 function createCameraElement(camera) {
     // Create a new camera element
     let camera_box = document.getElementById('camera-template');
@@ -45,6 +57,7 @@ function claimCameraButton() {
                 }
                 cameraElement = createCameraElement(camera);
                 document.getElementById('camera-panel').appendChild(cameraElement);
+                updateNoCameraMessage();
             })
             .catch((error) => {
                 Swal.fire({
@@ -110,9 +123,10 @@ function setupCameraButton() {
             .then((qrCodeDataUrl) => {
                 Swal.fire({
                     icon: 'success',
-                    title: 'Camera setup successful',
+                    title: 'Wi-Fi QR Code Generated',
                     html: `
-                        <img src="${qrCodeDataUrl}" alt="QR Code" style="width: 200px; height: 200px;">
+                        <img src="${qrCodeDataUrl}" alt="QR Code" style="width: 200px; height: 200px;"><br><br>
+                        <b>Scan the QR code with your camera to setup</b>
                     `
                 });
             })
@@ -186,6 +200,7 @@ function unclaimCameraButton(event, clickElement) {
             unclaimCamera(cameraId)
             .then((response) => {
                 document.getElementById(cameraId).remove();
+                updateNoCameraMessage();
                 Swal.fire({
                     icon: 'success',
                     title: 'Camera unclaimed successfully!',
@@ -250,6 +265,7 @@ $(async function() {
         let cameraElement = createCameraElement(camera);
         document.getElementById('camera-panel').appendChild(cameraElement);
     }
+    updateNoCameraMessage();
 
     // Periodically call the api every 5 sec to force logout in case of token expiry
     setInterval(async function() {
