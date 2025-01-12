@@ -3,10 +3,16 @@
     margin-top: 1em;
     max-width: 100%;
     justify-content: space-around;
+    align-items: center;
     text-align: center;
     flex-direction: column;
 }
 
+@media screen and (min-width: 1100px) {
+    #camera-panel {
+        flex-direction: row;
+    }
+}
 /* Camera name overlay */
 .camera-name-overlay {
     position: absolute;
@@ -28,12 +34,16 @@
     border: 1px solid #ccc;
     border-radius: 8px;
     overflow: hidden;
+    width: 90%;
+    max-width: 550px;
 }
 
 /* Camera-stream iframe styling */
 .camera-stream {
     display: block;
+    /* Width max 100% or 550*/
     width: 100%;
+    max-width: 550px;
     aspect-ratio: 16 / 9; /* Maintains the 16:9 aspect ratio automatically */
     border: none;
 }
@@ -61,9 +71,9 @@
     visibility: hidden;
     position: absolute;
     opacity: 0;
-    top: 25%; /* Position below the device options icon */
+    top: 1em; /* Position below the device options icon */
     transition: visibility 0.2s ease, opacity 0.2s ease;
-    right: 0;
+    right: 3em;
     background-color: #f9f9f9;
     border-radius: 6px;
     padding: 8px 0;

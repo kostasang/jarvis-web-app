@@ -204,6 +204,20 @@ function unclaimCameraButton(event, clickElement) {
     });
 }
 
+function cameraInfoButton(event, clickElement) {
+    const cameraId = clickElement.parentElement.parentElement.id;
+    const cameraNickename = clickElement.parentElement.parentElement.querySelector('.camera-name-overlay').innerText;
+    Swal.fire({
+        title: 'Camera Information',
+        html: `
+            <b>Camera Name:</b> ${cameraNickename}<br><br>
+            <b>Camera ID:</b> ${cameraId}<br>
+        `,
+        confirmButtonText: 'Close',
+        backdrop: true, // Dimmed background for focus
+    });
+}
+
 function toggleCameraDropdown(event, iconElement) {
     event.preventDefault();
     event.stopPropagation();
