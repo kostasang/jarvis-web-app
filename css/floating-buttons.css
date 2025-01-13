@@ -45,11 +45,10 @@
     background-color: #f6f6f6;
 }
 
-#floating-refresh-btn {
+.floating-btn {
     margin-top: 0.3em;
     width: 50px; /* Width of the button */
     height: 50px; /* Height of the button */
-    background-color: #007BFF; /* Button color */
     color: white; /* Text color */
     border: none; /* No border */
     border-radius: 50%; /* Make it circular */
@@ -60,24 +59,28 @@
     font-size: 24px; /* Icon size */
     cursor: pointer;
     z-index: 1002; /* Ensure it appears above other elements */
+}
+
+.floating-btn#refresh {
+    background-color: #007BFF; /* Button color */
     transition: transform 0.3s ease; /* Smooth transition */
 }
 
-#floating-refresh-btn:hover {
+.floating-btn#refresh:hover {
     background-color: #0056b3; /* Slightly darker on hover */
 }
 
-#floating-refresh-btn .icon {
+.floating-btn#refresh .icon {
     transition: transform 0.3s ease; /* Smooth transition */
 }
 
-#floating-refresh-btn:hover .icon {
+.floating-btn#refresh:hover .icon {
     transform: rotate(360deg) scale(1.2); /* Rotate the icon on hover */
 }
 
 
 /* Pulse Animation for Success */
-#floating-refresh-btn .pulse {
+.floating-btn#refresh .pulse {
     animation: pulse-animation 0.4s ease;
 }
 
@@ -89,7 +92,7 @@
 
 
 /* Shake Animation for Failure */
-#floating-refresh-btn .shake {
+.floating-btn#refresh .shake {
     animation: shake-animation 0.3s ease;
 }
 
@@ -99,4 +102,20 @@
     50% { transform: translateX(5px); }
     75% { transform: translateX(-5px); }
     100% { transform: translateX(0); }
+}
+
+.floating-btn#camera-claim {
+    background-color: #28a745; /* Button color */
+}
+
+.floating-btn#camera-claim:hover {
+    background-color: #218838; /* Slightly darker on hover */
+}
+
+.floating-btn#camera-setup {
+    background-color: #007BFF; /* Button color */
+}
+
+.floating-btn#camera-setup:hover {
+    background-color: #0056b3; /* Slightly darker on hover */
 }

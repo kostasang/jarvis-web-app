@@ -23,6 +23,8 @@
     <body>
         <div class="side-panel" id="side-panel">
             <h2>Menu</h2>
+            <a href="main.html"><i class="material-icons icon">home</i>Home</a>
+            <a href="surveillance.html"><i class="material-icons icon">visibility</i>Cameras</a>
             <a href="user.html"><i class="material-icons icon" >account_circle</i>User</a>
             <a href="../index.html" onclick="logOutButton(this)"><i class="material-icons icon" >logout</i>Logout</a>
             <a href="contact.html" target="_blank"><i class="material-icons icon" >import_contacts</i>Contact</a>
@@ -102,7 +104,7 @@
                 <span></span>
                 <span></span>
             </div>
-            <button id="floating-refresh-btn" onclick="refreshData(event, this)">
+            <button class="floating-btn" id="refresh" onclick="refreshData(event, this)">
                 <i class="material-icons icon">refresh</i>
             </button>
         </section>

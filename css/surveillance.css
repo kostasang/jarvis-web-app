@@ -1,0 +1,123 @@
+/* Style for the "no cameras" message */
+#no-camera-message {
+    display: none; /* Hidden by default */
+    font-size: 1.5rem;
+    color: #555; /* Neutral color */
+    text-align: center;
+    padding: 20px;
+    margin: 30px auto;
+    width: 90%; /* Adjust width */
+    max-width: 500px;
+    background-color: #f9f9f9; /* Light background */
+    border: 2px dashed #ccc; /* Dashed border for a hint */
+    border-radius: 10px; /* Smooth rounded corners */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+}
+
+#camera-panel {
+    display: flex;
+    margin-top: 1em;
+    max-width: 100%;
+    justify-content: space-around;
+    align-items: center;
+    text-align: center;
+    flex-direction: column;
+}
+
+@media screen and (min-width: 1100px) {
+    #camera-panel {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+}
+/* Camera name overlay */
+.camera-name-overlay {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    background-color: rgba(0, 0, 0, 0.6);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.9em;
+    z-index: 10;
+}
+
+/* Camera box styling */
+.camera-box {
+    position: relative;
+    display: inline-block;
+    margin: 16px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    overflow: hidden;
+    width: 90%;
+    max-width: 550px;
+}
+
+/* Camera-stream iframe styling */
+.camera-stream {
+    display: block;
+    /* Width max 100% or 550*/
+    width: 100%;
+    max-width: 550px;
+    aspect-ratio: 16 / 9; /* Maintains the 16:9 aspect ratio automatically */
+    border: none;
+}
+
+/* Options icon styling */
+.camera-options-icon {
+    cursor: pointer;
+    font-size: 1.5em; /* Adjust size */
+    width: 48px; /* Minimum recommended size for touch targets */
+    height: 48px;
+    color: white;
+    background-color: transparent;
+    position: absolute;
+    top: 3px;
+    right: 8px;
+    z-index: 20;
+    display: flex; /* Ensure content stays centered */
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+}
+
+/* Dropdown menu styles */
+.camera-dropdown-menu {
+    visibility: hidden;
+    position: absolute;
+    opacity: 0;
+    top: 1em; /* Position below the device options icon */
+    transition: visibility 0.2s ease, opacity 0.2s ease;
+    right: 3em;
+    background-color: #f9f9f9;
+    border-radius: 6px;
+    padding: 8px 0;
+    list-style-type: none;
+    margin: 0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    min-width: 140px;
+    z-index: 1000;
+}
+
+.camera-dropdown-menu.show {
+    visibility: visible;
+    opacity: 1;
+}
+
+.camera-dropdown-menu li {
+    padding: 10px 16px;
+    font-size: 0.9em;
+    color: #333;
+    cursor: pointer;
+}
+
+.camera-dropdown-menu li:hover {
+    background-color: #e6e6e6;
+}
+
+.camera-dropdown-menu li + li {
+    border-top: 1px solid #eee;
+}
+

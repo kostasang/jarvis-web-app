@@ -456,3 +456,95 @@ async function getDeviceHistory(deviceId, timeWindow) {
         console.error('Error:', error);
     });
 }
+
+async function getCameras() {
+    const apiUrl = config.apiBaseUrl + '/cameras/get_cameras';
+    return fetch(apiUrl, {
+        method: 'GET',
+        headers: {
+            'accept': 'application/json',
+            'Authorization': 'Bearer ' + token
+        }
+    })
+    .then(response => {
+        if (response.status === 401) { 
+            // If unauthorized, redirect to login
+            localStorage.removeItem('accessToken');
+            window.location.href = '../index.html';
+            return null;
+        }
+        if (!response.ok) {
+            throw new Error('Failed to get cameras.');
+        }
+        return response.json();
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
+
+
+async function claimCamera(cameraId, verificationCode, nickname = '') {
+    const apiUrl = config.apiBaseUrl + '/cameras/claim_camera';
+    const params = new URLSearchParams();
+    params.append('camera_id', cameraId);
+    params.append('verification_code', verificationCode.toString());
+    params.append('nickname', nickname);
+    return fetch(`${apiUrl}?${params.toString()}`, {
+        method: 'POST',
+        headers: {
+            'accept': '*/*',
+            'Authorization': 'Bearer ' + token
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(errorData => {
+                throw new Error(errorData.detail); // Throw with the detail message
+            });
+        }
+    })
+}
+
+
+async function unclaimCamera(cameraId) {
+    const apiUrl = config.apiBaseUrl + '/cameras/unclaim_camera';
+    const params = new URLSearchParams();
+    params.append('camera_id', cameraId);
+    return fetch(`${apiUrl}?${params.toString()}`, {
+        method: 'POST',
+        headers: {
+            'accept': '*/*',
+            'Authorization': 'Bearer ' + token
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(errorData => {
+                throw new Error(errorData.detail); // Throw with the detail message
+            });
+        }
+    })
+}
+
+
+async function setCameraNickname(cameraId, nickname) {
+    const apiUrl = config.apiBaseUrl + '/cameras/set_camera_nickname';
+    const params = new URLSearchParams();
+    params.append('camera_id', cameraId);
+    params.append('nickname', nickname);
+    return fetch(`${apiUrl}?${params.toString()}`, {
+        method: 'POST',
+        headers: {
+            'accept': '*/*',
+            'Authorization': 'Bearer ' + token
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(errorData => {
+                throw new Error(errorData.detail); // Throw with the detail message
+            });
+        }
+    })
+}

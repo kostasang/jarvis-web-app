@@ -1,0 +1,42 @@
+.swal2-popup {
+    font-family: 'Arial', sans-serif;
+    font-size: 1.1em;
+    padding: 20px; /* Ensure even padding */
+    box-sizing: border-box; /* Consistent box model */
+}
+
+.swal2-title {
+    margin-top: 3px;
+    padding-top: 0px;
+    margin-bottom: 1px;
+    font-size: 1.5em;
+    color: #333;
+}
+
+.swal2-input {
+    font-size: 1em;
+    padding-top: 1px;
+    padding-bottom: 2px;
+    width: 75%; /* Ensure full width */
+    box-sizing: border-box; /* Avoid overflow issues */
+    margin-top: 5px;
+    margin-bottom: 10px; /* Add consistent spacing between inputs */
+}
+
+.swal2-confirm {
+    background-color: #007bff !important;
+    color: white !important;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-size: 1em;
+}
+
+.swal2-cancel {
+    font-size: 1em;
+    padding: 10px 20px;
+}
+
+/* Remove any borders or lines around the popup */
+.swal2-popup::before {
+    display: none !important; /* Hides unnecessary black lines */
+}
