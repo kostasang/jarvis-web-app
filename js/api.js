@@ -115,13 +115,11 @@ async function createArea(hub_id, area_name) {
     })
     .then(response => {
         if (!response.ok) {
-            throw new Error('Failed to create area.');
+            return response.json().then(errorData => {
+                throw new Error(errorData.detail); // Throw with the detail message
+            });
         }
-        return response.json();
     })
-    .catch(error => {
-        console.error('Error:', error);
-    });
 }
 
 async function deleteArea(hub_id, area_id) {

@@ -82,7 +82,7 @@ async function addRoom() {
         rooms_div.appendChild(room_box);
     })
     .catch((error) => {
-        alert('Failed to create room, room already exists!');
+        alert(error);
     });
 }
 
