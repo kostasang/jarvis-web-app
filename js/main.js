@@ -1,7 +1,7 @@
 let userHubs = null;
 let hubId = null;
 
-async function renameArea(clicked_button) {
+async function renameAreaBtn(clicked_button) {
     // Rename area
     let newName = prompt("Provide a new name for the area.");
     if (newName === null || newName === '' || newName === 'null') {

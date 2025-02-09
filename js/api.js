@@ -164,13 +164,11 @@ async function renameArea(hub_id, area_id, new_area_name) {
     })
     .then(response => {
         if (!response.ok) {
-            throw new Error('Failed to rename area.');
+            return response.json().then(errorData => {
+                throw new Error(errorData.detail); // Throw with the detail message
+            });
         }
-        return;
     })
-    .catch(error => {
-        console.error('Error:', error);
-    });
 }
 
 async function assignDeviceToArea(device_id, area_id) {
