@@ -301,8 +301,11 @@ $(async function() {
         console.log("Disconnected from WebSocket server");
         logOut()
         .then(() => {
-            localStorage.removeItem('accessToken');
-            location.href = '../index.html';
+            // redirect to login after 2 seconds
+            setTimeout(() => {
+                localStorage.removeItem('accessToken');
+                location.href = '../index.html';
+            }, 2000);
         });
     };
     
