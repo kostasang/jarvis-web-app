@@ -119,6 +119,7 @@ async function createArea(hub_id, area_name) {
                 throw new Error(errorData.detail); // Throw with the detail message
             });
         }
+        return response.json();
     })
 }
 
