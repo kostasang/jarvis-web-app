@@ -11,6 +11,7 @@
         <link rel='stylesheet' href="../css/floating-buttons.css">
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
         <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+        <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     </head>
 
     <body>
@@ -80,7 +81,7 @@
                         <div class="form-group">
                             <input type="email" id="new-email" name="new-email" placeholder="New Email" required>
                         </div>
-
+                        <div class="g-recaptcha" data-sitekey="6LfbyesqAAAAAP6i8KxIXFKei_TFzW-j8N-02GZT" style="justify-self: center; margin-bottom: 0.6em;"></div>
                         <button type="submit">Change Email</button>
                     </form>
                     <p id="email-change-message" class="message"></p>

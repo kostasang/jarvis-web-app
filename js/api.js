@@ -285,11 +285,12 @@ async function changePassword(currentPassword, newPassword) {
     });
 }
 
-async function changeEmail(password, newEmail) {
+async function changeEmail(password, newEmail, captcha) {
     const apiUrl = config.apiBaseUrl + '/update_email';
     const params = new URLSearchParams();
     params.append('password', password);
     params.append('new_email', newEmail);
+    params.append('captcha', captcha);
     return fetch(`${apiUrl}?${params.toString()}`, {
         method: 'PUT',
         headers: {
