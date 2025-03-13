@@ -5,6 +5,14 @@ document.getElementById('signup-form').addEventListener('submit', function(event
     const email= document.getElementById('email').value;
     const password = document.getElementById('password').value;
     const confirmPassword = document.getElementById('confirm-password').value;
+    const captcha = grecaptcha.getResponse();
+
+    // Validate the CAPTCHA
+    if (!captcha) {
+        document.getElementById('msg').style.color = 'red';
+        document.getElementById('msg').innerText = 'Please complete the CAPTCHA.';
+        return;
+    }
 
     if (password !== confirmPassword) {
         document.getElementById('msg').style.color = 'red';
@@ -27,6 +35,7 @@ document.getElementById('signup-form').addEventListener('submit', function(event
     params.append('username', username);
     params.append('password', password);
     params.append('email', email);
+    params.append('captcha', captcha);
 
     // Send the login data to the API
     fetch(`${apiUrl}?${params.toString()}`, {
