@@ -56,23 +56,30 @@ document.getElementById('change-email-form').addEventListener('submit', async fu
     const password = document.getElementById('current-password-email').value;
     const newEmail = document.getElementById('new-email').value;
     const messageElem = document.getElementById('email-change-message');
+    const captcha = grecaptcha.getResponse();
+
+    // Validate the CAPTCHA
+    if (!captcha) {
+        messageElem.textContent = "Please complete the CAPTCHA.";
+        messageElem.classList.remove('success');
+    }
 
     // Make an API request to change the email
     try {
-        const response = await changeEmail(password, newEmail);
+        const response = await changeEmail(password, newEmail, captcha);
         if (response.ok) {
             messageElem.textContent = "Check your email for a verification link.";
             messageElem.classList.add('success');
             await new Promise(r => setTimeout(r, 3000));
             location.reload();
         } else {
-            messageElem.textContent = "Failed to change email. Please try again.";
+            // Print error returned by server
+            const errorData = await response.json();
+            messageElem.textContent = errorData.detail;
             messageElem.classList.remove('success');
         }
     } catch (error) {
         console.error('Error:', error);
-        messageElem.textContent = "An error occurred. Please try again later.";
-        messageElem.classList.remove('success');
     }
 });
 
