@@ -45,13 +45,10 @@ document.getElementById('signup-form').addEventListener('submit', function(event
         }
     })
     .then(response => {
-        if (response.status === 400) {
+        if (!response.ok) {
             return response.json().then(errorData => {
                 throw new Error(errorData.detail);
             });
-        }
-        else if (!response.ok) {
-            throw new Error('Unexpected error'); // If the response is not OK, throw an error
         }
     })
     .then(data => {

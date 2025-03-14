@@ -299,9 +299,6 @@ async function changeEmail(password, newEmail, captcha) {
         }
     })
     .then(response => {
-        if (!response.ok) {
-            throw new Error('Failed to change email.');
-        }
         return response;
     })
     .catch(error => {
