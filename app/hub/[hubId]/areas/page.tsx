@@ -11,6 +11,7 @@ import { getDevicesForHub } from '@/utils/deviceUtils'
 import AreaCard from '@/components/AreaCard'
 import CreateAreaModal from '@/components/CreateAreaModal'
 import DeviceCard from '@/components/DeviceCard'
+import DeviceModal from '@/components/DeviceModal'
 
 export default function HubAreasPage() {
   const router = useRouter()
@@ -23,6 +24,9 @@ export default function HubAreasPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
   const [error, setError] = useState('')
+  const [selectedDevice, setSelectedDevice] = useState<DeviceData | null>(null)
+  const [selectedDeviceAreaName, setSelectedDeviceAreaName] = useState<string | undefined>(undefined)
+  const [isDeviceModalOpen, setIsDeviceModalOpen] = useState(false)
 
   const fetchHubAndAreas = async () => {
     try {
@@ -88,6 +92,18 @@ export default function HubAreasPage() {
 
   const handleAreaUpdate = async () => {
     await fetchHubAndAreas()
+  }
+
+  const handleDeviceClick = (device: DeviceData, areaName?: string) => {
+    setSelectedDevice(device)
+    setSelectedDeviceAreaName(areaName)
+    setIsDeviceModalOpen(true)
+  }
+
+  const handleCloseDeviceModal = () => {
+    setIsDeviceModalOpen(false)
+    setSelectedDevice(null)
+    setSelectedDeviceAreaName(undefined)
   }
 
   if (isLoading) {
@@ -244,12 +260,13 @@ export default function HubAreasPage() {
 
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {areas.map((area) => (
-                <AreaCard 
-                  key={area.id} 
-                  area={area} 
-                  hubId={hubId}
-                  onAreaUpdate={handleAreaUpdate}
-                />
+                                  <AreaCard 
+                    key={area.id} 
+                    area={area} 
+                    hubId={hubId}
+                    onAreaUpdate={handleAreaUpdate}
+                    onDeviceClick={handleDeviceClick}
+                  />
               ))}
             </div>
 
@@ -273,6 +290,8 @@ export default function HubAreasPage() {
                         key={device.id} 
                         device={device}
                         showArea={false}
+                        onDeviceUpdate={fetchHubAndAreas}
+                        onDeviceClick={handleDeviceClick}
                       />
                     ))}
                   </div>
@@ -290,6 +309,15 @@ export default function HubAreasPage() {
         onSuccess={handleCreateSuccess}
         hubId={hubId}
         hubName={hub.nickname || `Hub ${hub.id.slice(0, 8)}`}
+      />
+
+      {/* Device Modal */}
+      <DeviceModal
+        device={selectedDevice}
+        isOpen={isDeviceModalOpen}
+        onClose={handleCloseDeviceModal}
+        onDeviceUpdate={fetchHubAndAreas}
+        areaName={selectedDeviceAreaName}
       />
     </div>
   )

@@ -162,6 +162,15 @@ export const deviceApi = {
       latestTimestamp: device.time || undefined,
     }))
   },
+
+  setDeviceNickname: async (deviceId: string, deviceNickname: string): Promise<void> => {
+    await apiClient.post('/set_device_nickname', null, {
+      params: {
+        device_id: deviceId,
+        device_nickname: deviceNickname,
+      },
+    })
+  },
 }
 
 export default apiClient 

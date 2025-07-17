@@ -21,6 +21,7 @@ import { AreaData } from '@/types/area'
 import { getDevicesForHub, filterDevices, calculateDeviceStats } from '@/utils/deviceUtils'
 import { DEVICE_CATEGORIES } from '@/config/deviceTypes'
 import DeviceCard from '@/components/DeviceCard'
+import DeviceModal from '@/components/DeviceModal'
 
 export default function HubDevicesPage() {
   const router = useRouter()
@@ -34,6 +35,9 @@ export default function HubDevicesPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState('')
   const [showFilters, setShowFilters] = useState(false)
+  const [selectedDevice, setSelectedDevice] = useState<DeviceData | null>(null)
+  const [selectedDeviceAreaName, setSelectedDeviceAreaName] = useState<string | undefined>(undefined)
+  const [isDeviceModalOpen, setIsDeviceModalOpen] = useState(false)
   
   const [filter, setFilter] = useState<DeviceFilter>({
     category: undefined,
@@ -114,6 +118,18 @@ export default function HubDevicesPage() {
       areaId: undefined,
       searchTerm: '',
     })
+  }
+
+  const handleDeviceClick = (device: DeviceData, areaName?: string) => {
+    setSelectedDevice(device)
+    setSelectedDeviceAreaName(areaName)
+    setIsDeviceModalOpen(true)
+  }
+
+  const handleCloseDeviceModal = () => {
+    setIsDeviceModalOpen(false)
+    setSelectedDevice(null)
+    setSelectedDeviceAreaName(undefined)
   }
 
   const hasActiveFilters = filter.category || filter.areaId || filter.searchTerm
@@ -338,6 +354,8 @@ export default function HubDevicesPage() {
                   device={device}
                   showArea={true}
                   areaName={areaName}
+                  onDeviceUpdate={fetchData}
+                  onDeviceClick={handleDeviceClick}
                 />
               )
             })}
@@ -365,6 +383,15 @@ export default function HubDevicesPage() {
           </div>
         )}
       </main>
+
+      {/* Device Modal */}
+      <DeviceModal
+        device={selectedDevice}
+        isOpen={isDeviceModalOpen}
+        onClose={handleCloseDeviceModal}
+        onDeviceUpdate={fetchData}
+        areaName={selectedDeviceAreaName}
+      />
     </div>
   )
 } 

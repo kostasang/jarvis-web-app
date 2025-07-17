@@ -20,9 +20,10 @@ interface AreaCardProps {
   area: AreaData
   hubId: string
   onAreaUpdate: () => void
+  onDeviceClick?: (device: DeviceData, areaName?: string) => void
 }
 
-export default function AreaCard({ area, hubId, onAreaUpdate }: AreaCardProps) {
+export default function AreaCard({ area, hubId, onAreaUpdate, onDeviceClick }: AreaCardProps) {
   const [isEditingName, setIsEditingName] = useState(false)
   const [newName, setNewName] = useState(area.name)
   const [isLoading, setIsLoading] = useState(false)
@@ -32,22 +33,22 @@ export default function AreaCard({ area, hubId, onAreaUpdate }: AreaCardProps) {
   const [deviceStats, setDeviceStats] = useState({ total: 0, lastUpdate: undefined as string | undefined })
 
   // Fetch devices for this area
-  useEffect(() => {
-    const fetchDevices = async () => {
-      try {
-        const allDevices = await deviceApi.getDevicesLatestData()
-        const areaDevices = getDevicesForArea(allDevices, area.id)
-        const stats = calculateDeviceStats(areaDevices)
-        setDevices(areaDevices)
-        setDeviceStats({
-          total: stats.total,
-          lastUpdate: stats.lastUpdate
-        })
-      } catch (error) {
-        console.error('Failed to fetch devices for area:', error)
-      }
+  const fetchDevices = async () => {
+    try {
+      const allDevices = await deviceApi.getDevicesLatestData()
+      const areaDevices = getDevicesForArea(allDevices, area.id)
+      const stats = calculateDeviceStats(areaDevices)
+      setDevices(areaDevices)
+      setDeviceStats({
+        total: stats.total,
+        lastUpdate: stats.lastUpdate
+      })
+    } catch (error) {
+      console.error('Failed to fetch devices for area:', error)
     }
+  }
 
+  useEffect(() => {
     fetchDevices()
     
     // Set up periodic refresh every 5 seconds
@@ -103,6 +104,8 @@ export default function AreaCard({ area, hubId, onAreaUpdate }: AreaCardProps) {
       setShowDeleteConfirm(false)
     }
   }
+
+
 
   return (
     <div className="glass-card hover:bg-dark-700/30 transition-all duration-200">
@@ -224,6 +227,8 @@ export default function AreaCard({ area, hubId, onAreaUpdate }: AreaCardProps) {
                 key={device.id} 
                 device={device}
                 showArea={false}
+                onDeviceUpdate={fetchDevices}
+                onDeviceClick={(device) => onDeviceClick?.(device, area.name)}
               />
             ))}
           </div>

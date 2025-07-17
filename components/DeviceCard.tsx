@@ -1,16 +1,24 @@
 'use client'
 
+import { useState } from 'react'
 import { DeviceData } from '@/types/device'
 import { getDeviceConfig, formatDeviceValue, getDeviceValueColor } from '@/utils/deviceUtils'
-import { Clock } from 'lucide-react'
+import { Clock, Edit3, Check, X } from 'lucide-react'
+import { deviceApi } from '@/lib/api'
 
 interface DeviceCardProps {
   device: DeviceData
   showArea?: boolean
   areaName?: string
+  onDeviceUpdate?: () => void
+  onDeviceClick?: (device: DeviceData, areaName?: string) => void
 }
 
-export default function DeviceCard({ device, showArea = false, areaName }: DeviceCardProps) {
+export default function DeviceCard({ device, showArea = false, areaName, onDeviceUpdate, onDeviceClick }: DeviceCardProps) {
+  const [isEditingName, setIsEditingName] = useState(false)
+  const [nickname, setNickname] = useState(device.name)
+  const [isLoading, setIsLoading] = useState(false)
+  
   const config = getDeviceConfig(device.type)
   const value = formatDeviceValue(device)
   const valueColor = getDeviceValueColor(device)
@@ -27,18 +35,96 @@ export default function DeviceCard({ device, showArea = false, areaName }: Devic
     }
   }
 
+  const handleSaveNickname = async () => {
+    if (!nickname.trim() || !device.id) return
 
+    setIsLoading(true)
+    try {
+      await deviceApi.setDeviceNickname(device.id, nickname.trim())
+      setIsEditingName(false)
+      if (onDeviceUpdate) {
+        onDeviceUpdate()
+      }
+    } catch (error) {
+      console.error('Failed to update device nickname:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleCancelEdit = () => {
+    setNickname(device.name)
+    setIsEditingName(false)
+  }
+
+  const handleCardClick = () => {
+    if (!isEditingName && onDeviceClick) {
+      onDeviceClick(device, areaName)
+    }
+  }
 
   return (
-    <div className="glass-card p-4 hover:bg-dark-700/30 transition-all duration-200">
+    <div 
+      className={`glass-card p-4 hover:bg-dark-700/30 transition-all duration-200 ${
+        onDeviceClick && !isEditingName ? 'cursor-pointer' : ''
+      }`}
+      onClick={handleCardClick}
+    >
       {/* Header */}
       <div className="flex items-start justify-between mb-3">
-        <div className="flex items-center">
+        <div className="flex items-center flex-1">
           <div className="w-10 h-10 rounded-lg flex items-center justify-center mr-3">
             <span className="text-2xl">{config.icon}</span>
           </div>
-          <div>
-            <h3 className="text-sm font-semibold text-white">{device.name}</h3>
+          <div className="flex-1">
+            {isEditingName ? (
+              <div className="flex items-center gap-2 mb-1">
+                <input
+                  type="text"
+                  value={nickname}
+                  onChange={(e) => setNickname(e.target.value)}
+                  className="input-field !py-1 !px-2 text-xs w-full"
+                  placeholder="Device name"
+                  autoFocus
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') handleSaveNickname()
+                    if (e.key === 'Escape') handleCancelEdit()
+                  }}
+                />
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    handleSaveNickname()
+                  }}
+                  disabled={isLoading || !nickname.trim()}
+                  className="p-1 text-green-400 hover:text-green-300 disabled:opacity-50"
+                >
+                  <Check className="w-3 h-3" />
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    handleCancelEdit()
+                  }}
+                  className="p-1 text-red-400 hover:text-red-300"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2 mb-1">
+                <h3 className="text-sm font-semibold text-white">{device.name}</h3>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    setIsEditingName(true)
+                  }}
+                  className="p-1 text-dark-400 hover:text-dark-200 transition-colors"
+                >
+                  <Edit3 className="w-3 h-3" />
+                </button>
+              </div>
+            )}
             <p className="text-xs text-dark-400">{config.description}</p>
           </div>
         </div>
