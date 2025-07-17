@@ -3,11 +3,6 @@
 import { useState, useEffect } from 'react'
 import { 
   Home, 
-  Wifi, 
-  WifiOff, 
-  Settings, 
-  Thermometer, 
-  Lightbulb, 
   MapPin,
   Edit3,
   Check,
@@ -91,27 +86,7 @@ export default function HubCard({ hub, onHubUpdate }: HubCardProps) {
     setIsEditingNickname(false)
   }
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'online':
-        return 'text-green-400'
-      case 'offline':
-        return 'text-red-400'
-      default:
-        return 'text-yellow-400'
-    }
-  }
 
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'online':
-        return <Wifi className="w-4 h-4" />
-      case 'offline':
-        return <WifiOff className="w-4 h-4" />
-      default:
-        return <Wifi className="w-4 h-4" />
-    }
-  }
 
   return (
     <div className="glass-card p-6 hover:bg-dark-700/30 transition-all duration-200 relative">
@@ -163,10 +138,7 @@ export default function HubCard({ hub, onHubUpdate }: HubCardProps) {
           </div>
         </div>
         
-        <div className={`flex items-center gap-1 ${getStatusColor(hub.status || 'unknown')}`}>
-          {getStatusIcon(hub.status || 'unknown')}
-          <span className="text-sm font-medium capitalize">{hub.status || 'unknown'}</span>
-        </div>
+
       </div>
 
       {/* Enhanced Stats */}

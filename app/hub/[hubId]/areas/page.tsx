@@ -27,6 +27,7 @@ export default function HubAreasPage() {
   const [selectedDevice, setSelectedDevice] = useState<DeviceData | null>(null)
   const [selectedDeviceAreaName, setSelectedDeviceAreaName] = useState<string | undefined>(undefined)
   const [isDeviceModalOpen, setIsDeviceModalOpen] = useState(false)
+  const [totalDeviceCount, setTotalDeviceCount] = useState(0)
 
   const fetchHubAndAreas = async () => {
     try {
@@ -53,6 +54,7 @@ export default function HubAreasPage() {
       setHub(currentHub)
       setAreas(areasData)
       setUnassignedDevices(unassigned)
+      setTotalDeviceCount(hubDevices.length)
     } catch (err: any) {
       console.error('Failed to fetch hub and areas:', err)
       if (err.response?.status === 401) {
@@ -165,28 +167,17 @@ export default function HubAreasPage() {
 
         {/* Hub Info */}
         <div className="glass-card p-6 mb-8">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <div className="w-12 h-12 bg-primary-600 rounded-xl flex items-center justify-center mr-4">
-                <Home className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <h1 className="text-2xl font-bold text-white">
-                  {hub.nickname || `Hub ${hub.id.slice(0, 8)}`}
-                </h1>
-                <p className="text-dark-400">
-                  {areas.length} area{areas.length !== 1 ? 's' : ''} • {hub.device_count || 0} devices total
-                </p>
-              </div>
+          <div className="flex items-center">
+            <div className="w-12 h-12 bg-primary-600 rounded-xl flex items-center justify-center mr-4">
+              <Home className="w-6 h-6 text-white" />
             </div>
-            <div className={`px-3 py-1 rounded-full text-sm font-medium ${
-              hub.status === 'online' 
-                ? 'bg-green-500/20 text-green-400' 
-                : hub.status === 'offline'
-                ? 'bg-red-500/20 text-red-400'
-                : 'bg-yellow-500/20 text-yellow-400'
-            }`}>
-              {hub.status || 'unknown'}
+            <div>
+              <h1 className="text-2xl font-bold text-white">
+                {hub.nickname || `Hub ${hub.id.slice(0, 8)}`}
+              </h1>
+              <p className="text-dark-400">
+                {areas.length} area{areas.length !== 1 ? 's' : ''} • {totalDeviceCount} devices total
+              </p>
             </div>
           </div>
         </div>
@@ -318,6 +309,7 @@ export default function HubAreasPage() {
         onClose={handleCloseDeviceModal}
         onDeviceUpdate={fetchHubAndAreas}
         areaName={selectedDeviceAreaName}
+        hubId={hubId}
       />
     </div>
   )

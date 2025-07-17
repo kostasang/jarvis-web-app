@@ -171,6 +171,23 @@ export const deviceApi = {
       },
     })
   },
+
+  assignDeviceToArea: async (deviceId: string, areaId: string): Promise<void> => {
+    await apiClient.post('/assign_device_to_area', null, {
+      params: {
+        device_id: deviceId,
+        area_id: areaId,
+      },
+    })
+  },
+
+  removeDeviceFromArea: async (deviceId: string): Promise<void> => {
+    await apiClient.delete('/remove_device_from_area', {
+      params: {
+        device_id: deviceId,
+      },
+    })
+  },
 }
 
 export default apiClient 

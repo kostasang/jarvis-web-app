@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from 'react'
 import { DeviceData } from '@/types/device'
+import { AreaData } from '@/types/area'
 import { getDeviceConfig, formatDeviceValue, getDeviceValueColor } from '@/utils/deviceUtils'
-import { deviceApi } from '@/lib/api'
+import { deviceApi, areaApi } from '@/lib/api'
 import { 
   X, 
   Edit3, 
@@ -22,19 +23,39 @@ interface DeviceModalProps {
   onClose: () => void
   onDeviceUpdate?: () => void
   areaName?: string
+  hubId?: string
 }
 
-export default function DeviceModal({ device, isOpen, onClose, onDeviceUpdate, areaName }: DeviceModalProps) {
+export default function DeviceModal({ device, isOpen, onClose, onDeviceUpdate, areaName, hubId }: DeviceModalProps) {
   const [isEditingName, setIsEditingName] = useState(false)
   const [nickname, setNickname] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const [areas, setAreas] = useState<AreaData[]>([])
+  const [currentAreaId, setCurrentAreaId] = useState<string | undefined>(undefined)
+  const [isChangingArea, setIsChangingArea] = useState(false)
 
   useEffect(() => {
     if (device) {
       setNickname(device.name)
+      setCurrentAreaId(device.areaId)
       setIsEditingName(false)
     }
   }, [device])
+
+  useEffect(() => {
+    const fetchAreas = async () => {
+      if (isOpen && hubId) {
+        try {
+          const areasData = await areaApi.getAreas(hubId)
+          setAreas(areasData)
+        } catch (error) {
+          console.error('Failed to fetch areas:', error)
+        }
+      }
+    }
+
+    fetchAreas()
+  }, [isOpen, hubId])
 
   if (!isOpen || !device) return null
 
@@ -74,6 +95,40 @@ export default function DeviceModal({ device, isOpen, onClose, onDeviceUpdate, a
   const handleCancelEdit = () => {
     setNickname(device.name)
     setIsEditingName(false)
+  }
+
+  const handleAreaAssignment = async (areaId: string) => {
+    if (!device?.id) return
+
+    setIsChangingArea(true)
+    try {
+      await deviceApi.assignDeviceToArea(device.id, areaId)
+      setCurrentAreaId(areaId)
+      if (onDeviceUpdate) {
+        onDeviceUpdate()
+      }
+    } catch (error) {
+      console.error('Failed to assign device to area:', error)
+    } finally {
+      setIsChangingArea(false)
+    }
+  }
+
+  const handleRemoveFromArea = async () => {
+    if (!device?.id) return
+
+    setIsChangingArea(true)
+    try {
+      await deviceApi.removeDeviceFromArea(device.id)
+      setCurrentAreaId(undefined)
+      if (onDeviceUpdate) {
+        onDeviceUpdate()
+      }
+    } catch (error) {
+      console.error('Failed to remove device from area:', error)
+    } finally {
+      setIsChangingArea(false)
+    }
   }
 
   const formatTimestamp = (timestamp?: string) => {
@@ -191,20 +246,70 @@ export default function DeviceModal({ device, isOpen, onClose, onDeviceUpdate, a
                   <MapPin className="w-4 h-4" />
                   Location
                 </h4>
-                <div className="text-dark-400">
-                  {areaName ? (
-                    <div className="flex items-center gap-2">
-                      <span className="text-white font-medium">{areaName}</span>
-                      <span className="px-2 py-1 bg-secondary-600/20 text-secondary-400 rounded text-xs">
-                        Area
-                      </span>
+                <div className="space-y-3">
+                  {/* Current Assignment */}
+                  <div className="text-dark-400">
+                    {currentAreaId ? (
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <span className="text-white font-medium">
+                            {areas.find(area => area.id === currentAreaId)?.name || 'Unknown Area'}
+                          </span>
+                          <span className="px-2 py-1 bg-secondary-600/20 text-secondary-400 rounded text-xs">
+                            Area
+                          </span>
+                        </div>
+                        <button
+                          onClick={handleRemoveFromArea}
+                          disabled={isChangingArea}
+                          className="text-xs text-red-400 hover:text-red-300 disabled:opacity-50"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-2">
+                        <span className="text-yellow-400">Unassigned</span>
+                        <span className="px-2 py-1 bg-yellow-600/20 text-yellow-400 rounded text-xs">
+                          No Area
+                        </span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Area Assignment */}
+                  {areas.length > 0 && (
+                    <div>
+                      <label className="text-xs text-dark-400 mb-2 block">
+                        {currentAreaId ? 'Change Area:' : 'Assign to Area:'}
+                      </label>
+                      <select
+                        className="input-field text-sm w-full"
+                        value=""
+                        onChange={(e) => {
+                          if (e.target.value) {
+                            handleAreaAssignment(e.target.value)
+                          }
+                        }}
+                        disabled={isChangingArea}
+                      >
+                        <option value="">Select an area...</option>
+                        {areas
+                          .filter(area => area.id !== currentAreaId)
+                          .map(area => (
+                            <option key={area.id} value={area.id}>
+                              {area.name}
+                            </option>
+                          ))
+                        }
+                      </select>
                     </div>
-                  ) : (
-                    <div className="flex items-center gap-2">
-                      <span className="text-yellow-400">Unassigned</span>
-                      <span className="px-2 py-1 bg-yellow-600/20 text-yellow-400 rounded text-xs">
-                        No Area
-                      </span>
+                  )}
+
+                  {isChangingArea && (
+                    <div className="text-xs text-dark-400 flex items-center gap-2">
+                      <div className="animate-spin rounded-full h-3 w-3 border-b border-primary-500"></div>
+                      Updating assignment...
                     </div>
                   )}
                 </div>

@@ -12,7 +12,8 @@ import {
   Wifi,
   WifiOff,
   BarChart3,
-  X
+  X,
+  Clock
 } from 'lucide-react'
 import { deviceApi, hubApi, areaApi } from '@/lib/api'
 import { DeviceData, DeviceFilter } from '@/types/device'
@@ -281,67 +282,25 @@ export default function HubDevicesPage() {
 
         {/* Hub Info */}
         <div className="glass-card p-6 mb-8">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <div className="w-12 h-12 bg-primary-600 rounded-xl flex items-center justify-center mr-4">
-                <BarChart3 className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <h1 className="text-2xl font-bold text-white">
-                  {hub.nickname || `Hub ${hub.id.slice(0, 8)}`} Devices
-                </h1>
-                <p className="text-dark-400">
-                  {totalStats.total} total devices
-                  {totalStats.lastUpdate && (
-                    <span> • Last update: {new Date(totalStats.lastUpdate).toLocaleString()}</span>
-                  )}
-                </p>
-              </div>
+          <div className="flex items-center">
+            <div className="w-12 h-12 bg-primary-600 rounded-xl flex items-center justify-center mr-4">
+              <BarChart3 className="w-6 h-6 text-white" />
             </div>
-            <div className={`px-3 py-1 rounded-full text-sm font-medium ${
-              hub.status === 'online' 
-                ? 'bg-green-500/20 text-green-400' 
-                : hub.status === 'offline'
-                ? 'bg-red-500/20 text-red-400'
-                : 'bg-yellow-500/20 text-yellow-400'
-            }`}>
-              {hub.status || 'unknown'}
+            <div>
+              <h1 className="text-2xl font-bold text-white">
+                {hub.nickname || `Hub ${hub.id.slice(0, 8)}`} Devices
+              </h1>
+              <p className="text-dark-400">
+                {totalStats.total} total devices
+                {totalStats.lastUpdate && (
+                  <span> • Last update: {new Date(totalStats.lastUpdate).toLocaleString()}</span>
+                )}
+              </p>
             </div>
           </div>
         </div>
 
-        {/* Collapsed Stats Cards */}
-        <details className="glass-card mb-8">
-          <summary className="p-4 cursor-pointer hover:bg-dark-700/30 transition-colors">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <h3 className="text-lg font-semibold text-white">Device Statistics</h3>
-                <span className="text-sm text-dark-400">({stats.total} devices)</span>
-              </div>
-              <span className="text-dark-400">Click to expand</span>
-            </div>
-          </summary>
-          <div className="p-4 pt-0 border-t border-dark-700">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="text-center">
-                <div className="text-2xl font-bold text-white">{stats.total}</div>
-                <div className="text-sm text-dark-400">Total</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-green-600">{stats.byCategory.environmental}</div>
-                <div className="text-sm text-dark-400">Environmental</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-red-600">{stats.byCategory.security}</div>
-                <div className="text-sm text-dark-400">Security</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-blue-600">{stats.byCategory.control}</div>
-                <div className="text-sm text-dark-400">Control</div>
-              </div>
-            </div>
-          </div>
-        </details>
+
 
         {/* Devices Grid */}
         {filteredDevices.length > 0 ? (
@@ -391,6 +350,7 @@ export default function HubDevicesPage() {
         onClose={handleCloseDeviceModal}
         onDeviceUpdate={fetchData}
         areaName={selectedDeviceAreaName}
+        hubId={hubId}
       />
     </div>
   )
