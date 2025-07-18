@@ -2,7 +2,7 @@ import axios from 'axios'
 import { LoginCredentials, Token } from '@/types/auth'
 import { HubData, HubApiResponse, ClaimHubRequest, SetHubNicknameRequest } from '@/types/hub'
 import { AreaData, AreaApiResponse, CreateAreaRequest, DeleteAreaRequest, RenameAreaRequest } from '@/types/area'
-import { DeviceData, DeviceLatestDataApiResponse } from '@/types/device'
+import { DeviceData, DeviceLatestDataApiResponse, DeviceHistoryResponse } from '@/types/device'
 
 // Configure the base URL - you'll need to update this with your actual backend URL
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
@@ -187,6 +187,16 @@ export const deviceApi = {
         device_id: deviceId,
       },
     })
+  },
+
+  getDeviceHistory: async (deviceId: string, timeWindow: number = 24): Promise<DeviceHistoryResponse> => {
+    const response = await apiClient.get('/get_device_history', {
+      params: {
+        device_id: deviceId,
+        time_window: timeWindow,
+      },
+    })
+    return response.data
   },
 }
 

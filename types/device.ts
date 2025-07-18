@@ -36,4 +36,18 @@ export interface DeviceStats {
   }
   byArea: Record<string, number>
   lastUpdate?: string
+}
+
+// Device history types
+export interface DeviceHistoryDataPoint {
+  device_data?: number | null
+  device_state?: number | null
+  device_type: number
+  hub_id: string
+  time: string
+}
+
+export interface DeviceHistoryResponse {
+  device_id: string
+  history: DeviceHistoryDataPoint[]
 } 

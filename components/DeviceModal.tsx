@@ -5,6 +5,7 @@ import { DeviceData } from '@/types/device'
 import { AreaData } from '@/types/area'
 import { getDeviceConfig, formatDeviceValue, getDeviceValueColor } from '@/utils/deviceUtils'
 import { deviceApi, areaApi } from '@/lib/api'
+import DeviceHistoryChart from './DeviceHistoryChart'
 import { 
   X, 
   Edit3, 
@@ -333,10 +334,7 @@ export default function DeviceModal({ device, isOpen, onClose, onDeviceUpdate, a
                   <Calendar className="w-4 h-4" />
                   Data History
                 </h4>
-                <div className="text-dark-400 text-sm">
-                  <p>📊 Historical data visualization will be available soon</p>
-                  <p className="mt-1">📈 Charts and trends coming in the next update</p>
-                </div>
+                <DeviceHistoryChart device={device} />
               </div>
             </div>
 
