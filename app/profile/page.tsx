@@ -394,7 +394,7 @@ export default function ProfilePage() {
          <div className="mt-8 p-6 bg-gradient-to-r from-primary-600/10 to-secondary-600/10 rounded-xl border border-primary-500/20">
            <h4 className="text-lg font-semibold text-white mb-2">🚀 Coming Soon</h4>
            <p className="text-dark-300 text-sm">
-             Email change functionality, password reset options, and two-factor authentication.
+             Two-factor authentication, security logs, and advanced account settings.
            </p>
          </div>
 

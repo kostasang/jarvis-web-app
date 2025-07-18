@@ -171,6 +171,7 @@ export default function CamerasPage() {
         camera={selectedCamera}
         isOpen={isStreamModalOpen}
         onClose={handleCloseStream}
+        onCameraUpdate={fetchCameras}
       />
     </div>
   )

@@ -1,16 +1,32 @@
 'use client'
 
-import { X, Camera, AlertCircle } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { X, Camera, AlertCircle, Edit3, Check } from 'lucide-react'
 import { CameraData } from '@/types/camera'
+import { cameraApi } from '@/lib/api'
 import { config } from '@/config/env'
 
 interface CameraStreamModalProps {
   camera: CameraData | null
   isOpen: boolean
   onClose: () => void
+  onCameraUpdate?: () => void
 }
 
-export default function CameraStreamModal({ camera, isOpen, onClose }: CameraStreamModalProps) {
+export default function CameraStreamModal({ camera, isOpen, onClose, onCameraUpdate }: CameraStreamModalProps) {
+  const [isEditingNickname, setIsEditingNickname] = useState(false)
+  const [nickname, setNickname] = useState(camera?.nickname || '')
+  const [isLoading, setIsLoading] = useState(false)
+  const [currentNickname, setCurrentNickname] = useState(camera?.nickname || '')
+
+  // Update local state when camera prop changes
+  useEffect(() => {
+    if (camera) {
+      setNickname(camera.nickname || '')
+      setCurrentNickname(camera.nickname || '')
+    }
+  }, [camera])
+
   if (!isOpen || !camera) return null
 
   // Get access token from localStorage
@@ -37,23 +53,88 @@ export default function CameraStreamModal({ camera, isOpen, onClose }: CameraStr
     )
   }
 
+  const handleSaveNickname = async () => {
+    if (!nickname.trim() || !camera.id) return
+
+    setIsLoading(true)
+    try {
+      await cameraApi.setCameraNickname({
+        camera_id: camera.id,
+        nickname: nickname.trim(),
+      })
+      // Update local state immediately to show the new name
+      setCurrentNickname(nickname.trim())
+      setIsEditingNickname(false)
+      if (onCameraUpdate) {
+        onCameraUpdate()
+      }
+    } catch (error) {
+      console.error('Failed to update camera nickname:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleCancelEdit = () => {
+    setNickname(currentNickname)
+    setIsEditingNickname(false)
+  }
+
   // Construct the iframe source URL
   const streamUrl = `${config.mediaServerUrl}/${camera.id}/?token=${accessToken}`
 
   return (
-    <div className="fixed inset-0 bg-black/90 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-      <div className="bg-dark-800 rounded-2xl shadow-2xl max-w-5xl w-full max-h-[90vh] overflow-hidden">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-2 z-50">
+      <div className="bg-dark-800 rounded-2xl shadow-2xl max-w-7xl w-full max-h-[95vh] overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-dark-700">
-          <div className="flex items-center gap-3">
+        <div className="flex items-center justify-between p-4 border-b border-dark-700">
+          <div className="flex items-center gap-3 flex-1">
             <div className="w-10 h-10 bg-primary-600 rounded-lg flex items-center justify-center">
               <Camera className="w-5 h-5 text-white" />
             </div>
-            <div>
-              <h2 className="text-xl font-bold text-white">
-                {camera.nickname || `Camera ${camera.id.slice(0, 8)}`}
-              </h2>
-              <p className="text-sm text-dark-400">Live Stream</p>
+            <div className="flex-1">
+              {isEditingNickname ? (
+                <div className="flex items-center gap-2 mb-1">
+                  <input
+                    type="text"
+                    value={nickname}
+                    onChange={(e) => setNickname(e.target.value)}
+                    className="input-field !py-1 !px-2 text-lg font-bold bg-dark-700 border-dark-600"
+                    placeholder="Camera nickname"
+                    autoFocus
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') handleSaveNickname()
+                      if (e.key === 'Escape') handleCancelEdit()
+                    }}
+                  />
+                  <button
+                    onClick={handleSaveNickname}
+                    disabled={isLoading || !nickname.trim()}
+                    className="p-1 text-green-400 hover:text-green-300 disabled:opacity-50"
+                  >
+                    <Check className="w-5 h-5" />
+                  </button>
+                  <button
+                    onClick={handleCancelEdit}
+                    className="p-1 text-red-400 hover:text-red-300"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2 mb-1">
+                  <h2 className="text-xl font-bold text-white">
+                    {currentNickname || `Camera ${camera.id}`}
+                  </h2>
+                  <button
+                    onClick={() => setIsEditingNickname(true)}
+                    className="p-1 text-dark-400 hover:text-dark-200 transition-colors"
+                  >
+                    <Edit3 className="w-4 h-4" />
+                  </button>
+                </div>
+              )}
+              <p className="text-sm text-dark-400 font-mono">{camera.id}</p>
             </div>
           </div>
           <button
@@ -65,48 +146,35 @@ export default function CameraStreamModal({ camera, isOpen, onClose }: CameraStr
         </div>
 
         {/* Stream Container */}
-        <div className="p-6">
+        <div className="p-3">
           <div className="relative bg-black rounded-lg overflow-hidden" style={{ aspectRatio: '16/9' }}>
             <iframe
               src={streamUrl}
               sandbox="allow-scripts"
               className="w-full h-full border-0"
-              title={`Live stream for ${camera.nickname || camera.id}`}
+              title={`Live stream for ${currentNickname || camera.id}`}
               allow="autoplay; fullscreen"
             />
           </div>
-          
-          {/* Stream Info */}
-          <div className="mt-4 flex items-center justify-between text-sm text-dark-400">
-            <div className="flex items-center gap-4">
-              <span>🔴 Live</span>
-              <span>Camera ID: {camera.id.slice(0, 8)}...</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-              <span>Connected</span>
-            </div>
-          </div>
         </div>
 
-        {/* Footer */}
-        <div className="p-6 pt-0">
-          <div className="flex gap-3">
-            <button
-              onClick={onClose}
-              className="flex-1 btn-secondary"
-            >
-              Close Stream
-            </button>
-            <button
-              onClick={() => {
-                // TODO: Implement fullscreen mode
-                console.log('Fullscreen mode for camera:', camera.id)
-              }}
-              className="btn-primary px-6"
-            >
-              Fullscreen
-            </button>
+        {/* Camera Info */}
+        <div className="px-3 pb-4">
+          <div className="glass-card p-4">
+            <h3 className="text-sm font-semibold text-white mb-3 flex items-center gap-2">
+              <Camera className="w-4 h-4" />
+              Camera Info
+            </h3>
+            <div className="space-y-3">
+              <div>
+                <div className="text-xs text-dark-400 mb-1">Camera ID</div>
+                <div className="text-sm text-white font-mono break-all">{camera.id}</div>
+              </div>
+              <div>
+                <div className="text-xs text-dark-400 mb-1">Nickname</div>
+                <div className="text-sm text-white">{currentNickname || 'Not set'}</div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

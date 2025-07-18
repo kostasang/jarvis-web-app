@@ -98,6 +98,11 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
     onClose()
   }
 
+  const navigateTools = () => {
+    router.push('/tools')
+    onClose()
+  }
+
   const menuItems = [
     {
       icon: Home,
@@ -138,8 +143,8 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
       icon: Wrench,
       label: 'Tools',
       description: 'Advanced utilities and diagnostics',
-      onClick: () => {}, // TODO: Implement tools
-      available: false
+      onClick: navigateTools,
+      available: true
     },
     {
       icon: Mail,
