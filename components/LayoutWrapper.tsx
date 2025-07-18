@@ -44,7 +44,7 @@ export default function LayoutWrapper({ children }: LayoutWrapperProps) {
       {showSidebar && (
         <button
           onClick={toggleSidebar}
-          className="fixed top-4 left-4 z-50 p-3 glass-card hover:bg-dark-700/50 transition-all duration-200 rounded-xl shadow-lg hover:shadow-xl hover:scale-105 active:scale-95"
+          className="fixed top-2.5 left-4 z-50 p-3 glass-card hover:bg-dark-700/50 transition-all duration-200 rounded-xl shadow-lg hover:shadow-xl hover:scale-105 active:scale-95"
           title="Open Menu"
         >
           <Menu className={`w-5 h-5 text-white transition-transform duration-200 ${

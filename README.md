@@ -28,8 +28,12 @@ A modern, responsive web application for managing your smart home ecosystem buil
    Create a `.env.local` file in the project root:
    ```env
    NEXT_PUBLIC_API_URL=http://127.0.0.1:8000
+   NEXT_PUBLIC_RECAPTCHA_SITE_KEY=6LfbyesqAAAAAP6i8KxIXFKei_TFzW-j8N-02GZT
    ```
-   > **Note**: Replace with your actual FastAPI backend URL
+   > **Note**: 
+   > - Replace `NEXT_PUBLIC_API_URL` with your actual FastAPI backend URL
+   > - The reCAPTCHA site key is required for email update functionality
+   > - If you need to change the reCAPTCHA key, update it in both `.env.local` and `config/env.ts`
 
 ### Development Server
 
@@ -157,6 +161,25 @@ Comprehensive device monitoring with **real-time updates every 5 seconds**:
 - **Unassigned Devices**: Special section for devices not yet assigned to areas
 - **Device Lists**: Expandable area cards showing devices within each location
 
+### Profile Management ✅ **NEW**
+Comprehensive user account management with security features:
+
+#### **User Dashboard**
+- **Profile Information**: Display username, email, registration date, and user ID
+- **Account Status**: Active status indicator with full access confirmation
+- **Quick Actions**: Centralized access to security and email management
+
+#### **Security Features**
+- **Password Change**: Secure password update with current password verification
+- **Email Update**: Change email address with password confirmation and reCAPTCHA verification
+- **Account Deletion**: Secure account removal with password confirmation and detailed warnings
+
+#### **Safety & User Experience**
+- **Real-time Validation**: Live feedback for password requirements and email format
+- **Elegant Error Handling**: Specific error messages for different failure scenarios
+- **Success Feedback**: Clear confirmation messages with auto-close functionality
+- **Collapsible Interface**: Space-efficient danger zone with smooth animations
+
 ### API Integration
 **Hub Management:**
 - `GET /get_hubs`: Fetch user's claimed hubs
@@ -171,6 +194,13 @@ Comprehensive device monitoring with **real-time updates every 5 seconds**:
 
 **Device & Sensor Data:**
 - `GET /get_devices_latest_data`: Fetch latest readings from all devices/sensors (**refreshed every 5 seconds**)
+- `POST /command_device`: Send control commands to action devices (requires device_data and password)
+
+**User Management:**
+- `GET /me`: Fetch current user profile information
+- `PUT /update_password`: Change user password (requires current_password and new_password)
+- `PUT /update_email`: Update email address (requires new_email, password, and reCAPTCHA token)
+- `DELETE /delete_user`: Permanently delete user account (requires password confirmation)
 
 ## 📱 Mobile Responsive
 
@@ -215,6 +245,11 @@ npm run dev -- --port 3000
 ### Build Issues
 - Clear Next.js cache: `rm -rf .next`
 - Reinstall dependencies: `rm -rf node_modules && npm install`
+
+### reCAPTCHA Issues
+- Ensure `NEXT_PUBLIC_RECAPTCHA_SITE_KEY` is set in `.env.local`
+- For development: The email modal includes a "Get Token (Dev)" button for testing
+- For production: Replace with actual Google reCAPTCHA integration
 
 ---
 

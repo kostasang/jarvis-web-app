@@ -9,7 +9,7 @@ import {
   Settings, 
   Zap, 
   User,
-  HelpCircle,
+  Mail,
   Shield,
   Wrench
 } from 'lucide-react'
@@ -82,6 +82,16 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
     onClose()
   }
 
+  const navigateProfile = () => {
+    router.push('/profile')
+    onClose()
+  }
+
+  const navigateContact = () => {
+    router.push('/contact')
+    onClose()
+  }
+
   const menuItems = [
     {
       icon: Home,
@@ -101,8 +111,8 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
       icon: User,
       label: 'Profile',
       description: 'Manage your account',
-      onClick: () => {}, // TODO: Implement profile
-      available: false
+      onClick: navigateProfile,
+      available: true
     },
     {
       icon: Shield,
@@ -119,11 +129,11 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
       available: false
     },
     {
-      icon: HelpCircle,
-      label: 'Help & Support',
-      description: 'Documentation and support',
-      onClick: () => {}, // TODO: Implement help
-      available: false
+      icon: Mail,
+      label: 'Contact',
+      description: 'Get in touch with the developer',
+      onClick: navigateContact,
+      available: true
     }
   ]
 

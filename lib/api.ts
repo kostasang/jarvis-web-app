@@ -3,9 +3,11 @@ import { LoginCredentials, Token } from '@/types/auth'
 import { HubData, HubApiResponse, ClaimHubRequest, SetHubNicknameRequest } from '@/types/hub'
 import { AreaData, AreaApiResponse, CreateAreaRequest, DeleteAreaRequest, RenameAreaRequest } from '@/types/area'
 import { DeviceData, DeviceLatestDataApiResponse, DeviceHistoryResponse } from '@/types/device'
+import { UserData, User } from '@/types/user'
+import { config } from '@/config/env'
 
-// Configure the base URL - you'll need to update this with your actual backend URL
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
+// Configure the base URL
+const API_BASE_URL = config.apiUrl
 
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
@@ -206,6 +208,48 @@ export const deviceApi = {
         device_data: deviceData,
         device_state: false, // Set to 0 (false) as requested
       },
+    })
+  },
+}
+
+export const userApi = {
+  getMe: async (): Promise<User> => {
+    const response = await apiClient.get('/me')
+    const userData: UserData = response.data
+    
+    // Transform API response to frontend format
+    return {
+      id: userData.user_id,
+      username: userData.username,
+      email: userData.email,
+      dateRegistered: new Date(userData.date_registered),
+    }
+  },
+
+  deleteAccount: async (password: string): Promise<void> => {
+    await apiClient.delete('/delete_user', {
+      params: {
+        password: password
+      }
+    })
+  },
+
+  updatePassword: async (currentPassword: string, newPassword: string): Promise<void> => {
+    await apiClient.put('/update_password', null, {
+      params: {
+        current_password: currentPassword,
+        new_password: newPassword
+      }
+    })
+  },
+
+  updateEmail: async (newEmail: string, password: string, captcha: string): Promise<void> => {
+    await apiClient.put('/update_email', null, {
+      params: {
+        new_email: newEmail,
+        password: password,
+        captcha: captcha
+      }
     })
   },
 }

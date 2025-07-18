@@ -67,8 +67,11 @@ export default function DashboardPage() {
       {/* Header */}
       <header className="bg-dark-800/50 backdrop-blur-sm border-b border-dark-700 sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16 ml-12">
+          <div className="flex justify-between items-center h-16 ml-16">
             <div className="flex items-center">
+              <div className="mr-4 p-2">
+                {/* Invisible spacer to match home button spacing on other pages */}
+              </div>
               <div className="flex items-center">
                 <Zap className="w-8 h-8 text-primary-500 mr-2" />
                 <span className="text-xl font-bold text-white">Jarvis</span>
