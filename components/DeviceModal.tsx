@@ -15,7 +15,8 @@ import {
   Wifi,
   Hash,
   Calendar,
-  Activity
+  Activity,
+  Power
 } from 'lucide-react'
 
 interface DeviceModalProps {
@@ -34,14 +35,50 @@ export default function DeviceModal({ device, isOpen, onClose, onDeviceUpdate, a
   const [areas, setAreas] = useState<AreaData[]>([])
   const [currentAreaId, setCurrentAreaId] = useState<string | undefined>(undefined)
   const [isChangingArea, setIsChangingArea] = useState(false)
+  const [liveDevice, setLiveDevice] = useState<DeviceData | null>(null)
 
   useEffect(() => {
     if (device) {
       setNickname(device.name)
       setCurrentAreaId(device.areaId)
       setIsEditingName(false)
+      setLiveDevice(device) // Initialize live device data
     }
   }, [device])
+
+  // Update nickname and area when live device data changes
+  useEffect(() => {
+    if (liveDevice && !isEditingName) {
+      setNickname(liveDevice.name)
+      setCurrentAreaId(liveDevice.areaId)
+    }
+  }, [liveDevice?.name, liveDevice?.areaId, isEditingName])
+
+  // Periodic refresh of device data while modal is open
+  useEffect(() => {
+    if (!isOpen || !device?.id) return
+
+    const fetchLatestDeviceData = async () => {
+      try {
+        const allDevices = await deviceApi.getDevicesLatestData()
+        const updatedDevice = allDevices.find(d => d.id === device.id)
+        if (updatedDevice) {
+          setLiveDevice(updatedDevice)
+        }
+      } catch (error) {
+        console.error('Failed to fetch latest device data:', error)
+      }
+    }
+
+    // Fetch immediately when modal opens
+    fetchLatestDeviceData()
+
+    // Set up periodic refresh every 5 seconds
+    const interval = setInterval(fetchLatestDeviceData, 5000)
+
+    // Cleanup interval when modal closes or device changes
+    return () => clearInterval(interval)
+  }, [isOpen, device?.id])
 
   useEffect(() => {
     const fetchAreas = async () => {
@@ -60,9 +97,11 @@ export default function DeviceModal({ device, isOpen, onClose, onDeviceUpdate, a
 
   if (!isOpen || !device) return null
 
+  // Use live device data for dynamic values, fallback to original device
+  const currentDevice = liveDevice || device
   const config = getDeviceConfig(device.type)
-  const value = formatDeviceValue(device)
-  const valueColor = getDeviceValueColor(device)
+  const value = formatDeviceValue(currentDevice)
+  const valueColor = getDeviceValueColor(currentDevice)
 
   const getColorClass = (color: string) => {
     switch (color) {
@@ -91,6 +130,21 @@ export default function DeviceModal({ device, isOpen, onClose, onDeviceUpdate, a
     } finally {
       setIsLoading(false)
     }
+  }
+
+  const handleToggleDevice = async () => {
+    if (!currentDevice || currentDevice.latestValue === undefined || currentDevice.latestValue === null) {
+      console.log('Cannot toggle device: no current value')
+      return
+    }
+
+    // Toggle binary value: 0 -> 1, 1 -> 0
+    const targetValue = currentDevice.latestValue === 0 ? 1 : 0
+    
+    console.log(`Toggle device ${currentDevice.name} (${device.id}): ${currentDevice.latestValue} -> ${targetValue}`)
+    
+    // TODO: Replace with actual API call when ready
+    // await deviceApi.setDeviceValue(device.id, targetValue)
   }
 
   const handleCancelEdit = () => {
@@ -228,13 +282,29 @@ export default function DeviceModal({ device, isOpen, onClose, onDeviceUpdate, a
                   Live
                 </div>
               </div>
-              <div className={`text-4xl font-bold ${getColorClass(valueColor)} mb-2`}>
-                {value}
+              <div className="flex items-center justify-between mb-2">
+                <div className={`text-4xl font-bold ${getColorClass(valueColor)}`}>
+                  {value}
+                </div>
+                {/* Control Button - Only for control devices */}
+                {config.category === 'control' && currentDevice.latestValue !== undefined && currentDevice.latestValue !== null && (
+                  <button
+                    onClick={handleToggleDevice}
+                    className={`p-3 rounded-xl transition-all transform hover:scale-105 ${
+                      currentDevice.latestValue === 1 
+                        ? 'bg-yellow-500/20 text-yellow-400 hover:bg-yellow-500/30 shadow-lg shadow-yellow-500/20' 
+                        : 'bg-gray-500/20 text-gray-400 hover:bg-gray-500/30 shadow-lg shadow-gray-500/20'
+                    }`}
+                    title={`Turn ${currentDevice.latestValue === 1 ? 'Off' : 'On'}`}
+                  >
+                    <Power className="w-6 h-6" />
+                  </button>
+                )}
               </div>
-              {device.latestTimestamp && (
+              {currentDevice.latestTimestamp && (
                 <div className="flex items-center gap-2 text-sm text-dark-400">
                   <Clock className="w-4 h-4" />
-                  <span>Last updated: {formatTimestamp(device.latestTimestamp)}</span>
+                  <span>Last updated: {formatTimestamp(currentDevice.latestTimestamp)}</span>
                 </div>
               )}
             </div>
@@ -334,7 +404,7 @@ export default function DeviceModal({ device, isOpen, onClose, onDeviceUpdate, a
                   <Calendar className="w-4 h-4" />
                   Data History
                 </h4>
-                <DeviceHistoryChart device={device} />
+                <DeviceHistoryChart device={currentDevice} />
               </div>
             </div>
 
@@ -344,10 +414,10 @@ export default function DeviceModal({ device, isOpen, onClose, onDeviceUpdate, a
               <div className="text-xs text-dark-400 font-mono bg-dark-900/50 p-3 rounded overflow-x-auto">
                 <div>Device ID: {device.id}</div>
                 <div>Hub ID: {device.hubId}</div>
-                <div>Area ID: {device.areaId || 'null'}</div>
+                <div>Area ID: {currentDevice.areaId || 'null'}</div>
                 <div>Type: {device.type}</div>
-                <div>Latest Value: {device.latestValue}</div>
-                <div>Timestamp: {device.latestTimestamp}</div>
+                <div>Latest Value: {currentDevice.latestValue}</div>
+                <div>Timestamp: {currentDevice.latestTimestamp}</div>
               </div>
             </div>
           </div>

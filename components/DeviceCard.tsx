@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { DeviceData } from '@/types/device'
 import { getDeviceConfig, formatDeviceValue, getDeviceValueColor } from '@/utils/deviceUtils'
-import { Clock, Edit3, Check, X } from 'lucide-react'
+import { Clock, Edit3, Check, X, Power } from 'lucide-react'
 import { deviceApi } from '@/lib/api'
 
 interface DeviceCardProps {
@@ -61,6 +61,23 @@ export default function DeviceCard({ device, showArea = false, areaName, onDevic
     if (!isEditingName && onDeviceClick) {
       onDeviceClick(device, areaName)
     }
+  }
+
+  const handleToggleDevice = async (e: React.MouseEvent) => {
+    e.stopPropagation() // Prevent card click
+    
+    if (device.latestValue === undefined || device.latestValue === null) {
+      console.log('Cannot toggle device: no current value')
+      return
+    }
+
+    // Toggle binary value: 0 -> 1, 1 -> 0
+    const targetValue = device.latestValue === 0 ? 1 : 0
+    
+    console.log(`Toggle device ${device.name} (${device.id}): ${device.latestValue} -> ${targetValue}`)
+    
+    // TODO: Replace with actual API call when ready
+    // await deviceApi.setDeviceValue(device.id, targetValue)
   }
 
   return (
@@ -132,8 +149,24 @@ export default function DeviceCard({ device, showArea = false, areaName, onDevic
 
       {/* Value */}
       <div className="mb-3">
-        <div className={`text-lg font-bold ${getColorClass(valueColor)}`}>
-          {value}
+        <div className="flex items-center justify-between">
+          <div className={`text-lg font-bold ${getColorClass(valueColor)}`}>
+            {value}
+          </div>
+          {/* Control Button - Only for control devices */}
+          {config.category === 'control' && device.latestValue !== undefined && device.latestValue !== null && (
+            <button
+              onClick={handleToggleDevice}
+              className={`p-2 rounded-lg transition-colors ${
+                device.latestValue === 1 
+                  ? 'bg-yellow-500/20 text-yellow-400 hover:bg-yellow-500/30' 
+                  : 'bg-gray-500/20 text-gray-400 hover:bg-gray-500/30'
+              }`}
+              title={`Turn ${device.latestValue === 1 ? 'Off' : 'On'}`}
+            >
+              <Power className="w-4 h-4" />
+            </button>
+          )}
         </div>
         {device.latestTimestamp && (
           <div className="flex items-center gap-1 text-xs text-dark-400 mt-1">

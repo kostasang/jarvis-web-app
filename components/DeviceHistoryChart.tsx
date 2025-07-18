@@ -542,36 +542,104 @@ export default function DeviceHistoryChart({ device }: DeviceHistoryChartProps) 
       {isDiscreteDevice ? (
         <div className="space-y-4">
           {/* Time Window Slider */}
-          <div className="bg-dark-800 rounded-lg border border-dark-700 p-4">
-            <div className="space-y-4">
-              <div className="flex flex-col gap-3">
-                <label className="text-sm text-white font-medium">Time Window (Hours)</label>
-                <div className="flex items-center gap-4">
-                  <span className="text-xs text-dark-400 w-8">0h</span>
-                  <input
-                    type="range"
-                    min="1"
-                    max="48"
-                    value={timelineHours}
-                    onChange={(e) => setTimelineHours(Number(e.target.value))}
-                    className="flex-1 h-2 bg-dark-700 rounded-lg appearance-none cursor-pointer"
-                    style={{
-                      background: `linear-gradient(to right, #3B82F6 0%, #3B82F6 ${(timelineHours / 48) * 100}%, #374151 ${(timelineHours / 48) * 100}%, #374151 100%)`
-                    }}
-                  />
-                  <span className="text-xs text-dark-400 w-10">48h</span>
+          <div className="glass-card p-6">
+            <div className="space-y-6">
+              <div className="flex flex-col gap-4">
+                <div className="flex items-center justify-between">
+                  <label className="text-sm font-semibold text-white flex items-center gap-2">
+                    <svg className="w-4 h-4 text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Time Window
+                  </label>
+                  <div className="px-3 py-1 bg-primary-500/20 border border-primary-500/30 rounded-full">
+                    <span className="text-sm font-bold text-primary-400">{timelineHours}h</span>
+                  </div>
                 </div>
-                <div className="text-center">
-                  <span className="text-lg font-bold text-primary-400">{timelineHours}</span>
-                  <span className="text-sm text-dark-400 ml-1">
-                    hour{timelineHours !== 1 ? 's' : ''} ago to now
+                
+                <div className="relative">
+                  <div className="flex items-center gap-4">
+                    <span className="text-xs text-dark-400 font-medium min-w-[24px]">1h</span>
+                    <div className="flex-1 relative">
+                      <input
+                        type="range"
+                        min="1"
+                        max="48"
+                        value={timelineHours}
+                        onChange={(e) => setTimelineHours(Number(e.target.value))}
+                        className="w-full h-2 bg-dark-700/50 rounded-full appearance-none cursor-pointer backdrop-blur-sm border border-dark-600/50 focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500/50 transition-all duration-200"
+                        style={{
+                          background: `linear-gradient(to right, 
+                            #3B82F6 0%, 
+                            #3B82F6 ${(timelineHours / 48) * 100}%, 
+                            rgba(55, 65, 81, 0.5) ${(timelineHours / 48) * 100}%, 
+                            rgba(55, 65, 81, 0.5) 100%)`
+                        }}
+                      />
+                      {/* Custom thumb styling via CSS */}
+                      <style jsx>{`
+                        input[type="range"]::-webkit-slider-thumb {
+                          appearance: none;
+                          height: 20px;
+                          width: 20px;
+                          border-radius: 50%;
+                          background: linear-gradient(135deg, #3B82F6, #1D4ED8);
+                          cursor: pointer;
+                          border: 2px solid rgba(59, 130, 246, 0.3);
+                          box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4), 0 0 0 0 rgba(59, 130, 246, 0.4);
+                          transition: all 0.2s ease;
+                        }
+                        input[type="range"]::-webkit-slider-thumb:hover {
+                          transform: scale(1.1);
+                          box-shadow: 0 6px 16px rgba(59, 130, 246, 0.6), 0 0 0 4px rgba(59, 130, 246, 0.2);
+                        }
+                        input[type="range"]::-moz-range-thumb {
+                          height: 20px;
+                          width: 20px;
+                          border-radius: 50%;
+                          background: linear-gradient(135deg, #3B82F6, #1D4ED8);
+                          cursor: pointer;
+                          border: 2px solid rgba(59, 130, 246, 0.3);
+                          box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+                          transition: all 0.2s ease;
+                        }
+                        input[type="range"]::-moz-range-thumb:hover {
+                          transform: scale(1.1);
+                          box-shadow: 0 6px 16px rgba(59, 130, 246, 0.6);
+                        }
+                      `}</style>
+                    </div>
+                    <span className="text-xs text-dark-400 font-medium min-w-[28px]">48h</span>
+                  </div>
+                  
+                  {/* Progress indicators */}
+                  <div className="flex justify-between mt-2 px-2">
+                    {[6, 12, 24, 36].map(hour => (
+                      <div key={hour} className="flex flex-col items-center">
+                        <div className={`w-1 h-1 rounded-full transition-colors ${
+                          timelineHours >= hour ? 'bg-primary-400' : 'bg-dark-600'
+                        }`} />
+                        <span className="text-xs text-dark-500 mt-1">{hour}h</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                
+                <div className="text-center bg-gradient-to-r from-primary-600/10 to-secondary-600/10 rounded-lg p-3 border border-primary-500/20">
+                  <span className="text-sm text-dark-300">
+                    Showing data from <span className="text-primary-400 font-semibold">{timelineHours} hour{timelineHours !== 1 ? 's' : ''} ago</span> to <span className="text-primary-400 font-semibold">now</span>
                   </span>
                 </div>
               </div>
             </div>
             
-            <div className="text-xs text-dark-400 text-center bg-dark-900 rounded px-3 py-2 mt-4">
-              💡 <strong>Tip:</strong> Drag the slider to select how many hours back from now to display
+            <div className="mt-4 p-3 bg-dark-900/50 rounded-lg border border-dark-700/50">
+              <div className="flex items-center gap-2 text-xs text-dark-400">
+                <svg className="w-4 h-4 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                </svg>
+                <span><strong>Tip:</strong> Drag the slider to select how many hours back from now to display</span>
+              </div>
             </div>
           </div>
 
