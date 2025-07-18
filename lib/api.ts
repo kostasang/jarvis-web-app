@@ -198,6 +198,16 @@ export const deviceApi = {
     })
     return response.data
   },
+
+  commandDevice: async (deviceId: string, deviceData: number): Promise<void> => {
+    await apiClient.post('/command_device', null, {
+      params: {
+        device_id: deviceId,
+        device_data: deviceData,
+        device_state: false, // Set to 0 (false) as requested
+      },
+    })
+  },
 }
 
 export default apiClient 

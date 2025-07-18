@@ -76,8 +76,12 @@ export default function DeviceCard({ device, showArea = false, areaName, onDevic
     
     console.log(`Toggle device ${device.name} (${device.id}): ${device.latestValue} -> ${targetValue}`)
     
-    // TODO: Replace with actual API call when ready
-    // await deviceApi.setDeviceValue(device.id, targetValue)
+    try {
+      await deviceApi.commandDevice(device.id, targetValue)
+      console.log('Device command sent successfully')
+    } catch (error) {
+      console.error('Failed to send device command:', error)
+    }
   }
 
   return (

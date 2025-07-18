@@ -143,8 +143,12 @@ export default function DeviceModal({ device, isOpen, onClose, onDeviceUpdate, a
     
     console.log(`Toggle device ${currentDevice.name} (${device.id}): ${currentDevice.latestValue} -> ${targetValue}`)
     
-    // TODO: Replace with actual API call when ready
-    // await deviceApi.setDeviceValue(device.id, targetValue)
+    try {
+      await deviceApi.commandDevice(device.id, targetValue)
+      console.log('Device command sent successfully')
+    } catch (error) {
+      console.error('Failed to send device command:', error)
+    }
   }
 
   const handleCancelEdit = () => {

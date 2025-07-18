@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { LogOut, Plus, Home, Zap, AlertCircle } from 'lucide-react'
-import { authApi, hubApi } from '@/lib/api'
+import { Plus, Home, Zap, AlertCircle } from 'lucide-react'
+import { hubApi } from '@/lib/api'
 import { HubData } from '@/types/hub'
 import HubCard from '@/components/HubCard'
 import ClaimHubModal from '@/components/ClaimHubModal'
@@ -45,16 +45,7 @@ export default function DashboardPage() {
     loadDashboard()
   }, [router])
 
-  const handleLogout = async () => {
-    try {
-      await authApi.logout()
-      router.push('/login')
-    } catch (error) {
-      console.error('Logout error:', error)
-      localStorage.removeItem('jarvis_token')
-      router.push('/login')
-    }
-  }
+
 
   const handleClaimSuccess = async () => {
     await fetchHubs()
@@ -76,7 +67,7 @@ export default function DashboardPage() {
       {/* Header */}
       <header className="bg-dark-800/50 backdrop-blur-sm border-b border-dark-700 sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
+          <div className="flex justify-between items-center h-16 ml-12">
             <div className="flex items-center">
               <div className="flex items-center">
                 <Zap className="w-8 h-8 text-primary-500 mr-2" />
@@ -86,13 +77,7 @@ export default function DashboardPage() {
                 <span className="text-dark-400">Smart Home Control Center</span>
               </div>
             </div>
-            <button
-              onClick={handleLogout}
-              className="flex items-center text-dark-300 hover:text-white transition-colors"
-            >
-              <LogOut className="w-5 h-5 mr-2" />
-              <span className="hidden sm:block">Logout</span>
-            </button>
+
           </div>
         </div>
       </header>
