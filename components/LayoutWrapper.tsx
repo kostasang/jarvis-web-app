@@ -22,13 +22,13 @@ export default function LayoutWrapper({ children }: LayoutWrapperProps) {
 
   // Close sidebar when not authenticated or on login page
   useEffect(() => {
-    if (!isAuthenticated || pathname === '/login') {
+    if (!isAuthenticated || pathname === '/login' || pathname === '/reset-password-confirm') {
       setIsSidebarOpen(false)
     }
   }, [isAuthenticated, pathname])
 
-  // Don't show sidebar on login page
-  const showSidebar = isAuthenticated && pathname !== '/login'
+  // Don't show sidebar on login page and reset password confirmation page
+  const showSidebar = isAuthenticated && pathname !== '/login' && pathname !== '/reset-password-confirm'
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen)

@@ -3,6 +3,22 @@ export interface LoginCredentials {
   password: string
 }
 
+export interface SignupCredentials {
+  username: string
+  email: string
+  password: string
+  confirmPassword: string
+}
+
+export interface ForgotPasswordRequest {
+  email: string
+}
+
+export interface ResetPasswordRequest {
+  verification_token: string
+  new_password: string
+}
+
 export interface Token {
   access_token: string
   token_type: string

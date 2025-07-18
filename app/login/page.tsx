@@ -2,14 +2,18 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Eye, EyeOff, Zap, Shield, Home } from 'lucide-react'
+import { Eye, EyeOff, Zap, Shield, Home, Mail, UserPlus } from 'lucide-react'
 import { authApi } from '@/lib/api'
+import SignupModal from '@/components/SignupModal'
+import ForgotPasswordModal from '@/components/ForgotPasswordModal'
 
 export default function LoginPage() {
   const [credentials, setCredentials] = useState({ username: '', password: '' })
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
+  const [isSignupModalOpen, setIsSignupModalOpen] = useState(false)
+  const [isForgotPasswordModalOpen, setIsForgotPasswordModalOpen] = useState(false)
   const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -26,6 +30,15 @@ export default function LoginPage() {
     } finally {
       setIsLoading(false)
     }
+  }
+
+  const handleContactClick = () => {
+    router.push('/contact')
+  }
+
+  const handleSignupSuccess = () => {
+    // Clear any existing errors and optionally show a success message
+    setError('')
   }
 
   return (
@@ -94,6 +107,7 @@ export default function LoginPage() {
               </div>
             </div>
 
+            {/* Sign In Button */}
             <button
               type="submit"
               disabled={isLoading}
@@ -107,6 +121,27 @@ export default function LoginPage() {
               ) : (
                 'Sign In'
               )}
+            </button>
+
+            {/* Forgot Password Link */}
+            <div className="text-center">
+              <button
+                type="button"
+                onClick={() => setIsForgotPasswordModalOpen(true)}
+                className="text-sm text-primary-400 hover:text-primary-300 transition-colors"
+              >
+                Forgot your password?
+              </button>
+            </div>
+
+            {/* Sign Up Button */}
+            <button
+              type="button"
+              onClick={() => setIsSignupModalOpen(true)}
+              className="w-full btn-secondary flex items-center justify-center gap-2"
+            >
+              <UserPlus className="w-4 h-4" />
+              Create New Account
             </button>
           </form>
 
@@ -126,10 +161,30 @@ export default function LoginPage() {
         </div>
 
         {/* Footer */}
-        <div className="text-center mt-8 text-dark-400 text-sm">
+        <div className="text-center mt-8 text-dark-400 text-sm space-y-3">
+          <button
+            onClick={handleContactClick}
+            className="flex items-center justify-center gap-2 text-primary-400 hover:text-primary-300 transition-colors mx-auto"
+          >
+            <Mail className="w-4 h-4" />
+            Need help? Contact Support
+          </button>
           <p>© 2024 Jarvis Smart Home System</p>
         </div>
       </div>
+
+      {/* Signup Modal */}
+      <SignupModal
+        isOpen={isSignupModalOpen}
+        onClose={() => setIsSignupModalOpen(false)}
+        onSuccess={handleSignupSuccess}
+      />
+
+      {/* Forgot Password Modal */}
+      <ForgotPasswordModal
+        isOpen={isForgotPasswordModalOpen}
+        onClose={() => setIsForgotPasswordModalOpen(false)}
+      />
     </div>
   )
 } 

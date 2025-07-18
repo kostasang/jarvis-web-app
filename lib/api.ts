@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { LoginCredentials, Token } from '@/types/auth'
+import { LoginCredentials, SignupCredentials, ForgotPasswordRequest, ResetPasswordRequest, Token } from '@/types/auth'
 import { HubData, HubApiResponse, ClaimHubRequest, SetHubNicknameRequest } from '@/types/hub'
 import { AreaData, AreaApiResponse, CreateAreaRequest, DeleteAreaRequest, RenameAreaRequest } from '@/types/area'
 import { DeviceData, DeviceLatestDataApiResponse, DeviceHistoryResponse } from '@/types/device'
@@ -47,6 +47,38 @@ export const authApi = {
       },
     })
     return response.data
+  },
+
+  signup: async (credentials: SignupCredentials, captchaToken: string): Promise<{ message: string }> => {
+    const params = new URLSearchParams({
+      username: credentials.username,
+      password: credentials.password,
+      email: credentials.email,
+      captcha: captchaToken,
+    })
+    
+    const response = await apiClient.post(`/create_user?${params.toString()}`)
+    return response.data
+  },
+
+  forgotPassword: async (request: ForgotPasswordRequest): Promise<{ message: string }> => {
+    const params = new URLSearchParams({
+      email: request.email,
+    })
+    
+    const response = await apiClient.post(`/declare_lost_password?${params.toString()}`)
+    // The endpoint returns 204 with no content, so we create our own success message
+    return { message: 'Password reset request submitted successfully' }
+  },
+
+  resetPassword: async (request: ResetPasswordRequest): Promise<{ message: string }> => {
+    const params = new URLSearchParams({
+      verification_token: request.verification_token,
+      new_password: request.new_password,
+    })
+    
+    const response = await apiClient.put(`/reset_password?${params.toString()}`)
+    return response.data || { message: 'Password reset successfully' }
   },
 
   logout: async (): Promise<void> => {

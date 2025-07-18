@@ -161,7 +161,7 @@ export default function ReCaptcha({ onVerify, onExpired, onError, disabled = fal
   }
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-2" style={{ overflow: 'visible' }}>
       {isLoading && (
         <div className="flex items-center gap-2 p-3 bg-dark-700/30 rounded border">
           <div className="w-4 h-4 border-2 border-primary-500 border-t-transparent rounded-full animate-spin"></div>
@@ -171,7 +171,12 @@ export default function ReCaptcha({ onVerify, onExpired, onError, disabled = fal
       
       <div 
         ref={containerRef}
-        className={`${isLoading ? 'hidden' : 'block'} ${disabled ? 'opacity-50 pointer-events-none' : ''}`}
+        className={`${isLoading ? 'hidden' : 'block'} ${disabled ? 'opacity-50 pointer-events-none' : 'pointer-events-auto'}`}
+        style={{ 
+          overflow: 'visible',
+          position: 'relative',
+          zIndex: 1000
+        }}
       />
       
       {!isLoading && !disabled && (
