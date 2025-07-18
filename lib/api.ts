@@ -4,6 +4,7 @@ import { HubData, HubApiResponse, ClaimHubRequest, SetHubNicknameRequest } from 
 import { AreaData, AreaApiResponse, CreateAreaRequest, DeleteAreaRequest, RenameAreaRequest } from '@/types/area'
 import { DeviceData, DeviceLatestDataApiResponse, DeviceHistoryResponse } from '@/types/device'
 import { UserData, User } from '@/types/user'
+import { CameraData, CameraApiResponse, ClaimCameraRequest, SetCameraNicknameRequest, UnclaimCameraRequest } from '@/types/camera'
 import { config } from '@/config/env'
 
 // Configure the base URL
@@ -282,6 +283,46 @@ export const userApi = {
         password: password,
         captcha: captcha
       }
+    })
+  },
+}
+
+export const cameraApi = {
+  getCameras: async (): Promise<CameraData[]> => {
+    const response = await apiClient.get('/cameras/get_cameras')
+    const camerasApiResponse: CameraApiResponse[] = response.data
+    
+    // Transform API response to frontend format
+    return camerasApiResponse.map(camera => ({
+      id: camera.camera_id,
+      nickname: camera.camera_nickname
+    }))
+  },
+
+  claimCamera: async (request: ClaimCameraRequest): Promise<void> => {
+    await apiClient.post('/cameras/claim_camera', null, {
+      params: {
+        camera_id: request.camera_id,
+        verification_code: request.verification_code,
+        nickname: request.nickname,
+      },
+    })
+  },
+
+  setCameraNickname: async (request: SetCameraNicknameRequest): Promise<void> => {
+    await apiClient.post('/cameras/set_camera_nickname', null, {
+      params: {
+        camera_id: request.camera_id,
+        nickname: request.nickname,
+      },
+    })
+  },
+
+  unclaimCamera: async (request: UnclaimCameraRequest): Promise<void> => {
+    await apiClient.post('/cameras/unclaim_camera', null, {
+      params: {
+        camera_id: request.camera_id,
+      },
     })
   },
 }

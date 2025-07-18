@@ -11,7 +11,8 @@ import {
   User,
   Mail,
   Shield,
-  Wrench
+  Wrench,
+  Camera
 } from 'lucide-react'
 import { authApi } from '@/lib/api'
 
@@ -92,12 +93,24 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
     onClose()
   }
 
+  const navigateCameras = () => {
+    router.push('/cameras')
+    onClose()
+  }
+
   const menuItems = [
     {
       icon: Home,
       label: 'Dashboard',
       description: 'Return to main dashboard',
       onClick: navigateHome,
+      available: true
+    },
+    {
+      icon: Camera,
+      label: 'Cameras',
+      description: 'Manage your security cameras',
+      onClick: navigateCameras,
       available: true
     },
     {
