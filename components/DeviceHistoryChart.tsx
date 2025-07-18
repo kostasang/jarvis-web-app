@@ -34,8 +34,27 @@ export default function DeviceHistoryChart({ device }: DeviceHistoryChartProps) 
   const [selectionEnd, setSelectionEnd] = useState<number | null>(null)
   const [isMobile, setIsMobile] = useState(false)
   const [lastTouchTime, setLastTouchTime] = useState(0)
+  const [showTimeline, setShowTimeline] = useState(false)
+  const [timelineHours, setTimelineHours] = useState(24) // Default 24 hours
+  const [timelineData, setTimelineData] = useState<ChartDataPoint[]>([])
+  const [isLoadingTimeline, setIsLoadingTimeline] = useState(false)
 
   const config = getDeviceConfig(device.type)
+  const isDiscreteDevice = config.values === 'binary' || config.valueMap
+
+
+
+  // Initialize timeline and automatically show timeline for discrete devices
+  useEffect(() => {
+    // Automatically show timeline for discrete devices
+    if (isDiscreteDevice) {
+      setShowTimeline(true)
+      // Auto-fetch timeline data for discrete devices
+      setTimeout(() => {
+        fetchTimelineData()
+      }, 100)
+    }
+  }, [isDiscreteDevice])
 
   // Intelligent data downsampling based on time window and zoom level
   const downsampleData = (data: ChartDataPoint[], targetPoints: number): ChartDataPoint[] => {
@@ -200,9 +219,81 @@ export default function DeviceHistoryChart({ device }: DeviceHistoryChartProps) 
     }
   }
 
+  const fetchTimelineData = async () => {
+    if (!device.id || timelineHours <= 0) return
+
+    setIsLoadingTimeline(true)
+    setError('')
+    
+    try {
+      const now = new Date()
+      const startTime = new Date(now.getTime() - timelineHours * 60 * 60 * 1000)
+      
+      // Cap at 48 hours for performance
+      const hours = Math.min(timelineHours, 48)
+      
+      const response = await deviceApi.getDeviceHistory(device.id, hours)
+      
+      // Process and filter data for the exact time range
+      const processedData: ChartDataPoint[] = response.history
+        .map(point => {
+          const timestamp = new Date(point.time).getTime()
+          const value = point.device_data ?? point.device_state ?? null
+          const date = new Date(point.time)
+          
+          const formattedTime = date.toLocaleTimeString('en-GB', {
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false
+          })
+          
+          const formattedDate = date.toLocaleDateString('en-GB', {
+            day: '2-digit',
+            month: '2-digit'
+          })
+          
+          return {
+            time: point.time,
+            timestamp,
+            value,
+            formattedTime,
+            formattedDate,
+            displayLabel: `${formattedDate}\n${formattedTime}`
+          }
+        })
+        .filter(point => 
+          point.timestamp && 
+          !isNaN(point.timestamp) && 
+          point.timestamp >= startTime.getTime() &&
+          (point.value === null || !isNaN(point.value))
+        )
+        .sort((a, b) => b.timestamp - a.timestamp) // Most recent first
+      
+      setTimelineData(processedData)
+    } catch (err) {
+      console.error('Failed to fetch timeline data:', err)
+      setError('Failed to load timeline data')
+    } finally {
+      setIsLoadingTimeline(false)
+    }
+  }
+
   useEffect(() => {
     fetchHistory(timeWindow)
   }, [device.id, timeWindow])
+
+  // Debounced fetch timeline data for discrete devices when device changes or hours change
+  useEffect(() => {
+    if (isDiscreteDevice && device.id && timelineHours > 0) {
+      // Debounce the fetch to avoid excessive requests during slider interaction
+      const timeoutId = setTimeout(() => {
+        fetchTimelineData()
+      }, 300) // Wait 300ms after user stops changing the slider
+
+      return () => clearTimeout(timeoutId)
+    }
+  }, [device.id, isDiscreteDevice, timelineHours])
 
   // Reset zoom when time window changes
   useEffect(() => {
@@ -420,231 +511,338 @@ export default function DeviceHistoryChart({ device }: DeviceHistoryChartProps) 
 
   return (
     <div className="space-y-4">
-      {/* Time Window Selector and Zoom Controls */}
+      {/* Time Window Selector and View Toggle */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <TrendingUp className="w-4 h-4 text-primary-400" />
           <span className="text-sm font-medium text-white">Historical Data</span>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-xs text-dark-400">Time Window:</span>
-          <select
-            value={timeWindow}
-            onChange={(e) => handleTimeWindowChange(Number(e.target.value))}
-            className="input-field !py-1 !px-2 text-xs"
-            disabled={isLoading}
-          >
-            {timeWindowOptions.map(option => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
+          {!isDiscreteDevice && (
+            <>
+              <span className="text-xs text-dark-400">Time Window:</span>
+              <select
+                value={timeWindow}
+                onChange={(e) => handleTimeWindowChange(Number(e.target.value))}
+                className="input-field !py-1 !px-2 text-xs"
+                disabled={isLoading}
+              >
+                {timeWindowOptions.map(option => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </>
+          )}
         </div>
       </div>
 
-      {/* Chart */}
-      <div 
-        className="h-64 w-full select-none" 
-        style={{ 
-          userSelect: 'none', 
-          WebkitUserSelect: 'none',
-          MozUserSelect: 'none',
-          msUserSelect: 'none'
-        }}
-      >
-        {isLoading ? (
-          <div className="flex items-center justify-center h-full">
-            <div className="flex items-center gap-2 text-dark-400">
-              <div className="animate-spin rounded-full h-5 w-5 border-b border-primary-500"></div>
-              Loading historical data...
+      {/* Timeline View */}
+      {isDiscreteDevice ? (
+        <div className="space-y-4">
+          {/* Time Window Slider */}
+          <div className="bg-dark-800 rounded-lg border border-dark-700 p-4">
+            <div className="space-y-4">
+              <div className="flex flex-col gap-3">
+                <label className="text-sm text-white font-medium">Time Window (Hours)</label>
+                <div className="flex items-center gap-4">
+                  <span className="text-xs text-dark-400 w-8">0h</span>
+                  <input
+                    type="range"
+                    min="1"
+                    max="48"
+                    value={timelineHours}
+                    onChange={(e) => setTimelineHours(Number(e.target.value))}
+                    className="flex-1 h-2 bg-dark-700 rounded-lg appearance-none cursor-pointer"
+                    style={{
+                      background: `linear-gradient(to right, #3B82F6 0%, #3B82F6 ${(timelineHours / 48) * 100}%, #374151 ${(timelineHours / 48) * 100}%, #374151 100%)`
+                    }}
+                  />
+                  <span className="text-xs text-dark-400 w-10">48h</span>
+                </div>
+                <div className="text-center">
+                  <span className="text-lg font-bold text-primary-400">{timelineHours}</span>
+                  <span className="text-sm text-dark-400 ml-1">
+                    hour{timelineHours !== 1 ? 's' : ''} ago to now
+                  </span>
+                </div>
+              </div>
+            </div>
+            
+            <div className="text-xs text-dark-400 text-center bg-dark-900 rounded px-3 py-2 mt-4">
+              💡 <strong>Tip:</strong> Drag the slider to select how many hours back from now to display
             </div>
           </div>
-        ) : chartData.length > 0 ? (
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart 
-              key={`chart-${timeWindow}`}
-              data={chartData} 
-              margin={{ top: 10, right: 10, left: 10, bottom: 30 }}
-              onMouseDown={handleMouseDown}
-              onMouseMove={handleMouseMove}
-              onMouseUp={handleMouseUp}
-              onClick={isMobile ? handleSelectionStart : undefined}
-              style={{ userSelect: 'none' }}
-            >
-              <CartesianGrid strokeDasharray="3 3" stroke="#374151" opacity={0.3} />
-              <XAxis 
-                dataKey="formattedTime"
-                stroke="#9CA3AF"
-                fontSize={11}
-                tickLine={false}
-                axisLine={false}
-                interval="preserveStartEnd"
-              />
-              <YAxis 
-                stroke="#9CA3AF"
-                fontSize={11}
-                tickLine={false}
-                axisLine={false}
-                tickFormatter={(value) => 
-                  config.values === 'continuous' 
-                    ? `${value}${config.unit || ''}` 
-                    : `${value}`
-                }
-              />
-              <Tooltip
-                contentStyle={{
-                  backgroundColor: '#1F2937',
-                  border: '1px solid #374151',
-                  borderRadius: '8px',
-                  color: '#F9FAFB'
-                }}
-                labelStyle={{ color: '#9CA3AF' }}
-                formatter={(value) => [formatTooltipValue(value as number | null), config.description]}
-                labelFormatter={(label, payload) => {
-                  if (payload && payload[0] && payload[0].payload) {
-                    const data = payload[0].payload as ChartDataPoint
-                    return `${data.formattedDate} at ${data.formattedTime}`
-                  }
-                  return `Time: ${label}`
-                }}
-                cursor={{
-                  stroke: getLineColor(),
-                  strokeWidth: 1,
-                  strokeDasharray: '3 3'
-                }}
-                animationDuration={0}
-              />
-              <Line
-                type="monotone"
-                dataKey="value"
-                stroke={getLineColor()}
-                strokeWidth={2}
-                dot={chartData.length <= 50 ? { fill: getLineColor(), strokeWidth: 0, r: 3 } : false}
-                activeDot={{ r: 5, fill: getLineColor() }}
-                connectNulls={false}
-              />
-              
-              {/* Selection indicators */}
-              {isSelecting && selectionStart !== null && (
-                <ReferenceLine
-                  x={chartData[selectionStart]?.formattedTime}
-                  stroke={getLineColor()}
-                  strokeWidth={2}
-                  strokeDasharray="4 4"
-                />
-              )}
-              {isSelecting && selectionEnd !== null && (
-                <ReferenceLine
-                  x={chartData[selectionEnd]?.formattedTime}
-                  stroke={getLineColor()}
-                  strokeWidth={2}
-                  strokeDasharray="4 4"
-                />
-              )}
-  
-            </LineChart>
-          </ResponsiveContainer>
-        ) : (
-          <div className="flex items-center justify-center h-full text-dark-400">
-            <div className="text-center">
-              <Clock className="w-8 h-8 mx-auto mb-2 opacity-50" />
-              <p className="text-sm">No historical data available</p>
-              <p className="text-xs mt-1">Try selecting a different time window</p>
-            </div>
-          </div>
-        )}
-      </div>
 
-      {/* Zoom Controls */}
-      {isZoomed && (
-        <div className="flex justify-center items-center gap-4 pb-2">
-          <div className="flex items-center gap-1">
-            <ZoomIn className="w-3 h-3 text-green-400" />
-            <span className="text-xs text-green-400">Zoomed View</span>
+          {/* Timeline Data */}
+          <div className="bg-dark-800 rounded-lg border border-dark-700">
+            <div className="p-3 border-b border-dark-700">
+              <h4 className="text-sm font-medium text-white">State Changes</h4>
+              <p className="text-xs text-dark-400">
+                {timelineData.length} events found
+              </p>
+            </div>
+            
+            {isLoadingTimeline ? (
+              <div className="flex items-center justify-center py-8">
+                <div className="flex items-center gap-2 text-dark-400">
+                  <div className="animate-spin rounded-full h-5 w-5 border-b border-primary-500"></div>
+                  Loading timeline data...
+                </div>
+              </div>
+            ) : timelineData.length > 0 ? (
+              <div className="max-h-64 overflow-y-auto">
+                {timelineData.map((point, index) => {
+                  const date = new Date(point.timestamp)
+                  const isStateChange = index === 0 || timelineData[index - 1].value !== point.value
+                  
+                  return (
+                    <div 
+                      key={`${point.timestamp}-${index}`}
+                      className={`px-3 py-2 border-b border-dark-700 last:border-b-0 ${
+                        isStateChange ? 'bg-dark-700/50' : ''
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className={`w-2 h-2 rounded-full ${
+                            isStateChange ? getLineColor() : 'bg-dark-600'
+                          }`} style={{
+                            backgroundColor: isStateChange ? getLineColor() : undefined
+                          }} />
+                          <div>
+                            <div className="text-sm text-white">
+                              {formatTooltipValue(point.value)}
+                            </div>
+                            <div className="text-xs text-dark-400">
+                              {date.toLocaleDateString('en-GB')} at {point.formattedTime}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            ) : (
+              <div className="flex items-center justify-center py-8 text-dark-400">
+                <div className="text-center">
+                  <Clock className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                  <p className="text-sm">No state changes found</p>
+                  <p className="text-xs mt-1">Try adjusting the time range</p>
+                </div>
+              </div>
+            )}
           </div>
-          <button
-            onClick={resetZoom}
-            className="px-3 py-1 bg-dark-700 hover:bg-dark-600 text-blue-400 hover:text-blue-300 text-xs rounded-md flex items-center gap-1 border border-dark-600"
-          >
-            <RotateCcw className="w-3 h-3" />
-            Reset Zoom
-          </button>
         </div>
-      )}
-
-      {/* Data Summary */}
-      {chartData.length > 0 && (
-        <div className="space-y-3 pt-4 border-t border-dark-700">
-          <div className="grid grid-cols-3 gap-4">
-            <div className="text-center">
-              <div className="text-sm font-semibold text-white">
-                {chartData.length}
+      ) : (
+        /* Chart View for Continuous Devices */
+        <>
+          {/* Chart */}
+          <div 
+            className="h-64 w-full select-none" 
+            style={{ 
+              userSelect: 'none', 
+              WebkitUserSelect: 'none',
+              MozUserSelect: 'none',
+              msUserSelect: 'none'
+            }}
+          >
+            {isLoading ? (
+              <div className="flex items-center justify-center h-full">
+                <div className="flex items-center gap-2 text-dark-400">
+                  <div className="animate-spin rounded-full h-5 w-5 border-b border-primary-500"></div>
+                  Loading historical data...
+                </div>
               </div>
-              <div className="text-xs text-dark-400">
-                {isZoomed ? 'Zoomed Points' : 'Displayed Points'}
+            ) : chartData.length > 0 ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart 
+                  key={`chart-${timeWindow}`}
+                  data={chartData} 
+                  margin={{ top: 10, right: 10, left: 10, bottom: 30 }}
+                  onMouseDown={handleMouseDown}
+                  onMouseMove={handleMouseMove}
+                  onMouseUp={handleMouseUp}
+                  onClick={isMobile ? handleSelectionStart : undefined}
+                  style={{ userSelect: 'none' }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" stroke="#374151" opacity={0.3} />
+                  <XAxis 
+                    dataKey="formattedTime"
+                    stroke="#9CA3AF"
+                    fontSize={11}
+                    tickLine={false}
+                    axisLine={false}
+                    interval="preserveStartEnd"
+                  />
+                  <YAxis 
+                    stroke="#9CA3AF"
+                    fontSize={11}
+                    tickLine={false}
+                    axisLine={false}
+                    tickFormatter={(value) => 
+                      config.values === 'continuous' 
+                        ? `${value}${config.unit || ''}` 
+                        : `${value}`
+                    }
+                  />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: '#1F2937',
+                      border: '1px solid #374151',
+                      borderRadius: '8px',
+                      color: '#F9FAFB'
+                    }}
+                    labelStyle={{ color: '#9CA3AF' }}
+                    formatter={(value) => [formatTooltipValue(value as number | null), config.description]}
+                    labelFormatter={(label, payload) => {
+                      if (payload && payload[0] && payload[0].payload) {
+                        const data = payload[0].payload as ChartDataPoint
+                        return `${data.formattedDate} at ${data.formattedTime}`
+                      }
+                      return `Time: ${label}`
+                    }}
+                    cursor={{
+                      stroke: getLineColor(),
+                      strokeWidth: 1,
+                      strokeDasharray: '3 3'
+                    }}
+                    animationDuration={0}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="value"
+                    stroke={getLineColor()}
+                    strokeWidth={2}
+                    dot={chartData.length <= 50 ? { fill: getLineColor(), strokeWidth: 0, r: 3 } : false}
+                    activeDot={{ r: 5, fill: getLineColor() }}
+                    connectNulls={false}
+                  />
+                  
+                  {/* Selection indicators */}
+                  {isSelecting && selectionStart !== null && (
+                    <ReferenceLine
+                      x={chartData[selectionStart]?.formattedTime}
+                      stroke={getLineColor()}
+                      strokeWidth={2}
+                      strokeDasharray="4 4"
+                    />
+                  )}
+                  {isSelecting && selectionEnd !== null && (
+                    <ReferenceLine
+                      x={chartData[selectionEnd]?.formattedTime}
+                      stroke={getLineColor()}
+                      strokeWidth={2}
+                      strokeDasharray="4 4"
+                    />
+                  )}
+    
+                </LineChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="flex items-center justify-center h-full text-dark-400">
+                <div className="text-center">
+                  <Clock className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                  <p className="text-sm">No historical data available</p>
+                  <p className="text-xs mt-1">Try selecting a different time window</p>
+                </div>
               </div>
-            </div>
-            <div className="text-center">
-              <div className="text-sm font-semibold text-white">
-                {formatTooltipValue(Math.max(...chartData.map(d => d.value || 0)))}
-              </div>
-              <div className="text-xs text-dark-400">Max Value</div>
-            </div>
-            <div className="text-center">
-              <div className="text-sm font-semibold text-white">
-                {formatTooltipValue(Math.min(...chartData.map(d => d.value || 0)))}
-              </div>
-              <div className="text-xs text-dark-400">Min Value</div>
-            </div>
+            )}
           </div>
-          
-                     {rawChartData.length > chartData.length && !isZoomed && (
-             <div className="text-center">
-               <div className="text-xs text-dark-400">
-                 📊 Showing {chartData.length} of {rawChartData.length} total data points
-                 <br />
-                 <span className="text-blue-400">
-                   {isMobile 
-                     ? "Double-tap on chart to zoom to recent data or use zoom button below" 
-                     : "Click and drag on the chart to select a time range for zooming"
-                   }
-                 </span>
-               </div>
-             </div>
-           )}
-           
-           {/* Mobile zoom button */}
-           {isMobile && !isZoomed && rawChartData.length > chartData.length && (
-             <div className="text-center mt-2">
-               <button
-                 onClick={handleMobileZoom}
-                 className="px-3 py-1 bg-primary-600 hover:bg-primary-700 text-white text-xs rounded-md flex items-center gap-1 mx-auto"
-               >
-                 <ZoomIn className="w-3 h-3" />
-                 Zoom to Recent Data
-               </button>
-             </div>
-           )}
-          
+
+          {/* Zoom Controls */}
           {isZoomed && (
-            <div className="text-center">
-              <div className="text-xs text-dark-400">
-                🔍 Zoomed view showing detailed data
-                <br />
-                <span className="text-green-400">Higher resolution data in selected time range</span>
+            <div className="flex justify-center items-center gap-4 pb-2">
+              <div className="flex items-center gap-1">
+                <ZoomIn className="w-3 h-3 text-green-400" />
+                <span className="text-xs text-green-400">Zoomed View</span>
               </div>
+              <button
+                onClick={resetZoom}
+                className="px-3 py-1 bg-dark-700 hover:bg-dark-600 text-blue-400 hover:text-blue-300 text-xs rounded-md flex items-center gap-1 border border-dark-600"
+              >
+                <RotateCcw className="w-3 h-3" />
+                Reset Zoom
+              </button>
             </div>
           )}
-          
-          {isSelecting && (
-            <div className="text-center">
-              <div className="text-xs text-blue-400">
-                🎯 Selecting zoom range... Release to zoom in
+
+          {/* Data Summary */}
+          {chartData.length > 0 && (
+            <div className="space-y-3 pt-4 border-t border-dark-700">
+              <div className="grid grid-cols-3 gap-4">
+                <div className="text-center">
+                  <div className="text-sm font-semibold text-white">
+                    {chartData.length}
+                  </div>
+                  <div className="text-xs text-dark-400">
+                    {isZoomed ? 'Zoomed Points' : 'Displayed Points'}
+                  </div>
+                </div>
+                <div className="text-center">
+                  <div className="text-sm font-semibold text-white">
+                    {formatTooltipValue(Math.max(...chartData.map(d => d.value || 0)))}
+                  </div>
+                  <div className="text-xs text-dark-400">Max Value</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-sm font-semibold text-white">
+                    {formatTooltipValue(Math.min(...chartData.map(d => d.value || 0)))}
+                  </div>
+                  <div className="text-xs text-dark-400">Min Value</div>
+                </div>
               </div>
+              
+              {rawChartData.length > chartData.length && !isZoomed && (
+                <div className="text-center">
+                  <div className="text-xs text-dark-400">
+                    📊 Showing {chartData.length} of {rawChartData.length} total data points
+                    <br />
+                    <span className="text-blue-400">
+                      {isMobile 
+                        ? "Double-tap on chart to zoom to recent data or use zoom button below" 
+                        : "Click and drag on the chart to select a time range for zooming"
+                      }
+                    </span>
+                  </div>
+                </div>
+              )}
+              
+              {/* Mobile zoom button */}
+              {isMobile && !isZoomed && rawChartData.length > chartData.length && (
+                <div className="text-center mt-2">
+                  <button
+                    onClick={handleMobileZoom}
+                    className="px-3 py-1 bg-primary-600 hover:bg-primary-700 text-white text-xs rounded-md flex items-center gap-1 mx-auto"
+                  >
+                    <ZoomIn className="w-3 h-3" />
+                    Zoom to Recent Data
+                  </button>
+                </div>
+              )}
+              
+              {isZoomed && (
+                <div className="text-center">
+                  <div className="text-xs text-dark-400">
+                    🔍 Zoomed view showing detailed data
+                    <br />
+                    <span className="text-green-400">Higher resolution data in selected time range</span>
+                  </div>
+                </div>
+              )}
+              
+              {isSelecting && (
+                <div className="text-center">
+                  <div className="text-xs text-blue-400">
+                    🎯 Selecting zoom range... Release to zoom in
+                  </div>
+                </div>
+              )}
             </div>
           )}
-        </div>
+        </>
       )}
     </div>
   )
