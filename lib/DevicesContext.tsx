@@ -27,8 +27,20 @@ export function DevicesProvider({ children }: DevicesProviderProps) {
   // Debouncing refs
   const refreshTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const isRefreshingRef = useRef(false)
+  const intervalRef = useRef<NodeJS.Timeout | null>(null)
+  
+  // Check if user is authenticated
+  const isAuthenticated = () => {
+    if (typeof window === 'undefined') return false
+    return !!localStorage.getItem('jarvis_token')
+  }
 
   const fetchDevices = async () => {
+    // Don't make API calls if user is not authenticated
+    if (!isAuthenticated()) {
+      return
+    }
+    
     try {
       const devicesData = await deviceApi.getDevicesLatestData()
       setDevices(devicesData)
@@ -36,12 +48,46 @@ export function DevicesProvider({ children }: DevicesProviderProps) {
       setError(null)
     } catch (err: any) {
       console.error('Failed to fetch devices data:', err)
+      
+      // If it's an authentication error, stop the interval and clear data
+      if (err.response?.status === 401) {
+        console.log('Authentication failed, stopping device updates')
+        stopInterval()
+        clearDeviceData()
+        return
+      }
+      
       setError('Failed to fetch devices data')
       // Don't throw error to avoid disrupting the app
     }
   }
+  
+  const clearDeviceData = () => {
+    setDevices([])
+    setLastUpdate(null)
+    setError(null)
+    setIsLoading(false)
+  }
+  
+  const stopInterval = () => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current)
+      intervalRef.current = null
+    }
+  }
+  
+  const startInterval = () => {
+    if (!intervalRef.current && isAuthenticated()) {
+      intervalRef.current = setInterval(fetchDevices, 5000)
+    }
+  }
 
   const refreshDevices = useCallback(async () => {
+    // Don't refresh if not authenticated
+    if (!isAuthenticated()) {
+      return
+    }
+    
     // If already refreshing, don't start another refresh
     if (isRefreshingRef.current) {
       return
@@ -55,7 +101,7 @@ export function DevicesProvider({ children }: DevicesProviderProps) {
     // Debounce multiple rapid calls to 200ms for better batching
     refreshTimeoutRef.current = setTimeout(async () => {
       // Double-check if still needed (another call might have occurred)
-      if (isRefreshingRef.current) {
+      if (isRefreshingRef.current || !isAuthenticated()) {
         return
       }
       
@@ -72,15 +118,36 @@ export function DevicesProvider({ children }: DevicesProviderProps) {
   }, [])
 
   useEffect(() => {
-    // Initial load
-    refreshDevices()
+    // Initial load and setup if authenticated
+    if (isAuthenticated()) {
+      refreshDevices()
+      startInterval()
+    } else {
+      // Clear data if not authenticated
+      clearDeviceData()
+    }
 
-    // Set up periodic refresh every 5 seconds
-    const interval = setInterval(fetchDevices, 5000)
+    // Monitor authentication state changes by checking periodically
+    const authCheckInterval = setInterval(() => {
+      const authenticated = isAuthenticated()
+      
+      if (authenticated && !intervalRef.current) {
+        // User logged in, start device updates
+        console.log('User logged in, starting device updates')
+        refreshDevices()
+        startInterval()
+      } else if (!authenticated && intervalRef.current) {
+        // User logged out, stop device updates
+        console.log('User logged out, stopping device updates')
+        stopInterval()
+        clearDeviceData()
+      }
+    }, 1000) // Check every second
 
-    // Cleanup interval and timeout on unmount
+    // Cleanup on unmount
     return () => {
-      clearInterval(interval)
+      stopInterval()
+      clearInterval(authCheckInterval)
       if (refreshTimeoutRef.current) {
         clearTimeout(refreshTimeoutRef.current)
       }
