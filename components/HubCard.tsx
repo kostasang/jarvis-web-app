@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { 
   Home, 
   MapPin,
@@ -15,6 +16,7 @@ import { DeviceData } from '@/types/device'
 import { hubApi } from '@/lib/api'
 import { useDevicesForHub } from '@/lib/DevicesContext'
 import { calculateDeviceStats } from '@/utils/deviceUtils'
+import { navigateTo } from '@/utils/navigation'
 
 interface HubCardProps {
   hub: HubData
@@ -22,6 +24,7 @@ interface HubCardProps {
 }
 
 export default function HubCard({ hub, onHubUpdate }: HubCardProps) {
+  const router = useRouter()
   const [isEditingNickname, setIsEditingNickname] = useState(false)
   const [nickname, setNickname] = useState(hub?.nickname || '')
   const [isLoading, setIsLoading] = useState(false)
@@ -142,26 +145,32 @@ export default function HubCard({ hub, onHubUpdate }: HubCardProps) {
           <div className="glass-card p-4 border border-dark-600">
             <div className="space-y-2">
               <h4 className="text-sm font-medium text-white mb-3">Navigate to:</h4>
-              <a 
-                href={`/areas?hubId=${hub.id}`}
-                className="flex items-center gap-3 p-3 rounded-lg hover:bg-dark-700/50 transition-colors text-white no-underline"
+              <button 
+                onClick={() => {
+                  setShowNavOptions(false)
+                  router.push(navigateTo(`/areas?hubId=${hub.id}`))
+                }}
+                className="flex items-center gap-3 p-3 rounded-lg hover:bg-dark-700/50 transition-colors text-white w-full text-left"
               >
                 <MapPin className="w-5 h-5 text-secondary-500" />
                 <div>
                   <div className="font-medium">Areas</div>
                   <div className="text-xs text-dark-400">Manage rooms and locations</div>
                 </div>
-              </a>
-              <a 
-                href={`/devices?hubId=${hub.id}`}
-                className="flex items-center gap-3 p-3 rounded-lg hover:bg-dark-700/50 transition-colors text-white no-underline"
+              </button>
+              <button 
+                onClick={() => {
+                  setShowNavOptions(false)
+                  router.push(navigateTo(`/devices?hubId=${hub.id}`))
+                }}
+                className="flex items-center gap-3 p-3 rounded-lg hover:bg-dark-700/50 transition-colors text-white w-full text-left"
               >
                 <BarChart3 className="w-5 h-5 text-primary-500" />
                 <div>
                   <div className="font-medium">Devices & Sensors</div>
                   <div className="text-xs text-dark-400">View all devices with filtering</div>
                 </div>
-              </a>
+              </button>
             </div>
           </div>
         </div>
