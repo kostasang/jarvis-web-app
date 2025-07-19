@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Lock, Eye, EyeOff, Zap, CheckCircle, AlertCircle, ArrowLeft } from 'lucide-react'
 import { authApi } from '@/lib/api'
+import { navigateTo } from '@/utils/navigation'
 
 export default function ResetPasswordConfirmPage() {
   const router = useRouter()
@@ -63,7 +64,7 @@ export default function ResetPasswordConfirmPage() {
       })
       setSuccess('Your password has been reset successfully! You can now sign in with your new password.')
       setTimeout(() => {
-        router.push('/login')
+        router.push(navigateTo('/login'))
       }, 3000)
     } catch (err: any) {
       console.error('Password reset error:', err)
@@ -88,7 +89,7 @@ export default function ResetPasswordConfirmPage() {
   }
 
   const handleBackToLogin = () => {
-    router.push('/login')
+    router.push(navigateTo('/login'))
   }
 
   return (

@@ -8,6 +8,7 @@ import { CameraData } from '@/types/camera'
 import CameraCard from '@/components/CameraCard'
 import ClaimCameraModal from '@/components/ClaimCameraModal'
 import CameraStreamModal from '@/components/CameraStreamModal'
+import { navigateTo } from '@/utils/navigation'
 
 export default function CamerasPage() {
   const [isLoading, setIsLoading] = useState(true)
@@ -35,7 +36,7 @@ export default function CamerasPage() {
   useEffect(() => {
     const token = localStorage.getItem('jarvis_token')
     if (!token) {
-      router.push('/login')
+      router.push(navigateTo('/login'))
       return
     }
 
@@ -81,7 +82,7 @@ export default function CamerasPage() {
           <div className="flex items-center justify-between h-16 ml-16">
             <div className="flex items-center">
               <button
-                onClick={() => router.push('/dashboard')}
+                onClick={() => router.push(navigateTo('/dashboard'))}
                 className="mr-4 p-2 text-dark-400 hover:text-white transition-colors"
               >
                 <Home className="w-5 h-5" />

@@ -6,6 +6,7 @@ import { DeviceData, DeviceLatestDataApiResponse, DeviceHistoryResponse } from '
 import { UserData, User } from '@/types/user'
 import { CameraData, CameraApiResponse, ClaimCameraRequest, SetCameraNicknameRequest, UnclaimCameraRequest } from '@/types/camera'
 import { config } from '@/config/env'
+import { redirectTo } from '@/utils/navigation'
 
 // Configure the base URL
 const API_BASE_URL = config.apiUrl
@@ -30,7 +31,7 @@ apiClient.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       localStorage.removeItem('jarvis_token')
-      window.location.href = '/login'
+      redirectTo('/login')
     }
     return Promise.reject(error)
   }

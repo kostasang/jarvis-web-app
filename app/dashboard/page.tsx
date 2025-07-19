@@ -7,6 +7,7 @@ import { hubApi } from '@/lib/api'
 import { HubData } from '@/types/hub'
 import HubCard from '@/components/HubCard'
 import ClaimHubModal from '@/components/ClaimHubModal'
+import { navigateTo } from '@/utils/navigation'
 
 export default function DashboardPage() {
   const [isLoading, setIsLoading] = useState(true)
@@ -32,7 +33,7 @@ export default function DashboardPage() {
   useEffect(() => {
     const token = localStorage.getItem('jarvis_token')
     if (!token) {
-      router.push('/login')
+      router.push(navigateTo('/login'))
       return
     }
 

@@ -13,6 +13,7 @@ import AreaCard from '@/components/AreaCard'
 import CreateAreaModal from '@/components/CreateAreaModal'
 import DeviceCard from '@/components/DeviceCard'
 import DeviceModal from '@/components/DeviceModal'
+import { navigateTo } from '@/utils/navigation'
 
 export default function HubAreasPage() {
   const router = useRouter()
@@ -62,7 +63,7 @@ export default function HubAreasPage() {
     } catch (err: any) {
       console.error('Failed to fetch hub and areas:', err)
       if (err.response?.status === 401) {
-        router.push('/login')
+        router.push(navigateTo('/login'))
       } else {
         setError('Failed to load areas. Please try refreshing the page.')
       }
@@ -84,7 +85,7 @@ export default function HubAreasPage() {
       } catch (err: any) {
         console.error('Failed to fetch hubs:', err)
         if (err.response?.status === 401) {
-          router.push('/login')
+          router.push(navigateTo('/login'))
         }
       }
     }
@@ -155,7 +156,7 @@ export default function HubAreasPage() {
         <div className="text-center">
           <p className="text-red-400">No hubs available. Please go to dashboard to add a hub.</p>
           <button
-            onClick={() => router.push('/dashboard')}
+            onClick={() => router.push(navigateTo('/dashboard'))}
             className="btn-primary mt-4"
           >
             Go to Dashboard
@@ -173,7 +174,7 @@ export default function HubAreasPage() {
           <div className="flex items-center justify-between h-16 ml-16">
             <div className="flex items-center">
               <button
-                onClick={() => router.push('/dashboard')}
+                onClick={() => router.push(navigateTo('/dashboard'))}
                 className="mr-4 p-2 text-dark-400 hover:text-white transition-colors"
               >
                 <Home className="w-5 h-5" />

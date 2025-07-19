@@ -20,6 +20,7 @@ import {
 import { userApi } from '@/lib/api'
 import { User as UserType } from '@/types/user'
 import ReCaptcha from '@/components/ReCaptcha'
+import { navigateTo } from '@/utils/navigation'
 
 export default function ProfilePage() {
   const [user, setUser] = useState<UserType | null>(null)
@@ -59,7 +60,7 @@ export default function ProfilePage() {
     } catch (err: any) {
       console.error('Failed to fetch user data:', err)
       if (err.response?.status === 401) {
-        router.push('/login')
+        router.push(navigateTo('/login'))
       } else {
         setError('Failed to load profile. Please try refreshing the page.')
       }
@@ -69,7 +70,7 @@ export default function ProfilePage() {
   useEffect(() => {
     const token = localStorage.getItem('jarvis_token')
     if (!token) {
-      router.push('/login')
+      router.push(navigateTo('/login'))
       return
     }
 
@@ -113,7 +114,7 @@ export default function ProfilePage() {
       await userApi.deleteAccount(password)
       // Clear token and redirect to login
       localStorage.removeItem('jarvis_token')
-      router.push('/login')
+      router.push(navigateTo('/login'))
     } catch (err: any) {
       console.error('Failed to delete account:', err)
       const errorMessage = err.response?.status === 401 || err.response?.status === 422 
@@ -294,7 +295,7 @@ export default function ProfilePage() {
           <div className="flex items-center justify-between h-16 ml-16">
             <div className="flex items-center">
                              <button
-                 onClick={() => router.push('/dashboard')}
+                 onClick={() => router.push(navigateTo('/dashboard'))}
                  className="mr-4 p-2 text-dark-400 hover:text-white transition-colors"
                >
                  <Home className="w-5 h-5" />

@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { navigateTo } from '@/utils/navigation'
 
 export default function Home() {
   const router = useRouter()
@@ -10,9 +11,9 @@ export default function Home() {
     // Check if user is logged in, if not redirect to login
     const token = localStorage.getItem('jarvis_token')
     if (!token) {
-      router.push('/login')
+      router.push(navigateTo('/login'))
     } else {
-      router.push('/dashboard')
+      router.push(navigateTo('/dashboard'))
     }
   }, [router])
 

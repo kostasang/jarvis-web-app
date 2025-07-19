@@ -6,6 +6,7 @@ import { Eye, EyeOff, Zap, Shield, Home, Mail, UserPlus } from 'lucide-react'
 import { authApi } from '@/lib/api'
 import SignupModal from '@/components/SignupModal'
 import ForgotPasswordModal from '@/components/ForgotPasswordModal'
+import { navigateTo } from '@/utils/navigation'
 
 export default function LoginPage() {
   const [credentials, setCredentials] = useState({ username: '', password: '' })
@@ -24,7 +25,7 @@ export default function LoginPage() {
     try {
       const token = await authApi.login(credentials)
       localStorage.setItem('jarvis_token', token.access_token)
-      router.push('/dashboard')
+      router.push(navigateTo('/dashboard'))
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Login failed. Please try again.')
     } finally {
@@ -33,7 +34,7 @@ export default function LoginPage() {
   }
 
   const handleContactClick = () => {
-    router.push('/contact')
+    router.push(navigateTo('/contact'))
   }
 
   const handleSignupSuccess = () => {

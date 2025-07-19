@@ -2,6 +2,7 @@
 
 import { Mail, Linkedin, Zap, Home, ExternalLink } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import { navigateTo } from '@/utils/navigation'
 
 export default function ContactPage() {
   const router = useRouter()
@@ -22,7 +23,7 @@ export default function ContactPage() {
           <div className="flex items-center justify-between h-16 ml-16">
             <div className="flex items-center">
               <button
-                onClick={() => router.push('/dashboard')}
+                onClick={() => router.push(navigateTo('/dashboard'))}
                 className="mr-4 p-2 text-dark-400 hover:text-white transition-colors"
               >
                 <Home className="w-5 h-5" />

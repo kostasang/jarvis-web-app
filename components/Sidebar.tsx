@@ -15,6 +15,7 @@ import {
   Camera
 } from 'lucide-react'
 import { authApi } from '@/lib/api'
+import { navigateTo } from '@/utils/navigation'
 
 interface SidebarProps {
   isOpen: boolean
@@ -68,38 +69,38 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
     setIsLoggingOut(true)
     try {
       await authApi.logout()
-      router.push('/login')
+      router.push(navigateTo('/login'))
     } catch (error) {
       console.error('Logout error:', error)
       localStorage.removeItem('jarvis_token')
-      router.push('/login')
+      router.push(navigateTo('/login'))
     } finally {
       setIsLoggingOut(false)
     }
   }
 
   const navigateHome = () => {
-    router.push('/dashboard')
+    router.push(navigateTo('/dashboard'))
     onClose()
   }
 
   const navigateProfile = () => {
-    router.push('/profile')
+    router.push(navigateTo('/profile'))
     onClose()
   }
 
   const navigateContact = () => {
-    router.push('/contact')
+    router.push(navigateTo('/contact'))
     onClose()
   }
 
   const navigateCameras = () => {
-    router.push('/cameras')
+    router.push(navigateTo('/cameras'))
     onClose()
   }
 
   const navigateTools = () => {
-    router.push('/tools')
+    router.push(navigateTo('/tools'))
     onClose()
   }
 

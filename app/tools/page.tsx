@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Home, Zap, Wrench, Wifi, QrCode, Camera, X, Eye, EyeOff } from 'lucide-react'
+import { navigateTo } from '@/utils/navigation'
 
 export default function ToolsPage() {
   const [isLoading, setIsLoading] = useState(true)
@@ -17,7 +18,7 @@ export default function ToolsPage() {
   useEffect(() => {
     const token = localStorage.getItem('jarvis_token')
     if (!token) {
-      router.push('/login')
+      router.push(navigateTo('/login'))
       return
     }
     setIsLoading(false)
@@ -72,7 +73,7 @@ export default function ToolsPage() {
           <div className="flex items-center justify-between h-16 ml-16">
             <div className="flex items-center">
               <button
-                onClick={() => router.push('/dashboard')}
+                onClick={() => router.push(navigateTo('/dashboard'))}
                 className="mr-4 p-2 text-dark-400 hover:text-white transition-colors"
               >
                 <Home className="w-5 h-5" />
