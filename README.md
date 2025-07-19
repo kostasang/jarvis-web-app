@@ -21,26 +21,22 @@ Create `.env.local`:
 
 ```env
 NEXT_PUBLIC_API_URL=https://jarvis-core.ddns.net
+NEXT_PUBLIC_WEBSOCKET_URL=wss://jarvis-core.ddns.net
 NEXT_PUBLIC_MEDIA_SERVER_URL=https://jarvis-core.ddns.net:8889
 NEXT_PUBLIC_RECAPTCHA_SITE_KEY=your_recaptcha_site_key
 ```
 
 **Required:**
+
 - `NEXT_PUBLIC_API_URL` - FastAPI backend URL
+- `NEXT_PUBLIC_WEBSOCKET_URL` - WebSocket URL for real-time device notifications
 - `NEXT_PUBLIC_MEDIA_SERVER_URL` - MediaMTX server URL for camera streams  
 - `NEXT_PUBLIC_RECAPTCHA_SITE_KEY` - Google reCAPTCHA site key
 
 ## Development
 
 ```bash
-npm run dev
-```
-
-Runs on http://127.0.0.1:5500
-
-**Custom host/port:**
-```bash
-npm run dev -- --hostname 0.0.0.0 --port 3000
+npm run dev -- --hostname 127.0.0.1 --port 5500
 ```
 
 ## Production
@@ -51,6 +47,7 @@ npm start
 ```
 
 **Custom host/port:**
+
 ```bash
 npm start -- --hostname 0.0.0.0 --port 3000
 ```
@@ -59,7 +56,7 @@ npm start -- --hostname 0.0.0.0 --port 3000
 
 This app is configured for automatic deployment to GitHub Pages via GitHub Actions.
 
-### Setup Steps:
+### Setup Steps
 
 1. **Enable GitHub Pages** in your repository settings:
    - Go to Settings → Pages
@@ -69,7 +66,8 @@ This app is configured for automatic deployment to GitHub Pages via GitHub Actio
    - Go to Settings → Secrets and variables → Actions
    - Add these secrets:
      - `NEXT_PUBLIC_API_URL`
-     - `NEXT_PUBLIC_MEDIA_SERVER_URL` 
+     - `NEXT_PUBLIC_WEBSOCKET_URL`
+     - `NEXT_PUBLIC_MEDIA_SERVER_URL`
      - `NEXT_PUBLIC_RECAPTCHA_SITE_KEY`
 
 3. **Update basePath** in `next.config.js`:

@@ -3,6 +3,9 @@ export const config = {
   // API Configuration
   apiUrl: process.env.NEXT_PUBLIC_API_URL || 'https://jarvis-core.ddns.net',
   
+  // WebSocket Configuration
+  websocketUrl: process.env.NEXT_PUBLIC_WEBSOCKET_URL || 'wss://jarvis-core.ddns.net',
+  
   // Media Server Configuration
   mediaServerUrl: process.env.NEXT_PUBLIC_MEDIA_SERVER_URL || 'https://jarvis-core.ddns.net:8889',
   

@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode, useCallback, useRef } from 'react'
 import { DeviceData } from '@/types/device'
 import { deviceApi } from '@/lib/api'
+import { config } from '@/config/env'
 
 interface DevicesContextType {
   devices: DeviceData[]
@@ -27,7 +28,10 @@ export function DevicesProvider({ children }: DevicesProviderProps) {
   // Debouncing refs
   const refreshTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const isRefreshingRef = useRef(false)
-  const intervalRef = useRef<NodeJS.Timeout | null>(null)
+  
+  // WebSocket refs
+  const wsRef = useRef<WebSocket | null>(null)
+  const wsReconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   
   // Check if user is authenticated
   const isAuthenticated = () => {
@@ -49,10 +53,10 @@ export function DevicesProvider({ children }: DevicesProviderProps) {
     } catch (err: any) {
       console.error('Failed to fetch devices data:', err)
       
-      // If it's an authentication error, stop the interval and clear data
+      // If it's an authentication error, stop WebSocket and clear data
       if (err.response?.status === 401) {
         console.log('Authentication failed, stopping device updates')
-        stopInterval()
+        disconnectWebSocket()
         clearDeviceData()
         return
       }
@@ -69,18 +73,69 @@ export function DevicesProvider({ children }: DevicesProviderProps) {
     setIsLoading(false)
   }
   
-  const stopInterval = () => {
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current)
-      intervalRef.current = null
+  const connectWebSocket = useCallback(() => {
+    if (!isAuthenticated()) return
+    
+    const token = localStorage.getItem('jarvis_token')
+    if (!token) return
+    
+    // Close existing connection if any
+    if (wsRef.current) {
+      wsRef.current.close()
     }
-  }
-  
-  const startInterval = () => {
-    if (!intervalRef.current && isAuthenticated()) {
-      intervalRef.current = setInterval(fetchDevices, 5000)
+    
+    try {
+      const ws = new WebSocket(`${config.websocketUrl}/get_live_notifications?token=${token}`)
+      
+      ws.onopen = () => {
+        console.log('WebSocket connected for device notifications')
+        // Clear any reconnection timeout
+        if (wsReconnectTimeoutRef.current) {
+          clearTimeout(wsReconnectTimeoutRef.current)
+          wsReconnectTimeoutRef.current = null
+        }
+      }
+      
+      ws.onmessage = (event) => {
+        // When we receive a message, fetch latest devices data
+        console.log('Received device update notification, fetching latest data')
+        fetchDevices()
+      }
+      
+      ws.onclose = (event) => {
+        console.log('WebSocket disconnected', event.code, event.reason)
+        wsRef.current = null
+        
+        // Reconnect if still authenticated and not a clean close
+        if (isAuthenticated() && event.code !== 1000) {
+          console.log('Attempting to reconnect WebSocket in 5 seconds...')
+          wsReconnectTimeoutRef.current = setTimeout(() => {
+            connectWebSocket()
+          }, 5000) // Reconnect after 5 seconds
+        }
+      }
+      
+      ws.onerror = (error) => {
+        console.error('WebSocket error:', error)
+      }
+      
+      wsRef.current = ws
+    } catch (error) {
+      console.error('Failed to create WebSocket connection:', error)
     }
-  }
+  }, [])
+
+  const disconnectWebSocket = useCallback(() => {
+    if (wsRef.current) {
+      wsRef.current.close(1000, 'User disconnected')
+      wsRef.current = null
+    }
+    
+    if (wsReconnectTimeoutRef.current) {
+      clearTimeout(wsReconnectTimeoutRef.current)
+      wsReconnectTimeoutRef.current = null
+    }
+  }, [])
 
   const refreshDevices = useCallback(async () => {
     // Don't refresh if not authenticated
@@ -115,13 +170,13 @@ export function DevicesProvider({ children }: DevicesProviderProps) {
         isRefreshingRef.current = false
       }
     }, 200)
-  }, [])
+  }, [connectWebSocket])
 
   useEffect(() => {
     // Initial load and setup if authenticated
     if (isAuthenticated()) {
       refreshDevices()
-      startInterval()
+      connectWebSocket()
     } else {
       // Clear data if not authenticated
       clearDeviceData()
@@ -131,22 +186,22 @@ export function DevicesProvider({ children }: DevicesProviderProps) {
     const authCheckInterval = setInterval(() => {
       const authenticated = isAuthenticated()
       
-      if (authenticated && !intervalRef.current) {
+      if (authenticated && !wsRef.current) {
         // User logged in, start device updates
-        console.log('User logged in, starting device updates')
+        console.log('User logged in, starting device updates via WebSocket')
         refreshDevices()
-        startInterval()
-      } else if (!authenticated && intervalRef.current) {
+        connectWebSocket()
+      } else if (!authenticated && wsRef.current) {
         // User logged out, stop device updates
         console.log('User logged out, stopping device updates')
-        stopInterval()
+        disconnectWebSocket()
         clearDeviceData()
       }
     }, 1000) // Check every second
 
     // Cleanup on unmount
     return () => {
-      stopInterval()
+      disconnectWebSocket()
       clearInterval(authCheckInterval)
       if (refreshTimeoutRef.current) {
         clearTimeout(refreshTimeoutRef.current)
