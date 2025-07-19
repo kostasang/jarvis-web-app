@@ -39,7 +39,7 @@ export default function DeviceModal({ device, isOpen, onClose, onDeviceUpdate, a
 
   useEffect(() => {
     if (device) {
-      setNickname(device.name)
+      setNickname(device.name || '')
       setCurrentAreaId(device.areaId)
       setIsEditingName(false)
       setLiveDevice(device) // Initialize live device data
@@ -49,7 +49,7 @@ export default function DeviceModal({ device, isOpen, onClose, onDeviceUpdate, a
   // Update nickname and area when live device data changes
   useEffect(() => {
     if (liveDevice && !isEditingName) {
-      setNickname(liveDevice.name)
+      setNickname(liveDevice.name || '')
       setCurrentAreaId(liveDevice.areaId)
     }
   }, [liveDevice?.name, liveDevice?.areaId, isEditingName])
@@ -141,7 +141,7 @@ export default function DeviceModal({ device, isOpen, onClose, onDeviceUpdate, a
     // Toggle binary value: 0 -> 1, 1 -> 0
     const targetValue = currentDevice.latestValue === 0 ? 1 : 0
     
-    console.log(`Toggle device ${currentDevice.name} (${device.id}): ${currentDevice.latestValue} -> ${targetValue}`)
+          console.log(`Toggle device ${currentDevice.name || device?.id} (${device?.id}): ${currentDevice.latestValue} -> ${targetValue}`)
     
     try {
       await deviceApi.commandDevice(device.id, targetValue)
@@ -152,7 +152,7 @@ export default function DeviceModal({ device, isOpen, onClose, onDeviceUpdate, a
   }
 
   const handleCancelEdit = () => {
-    setNickname(device.name)
+    setNickname(device?.name || '')
     setIsEditingName(false)
   }
 

@@ -134,7 +134,6 @@ export default function CameraStreamModal({ camera, isOpen, onClose, onCameraUpd
                   </button>
                 </div>
               )}
-              <p className="text-sm text-dark-400 font-mono">{camera.id}</p>
             </div>
           </div>
           <button

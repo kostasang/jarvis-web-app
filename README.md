@@ -1,256 +1,71 @@
 # Jarvis Smart Home Web App
 
-A modern, responsive web application for managing your smart home ecosystem built with Next.js 14, TypeScript, and Tailwind CSS.
+Next.js 14 web application for smart home management.
 
-## 🚀 Getting Started
+## Requirements
 
-### Prerequisites
-- **Node.js** 18.17+ or 20+
-- **npm** or **yarn** package manager
-- **Git** for cloning the repository
+- Node.js 18.17.0+
+- npm 9+ (or yarn)
 
-### Installation
+## Setup
 
-1. **Clone the repository**:
-   ```bash
-   git clone <your-repo-url>
-   cd jarvis-web-app
-   ```
+```bash
+git clone <repo-url>
+cd jarvis-web-app
+npm install
+```
 
-2. **Install dependencies**:
-   ```bash
-   npm install
-   # or
-   yarn install
-   ```
+## Environment Variables
 
-3. **Configure environment**:
-   Create a `.env.local` file in the project root:
-   ```env
-   NEXT_PUBLIC_API_URL=http://127.0.0.1:8000
-   NEXT_PUBLIC_RECAPTCHA_SITE_KEY=6LfbyesqAAAAAP6i8KxIXFKei_TFzW-j8N-02GZT
-   ```
-   > **Note**: 
-   > - Replace `NEXT_PUBLIC_API_URL` with your actual FastAPI backend URL
-   > - The reCAPTCHA site key is required for email update functionality
-   > - If you need to change the reCAPTCHA key, update it in both `.env.local` and `config/env.ts`
+Create `.env.local`:
 
-### Development Server
+```env
+NEXT_PUBLIC_API_URL=https://jarvis-core.ddns.net
+NEXT_PUBLIC_MEDIA_SERVER_URL=https://jarvis-core.ddns.net:8889
+NEXT_PUBLIC_RECAPTCHA_SITE_KEY=your_recaptcha_site_key
+```
 
-Start the development server:
+**Required:**
+- `NEXT_PUBLIC_API_URL` - FastAPI backend URL
+- `NEXT_PUBLIC_MEDIA_SERVER_URL` - MediaMTX server URL for camera streams  
+- `NEXT_PUBLIC_RECAPTCHA_SITE_KEY` - Google reCAPTCHA site key
+
+## Development
+
 ```bash
 npm run dev
-# or
-yarn dev
 ```
 
-The application will be available at **http://127.0.0.1:5500**
+Runs on http://127.0.0.1:5500
 
-### Production Build
-
-1. **Build the application**:
-   ```bash
-   npm run build
-   # or
-   yarn build
-   ```
-
-2. **Start production server**:
-   ```bash
-   npm start
-   # or
-   yarn start
-   ```
-
-### Serving Options
-
-#### Option 1: Development Server (Recommended for testing)
+**Custom host/port:**
 ```bash
-npm run dev -- --hostname 127.0.0.1 --port 5500
+npm run dev -- --hostname 0.0.0.0 --port 3000
 ```
 
-#### Option 2: Production Build + Serve
+## Production
+
 ```bash
-# Build the app
 npm run build
-
-# Serve the built app
-npm start -- --hostname 127.0.0.1 --port 5500
+npm start
 ```
 
-#### Option 3: Static Export (if needed)
+**Custom host/port:**
 ```bash
-# Add to next.config.js if you need static export
-npm run build
-npx serve out/ -l 5500
+npm start -- --hostname 0.0.0.0 --port 3000
 ```
 
-### Configuration
+## Scripts
 
-#### Backend Connection
-The app connects to your FastAPI backend via the `NEXT_PUBLIC_API_URL` environment variable. Make sure your backend is running and accessible.
+- `npm run dev` - Development server (127.0.0.1:5500)
+- `npm run build` - Production build
+- `npm start` - Production server
+- `npm run lint` - ESLint
 
-#### Network Access
-- **Local access**: http://127.0.0.1:5500
-- **Network access**: http://[your-ip]:5500 (configure hostname in next.config.js if needed)
+## Tech Stack
 
-## 🎨 Design & Features
-
-### Color Palette
-- **Primary**: Blue tones (#3b82f6) - Professional and trustworthy
-- **Secondary**: Teal accents (#14b8a6) - Modern tech feel  
-- **Dark Theme**: Sophisticated dark grays (#0f172a to #1e293b)
-- **Glass Morphism**: Subtle transparency effects for modern UI
-
-### Design Philosophy
-- **Professional**: Clean, enterprise-grade interface suitable for smart home management
-- **Responsive**: Optimized for both laptop and smartphone viewing
-- **Accessible**: High contrast ratios and clear typography
-- **Modern**: Glass morphism, gradient backgrounds, smooth animations
-
-## 🔐 Authentication
-
-The login screen integrates with your FastAPI backend using:
-- OAuth2 password flow (`/token` endpoint)
-- JWT token storage in localStorage
-- Automatic token refresh handling
-- Secure logout (`/logout` endpoint)
-
-## 🏠 Hub Management
-
-After login, users can manage multiple smart home hubs:
-
-### First Time Setup
-- **No Hubs**: Welcome screen with "Claim First Hub" button
-- **Hub Claiming**: Modal with Hub ID and verification code input
-- **Guided Setup**: Clear instructions for finding credentials on Raspberry Pi
-
-### Hub Dashboard
-- **Hub Grid**: Visual cards showing all connected hubs
-- **Hub Status**: Real-time online/offline indicators
-- **Editable Nicknames**: Click-to-edit hub names for easy identification
-- **Live Device Stats**: Real-time device counts and last update timestamps
-
-### Hub Navigation
-Each hub card provides access to:
-- 📍 **Areas**: Manage rooms and locations within the hub ✅ **IMPLEMENTED**
-- 📊 **Devices & Sensors**: View all devices with filtering and real-time data ✅ **IMPLEMENTED**
-
-### Device & Sensor Management ✅ **LATEST**
-Comprehensive device monitoring with **real-time updates every 5 seconds**:
-
-#### **Device Type Support**
-- 🌡️ **Environmental**: Temperature sensors (℃), humidity sensors (%), air quality monitors
-- 🔒 **Security**: Infrared sensors, door/window sensors, motion detectors
-- 💡 **Control**: Smart switches, lights, controllable devices
-
-#### **Real-time Features**
-- **Live Values**: Auto-refreshing sensor readings and device states
-- **Last Update**: Shows when latest data was received from any sensor
-- **Status Indicators**: Clean design without colored backgrounds
-- **Value Formatting**: Automatic formatting based on device type and binary states
-
-#### **Advanced Filtering**
-- **Category Filter**: Environmental, Security, Control devices
-- **Area Filter**: Filter by specific rooms/locations + "Unassigned" devices
-- **Search**: Find devices by name or description
-- **Collapsible Stats**: Device category breakdowns in expandable section
-
-#### **Area Management**
-- **Create/Rename/Delete**: Full CRUD operations for organizing devices
-- **Unassigned Devices**: Special section for devices not yet assigned to areas
-- **Device Lists**: Expandable area cards showing devices within each location
-
-### Profile Management ✅ **NEW**
-Comprehensive user account management with security features:
-
-#### **User Dashboard**
-- **Profile Information**: Display username, email, registration date, and user ID
-- **Account Status**: Active status indicator with full access confirmation
-- **Quick Actions**: Centralized access to security and email management
-
-#### **Security Features**
-- **Password Change**: Secure password update with current password verification
-- **Email Update**: Change email address with password confirmation and reCAPTCHA verification
-- **Account Deletion**: Secure account removal with password confirmation and detailed warnings
-
-#### **Safety & User Experience**
-- **Real-time Validation**: Live feedback for password requirements and email format
-- **Elegant Error Handling**: Specific error messages for different failure scenarios
-- **Success Feedback**: Clear confirmation messages with auto-close functionality
-- **Collapsible Interface**: Space-efficient danger zone with smooth animations
-
-### API Integration
-**Hub Management:**
-- `GET /get_hubs`: Fetch user's claimed hubs
-- `POST /claim_hub`: Add new hub with verification
-- `POST /set_hub_nickname`: Update hub display names
-
-**Area Management:**
-- `GET /get_areas`: Fetch areas for a hub
-- `POST /create_area`: Create new area within a hub
-- `PUT /rename_area`: Update area name
-- `DELETE /delete_area`: Remove area and unassign devices
-
-**Device & Sensor Data:**
-- `GET /get_devices_latest_data`: Fetch latest readings from all devices/sensors (**refreshed every 5 seconds**)
-- `POST /command_device`: Send control commands to action devices (requires device_data and password)
-
-**User Management:**
-- `GET /me`: Fetch current user profile information
-- `PUT /update_password`: Change user password (requires current_password and new_password)
-- `PUT /update_email`: Update email address (requires new_email, password, and reCAPTCHA token)
-- `DELETE /delete_user`: Permanently delete user account (requires password confirmation)
-
-## 📱 Mobile Responsive
-
-The interface adapts seamlessly across devices:
-- **Desktop**: Full-featured layout with glass card design
-- **Mobile**: Touch-optimized inputs and responsive typography
-- **Tablet**: Balanced experience between desktop and mobile
-
-## 🛠 Tech Stack
-
-- **Next.js 14**: React framework with App Router
-- **TypeScript**: Type-safe development
-- **Tailwind CSS**: Utility-first styling
-- **Lucide React**: Beautiful, consistent icons
-- **Axios**: HTTP client for API communication
-
-## 📋 Available Scripts
-
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm start` - Start production server
-- `npm run lint` - Run ESLint
-- `npm run lint:fix` - Fix ESLint issues
-
-## 🐛 Troubleshooting
-
-### Port Already in Use
-If port 5500 is busy:
-```bash
-# Kill the process using the port
-lsof -ti:5500 | xargs kill -9
-
-# Or use a different port
-npm run dev -- --port 3000
-```
-
-### Backend Connection Issues
-- Check that your FastAPI backend is running
-- Verify the `NEXT_PUBLIC_API_URL` in `.env.local`
-- Check browser console for CORS or network errors
-
-### Build Issues
-- Clear Next.js cache: `rm -rf .next`
-- Reinstall dependencies: `rm -rf node_modules && npm install`
-
-### reCAPTCHA Issues
-- Ensure `NEXT_PUBLIC_RECAPTCHA_SITE_KEY` is set in `.env.local`
-- For development: The email modal includes a "Get Token (Dev)" button for testing
-- For production: Replace with actual Google reCAPTCHA integration
-
----
-
-**Ready to manage your smart home!** 🏠✨
+- Next.js 14 (App Router)
+- TypeScript
+- Tailwind CSS
+- Axios
+- Lucide React

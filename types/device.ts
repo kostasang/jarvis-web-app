@@ -13,7 +13,7 @@ export interface DeviceLatestDataApiResponse {
 // Frontend interface (normalized)
 export interface DeviceData {
   id: string
-  name: string
+  name: string | null
   type: number
   areaId?: string
   hubId: string

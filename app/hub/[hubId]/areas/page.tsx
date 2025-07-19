@@ -140,7 +140,7 @@ export default function HubAreasPage() {
                 onClick={() => router.push('/dashboard')}
                 className="mr-4 p-2 text-dark-400 hover:text-white transition-colors"
               >
-                <ArrowLeft className="w-5 h-5" />
+                <Home className="w-5 h-5" />
               </button>
               <div className="flex items-center">
                 <Zap className="w-8 h-8 text-primary-500 mr-2" />

@@ -69,7 +69,7 @@ export function filterDevices(devices: DeviceData[], filter: DeviceFilter): Devi
     // Search term filter
     if (filter.searchTerm) {
       const searchLower = filter.searchTerm.toLowerCase()
-      const matchesName = device.name.toLowerCase().includes(searchLower)
+      const matchesName = device.name?.toLowerCase().includes(searchLower) || false
       const matchesDescription = config.description.toLowerCase().includes(searchLower)
       if (!matchesName && !matchesDescription) {
         return false

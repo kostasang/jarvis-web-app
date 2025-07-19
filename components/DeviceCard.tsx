@@ -16,7 +16,7 @@ interface DeviceCardProps {
 
 export default function DeviceCard({ device, showArea = false, areaName, onDeviceUpdate, onDeviceClick }: DeviceCardProps) {
   const [isEditingName, setIsEditingName] = useState(false)
-  const [nickname, setNickname] = useState(device.name)
+  const [nickname, setNickname] = useState(device.name || '')
   const [isLoading, setIsLoading] = useState(false)
   
   const config = getDeviceConfig(device.type)
@@ -53,7 +53,7 @@ export default function DeviceCard({ device, showArea = false, areaName, onDevic
   }
 
   const handleCancelEdit = () => {
-    setNickname(device.name)
+    setNickname(device.name || '')
     setIsEditingName(false)
   }
 
@@ -74,7 +74,7 @@ export default function DeviceCard({ device, showArea = false, areaName, onDevic
     // Toggle binary value: 0 -> 1, 1 -> 0
     const targetValue = device.latestValue === 0 ? 1 : 0
     
-    console.log(`Toggle device ${device.name} (${device.id}): ${device.latestValue} -> ${targetValue}`)
+          console.log(`Toggle device ${device.name || device.id} (${device.id}): ${device.latestValue} -> ${targetValue}`)
     
     try {
       await deviceApi.commandDevice(device.id, targetValue)
@@ -134,7 +134,7 @@ export default function DeviceCard({ device, showArea = false, areaName, onDevic
               </div>
             ) : (
               <div className="flex items-center gap-2 mb-1">
-                <h3 className="text-sm font-semibold text-white">{device.name}</h3>
+                <h3 className="text-sm font-semibold text-white">{device.name || `Device ${device.id}`}</h3>
                 <button
                   onClick={(e) => {
                     e.stopPropagation()
