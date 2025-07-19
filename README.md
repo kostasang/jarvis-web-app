@@ -55,6 +55,30 @@ npm start
 npm start -- --hostname 0.0.0.0 --port 3000
 ```
 
+## GitHub Pages Deployment
+
+This app is configured for automatic deployment to GitHub Pages via GitHub Actions.
+
+### Setup Steps:
+
+1. **Enable GitHub Pages** in your repository settings:
+   - Go to Settings → Pages
+   - Source: "GitHub Actions"
+
+2. **Add Environment Secrets** in your repository:
+   - Go to Settings → Secrets and variables → Actions
+   - Add these secrets:
+     - `NEXT_PUBLIC_API_URL`
+     - `NEXT_PUBLIC_MEDIA_SERVER_URL` 
+     - `NEXT_PUBLIC_RECAPTCHA_SITE_KEY`
+
+3. **Update basePath** in `next.config.js`:
+   - Change `/jarvis-web-app` to match your repository name
+
+4. **Push to cursor-support branch** - deployment happens automatically
+
+**Your app will be available at:** `https://username.github.io/repository-name`
+
 ## Scripts
 
 - `npm run dev` - Development server (127.0.0.1:5500)
