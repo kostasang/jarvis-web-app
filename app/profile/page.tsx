@@ -772,13 +772,13 @@ export default function ProfilePage() {
                          }}
                          className="input-field pr-12"
                          placeholder="Enter current password"
-                         disabled={isUpdatingPassword || passwordSuccess}
+                         disabled={isUpdatingPassword || !!passwordSuccess}
                        />
                        <button
                          type="button"
                          onClick={() => setShowCurrentPassword(!showCurrentPassword)}
                          className="absolute inset-y-0 right-0 flex items-center pr-3 text-dark-400 hover:text-dark-200 transition-colors"
-                         disabled={isUpdatingPassword || passwordSuccess}
+                         disabled={isUpdatingPassword || !!passwordSuccess}
                        >
                          {showCurrentPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                        </button>
@@ -800,13 +800,13 @@ export default function ProfilePage() {
                          }}
                          className="input-field pr-12"
                          placeholder="Enter new password (min 8 characters)"
-                         disabled={isUpdatingPassword || passwordSuccess}
+                         disabled={isUpdatingPassword || !!passwordSuccess}
                        />
                        <button
                          type="button"
                          onClick={() => setShowNewPassword(!showNewPassword)}
                          className="absolute inset-y-0 right-0 flex items-center pr-3 text-dark-400 hover:text-dark-200 transition-colors"
-                         disabled={isUpdatingPassword || passwordSuccess}
+                         disabled={isUpdatingPassword || !!passwordSuccess}
                        >
                          {showNewPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                        </button>
@@ -828,13 +828,13 @@ export default function ProfilePage() {
                          }}
                          className="input-field pr-12"
                          placeholder="Confirm new password"
-                         disabled={isUpdatingPassword || passwordSuccess}
+                         disabled={isUpdatingPassword || !!passwordSuccess}
                        />
                        <button
                          type="button"
                          onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                          className="absolute inset-y-0 right-0 flex items-center pr-3 text-dark-400 hover:text-dark-200 transition-colors"
-                         disabled={isUpdatingPassword || passwordSuccess}
+                         disabled={isUpdatingPassword || !!passwordSuccess}
                        >
                          {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                        </button>
@@ -869,7 +869,7 @@ export default function ProfilePage() {
                    </button>
                    <button
                      onClick={handleUpdatePassword}
-                     disabled={isUpdatingPassword || !currentPassword.trim() || !newPassword.trim() || !confirmPassword.trim() || passwordSuccess}
+                     disabled={isUpdatingPassword || !currentPassword.trim() || !newPassword.trim() || !confirmPassword.trim() || !!passwordSuccess}
                      className="flex-1 bg-secondary-600 hover:bg-secondary-700 text-white font-medium py-2.5 px-4 rounded-lg disabled:opacity-50 flex items-center justify-center gap-2"
                    >
                      {isUpdatingPassword ? (
