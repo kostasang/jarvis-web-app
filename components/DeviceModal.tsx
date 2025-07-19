@@ -5,6 +5,7 @@ import { DeviceData } from '@/types/device'
 import { AreaData } from '@/types/area'
 import { getDeviceConfig, formatDeviceValue, getDeviceValueColor } from '@/utils/deviceUtils'
 import { deviceApi, areaApi } from '@/lib/api'
+import { useDevice } from '@/lib/DevicesContext'
 import DeviceHistoryChart from './DeviceHistoryChart'
 import { 
   X, 
@@ -35,14 +36,14 @@ export default function DeviceModal({ device, isOpen, onClose, onDeviceUpdate, a
   const [areas, setAreas] = useState<AreaData[]>([])
   const [currentAreaId, setCurrentAreaId] = useState<string | undefined>(undefined)
   const [isChangingArea, setIsChangingArea] = useState(false)
-  const [liveDevice, setLiveDevice] = useState<DeviceData | null>(null)
+  // Use centralized device data for live updates
+  const { device: liveDevice } = useDevice(device?.id || null)
 
   useEffect(() => {
     if (device) {
       setNickname(device.name || '')
       setCurrentAreaId(device.areaId)
       setIsEditingName(false)
-      setLiveDevice(device) // Initialize live device data
     }
   }, [device])
 
@@ -53,32 +54,6 @@ export default function DeviceModal({ device, isOpen, onClose, onDeviceUpdate, a
       setCurrentAreaId(liveDevice.areaId)
     }
   }, [liveDevice?.name, liveDevice?.areaId, isEditingName])
-
-  // Periodic refresh of device data while modal is open
-  useEffect(() => {
-    if (!isOpen || !device?.id) return
-
-    const fetchLatestDeviceData = async () => {
-      try {
-        const allDevices = await deviceApi.getDevicesLatestData()
-        const updatedDevice = allDevices.find(d => d.id === device.id)
-        if (updatedDevice) {
-          setLiveDevice(updatedDevice)
-        }
-      } catch (error) {
-        console.error('Failed to fetch latest device data:', error)
-      }
-    }
-
-    // Fetch immediately when modal opens
-    fetchLatestDeviceData()
-
-    // Set up periodic refresh every 5 seconds
-    const interval = setInterval(fetchLatestDeviceData, 5000)
-
-    // Cleanup interval when modal closes or device changes
-    return () => clearInterval(interval)
-  }, [isOpen, device?.id])
 
   useEffect(() => {
     const fetchAreas = async () => {

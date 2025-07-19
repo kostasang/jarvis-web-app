@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { 
   Home, 
   MapPin,
@@ -12,8 +12,9 @@ import {
 } from 'lucide-react'
 import { HubData } from '@/types/hub'
 import { DeviceData } from '@/types/device'
-import { hubApi, deviceApi } from '@/lib/api'
-import { getDevicesForHub, calculateDeviceStats } from '@/utils/deviceUtils'
+import { hubApi } from '@/lib/api'
+import { useDevicesForHub } from '@/lib/DevicesContext'
+import { calculateDeviceStats } from '@/utils/deviceUtils'
 
 interface HubCardProps {
   hub: HubData
@@ -25,8 +26,6 @@ export default function HubCard({ hub, onHubUpdate }: HubCardProps) {
   const [nickname, setNickname] = useState(hub?.nickname || '')
   const [isLoading, setIsLoading] = useState(false)
   const [showNavOptions, setShowNavOptions] = useState(false)
-  const [deviceStats, setDeviceStats] = useState({ total: 0, lastUpdate: undefined as string | undefined })
-
   // Guard clause for invalid hub data
   if (!hub || !hub.id) {
     return (
@@ -38,30 +37,9 @@ export default function HubCard({ hub, onHubUpdate }: HubCardProps) {
     )
   }
 
-  // Fetch device statistics for this hub
-  useEffect(() => {
-    const fetchDeviceStats = async () => {
-      try {
-        const devices = await deviceApi.getDevicesLatestData()
-        const hubDevices = getDevicesForHub(devices, hub.id)
-        const stats = calculateDeviceStats(hubDevices)
-        setDeviceStats({
-          total: stats.total,
-          lastUpdate: stats.lastUpdate
-        })
-      } catch (error) {
-        console.error('Failed to fetch device stats:', error)
-      }
-    }
-
-    fetchDeviceStats()
-    
-    // Set up periodic refresh every 5 seconds
-    const interval = setInterval(fetchDeviceStats, 5000)
-    
-    // Cleanup interval on unmount
-    return () => clearInterval(interval)
-  }, [hub.id])
+  // Use centralized device data
+  const { devices: hubDevices } = useDevicesForHub(hub.id)
+  const deviceStats = React.useMemo(() => calculateDeviceStats(hubDevices), [hubDevices])
 
   const handleSaveNickname = async () => {
     if (!nickname.trim() || !hub.id) return
@@ -165,7 +143,7 @@ export default function HubCard({ hub, onHubUpdate }: HubCardProps) {
             <div className="space-y-2">
               <h4 className="text-sm font-medium text-white mb-3">Navigate to:</h4>
               <a 
-                href={`/hub/${hub.id}/areas`}
+                href={`/areas?hubId=${hub.id}`}
                 className="flex items-center gap-3 p-3 rounded-lg hover:bg-dark-700/50 transition-colors text-white no-underline"
               >
                 <MapPin className="w-5 h-5 text-secondary-500" />
@@ -175,7 +153,7 @@ export default function HubCard({ hub, onHubUpdate }: HubCardProps) {
                 </div>
               </a>
               <a 
-                href={`/hub/${hub.id}/devices`}
+                href={`/devices?hubId=${hub.id}`}
                 className="flex items-center gap-3 p-3 rounded-lg hover:bg-dark-700/50 transition-colors text-white no-underline"
               >
                 <BarChart3 className="w-5 h-5 text-primary-500" />

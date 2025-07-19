@@ -1,13 +1,14 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useRouter, useParams } from 'next/navigation'
-import { ArrowLeft, Plus, Home, Zap, MapPin, AlertCircle, Package } from 'lucide-react'
-import { areaApi, hubApi, deviceApi } from '@/lib/api'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { ArrowLeft, Plus, Home, Zap, MapPin, AlertCircle, Package, ChevronDown } from 'lucide-react'
+import { areaApi, hubApi } from '@/lib/api'
 import { AreaData } from '@/types/area'
 import { HubData } from '@/types/hub'
 import { DeviceData } from '@/types/device'
-import { getDevicesForHub } from '@/utils/deviceUtils'
+import { useUnassignedDevices, useDevicesForHub, useDevices } from '@/lib/DevicesContext'
+import { calculateDeviceStats } from '@/utils/deviceUtils'
 import AreaCard from '@/components/AreaCard'
 import CreateAreaModal from '@/components/CreateAreaModal'
 import DeviceCard from '@/components/DeviceCard'
@@ -15,46 +16,49 @@ import DeviceModal from '@/components/DeviceModal'
 
 export default function HubAreasPage() {
   const router = useRouter()
-  const params = useParams()
-  const hubId = params.hubId as string
+  const searchParams = useSearchParams()
+  const hubIdFromUrl = searchParams.get('hubId')
 
   const [hub, setHub] = useState<HubData | null>(null)
+  const [allHubs, setAllHubs] = useState<HubData[]>([])
+  const [selectedHubId, setSelectedHubId] = useState<string | null>(hubIdFromUrl || null)
+  const [showHubSelector, setShowHubSelector] = useState(false)
   const [areas, setAreas] = useState<AreaData[]>([])
-  const [unassignedDevices, setUnassignedDevices] = useState<DeviceData[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
   const [error, setError] = useState('')
   const [selectedDevice, setSelectedDevice] = useState<DeviceData | null>(null)
   const [selectedDeviceAreaName, setSelectedDeviceAreaName] = useState<string | undefined>(undefined)
   const [isDeviceModalOpen, setIsDeviceModalOpen] = useState(false)
-  const [totalDeviceCount, setTotalDeviceCount] = useState(0)
+  
+  // Use centralized device data
+  const { refreshDevices } = useDevices()
+  const { devices: unassignedDevices } = useUnassignedDevices(selectedHubId)
+  const { devices: allHubDevices } = useDevicesForHub(selectedHubId)
+  const totalDeviceCount = allHubDevices.length
 
   const fetchHubAndAreas = async () => {
+    if (!selectedHubId) return
+    
     try {
       setError('')
       
-      // Fetch hub details, areas, and devices in parallel
-      const [hubsData, areasData, devicesData] = await Promise.all([
+      // Fetch hub details and areas (called once or when areas change)
+      const [hubsData, areasData] = await Promise.all([
         hubApi.getHubs(),
-        areaApi.getAreas(hubId),
-        deviceApi.getDevicesLatestData()
+        areaApi.getAreas(selectedHubId)
       ])
 
       // Find the specific hub
-      const currentHub = hubsData.find(h => h.id === hubId)
+      const currentHub = hubsData.find(h => h.id === selectedHubId)
       if (!currentHub) {
-        router.push('/dashboard')
+        setSelectedHubId(null)
         return
       }
 
-      // Get devices for this hub and filter unassigned ones
-      const hubDevices = getDevicesForHub(devicesData, hubId)
-      const unassigned = hubDevices.filter(device => !device.areaId)
-
       setHub(currentHub)
+      setAllHubs(hubsData)
       setAreas(areasData)
-      setUnassignedDevices(unassigned)
-      setTotalDeviceCount(hubDevices.length)
     } catch (err: any) {
       console.error('Failed to fetch hub and areas:', err)
       if (err.response?.status === 401) {
@@ -65,35 +69,61 @@ export default function HubAreasPage() {
     }
   }
 
+
+
   useEffect(() => {
-    if (!hubId) {
-      router.push('/dashboard')
+    const loadHubs = async () => {
+      try {
+        const hubsData = await hubApi.getHubs()
+        setAllHubs(hubsData)
+        
+        // If no hub selected and hubs available, select first one
+        if (!selectedHubId && hubsData.length > 0) {
+          setSelectedHubId(hubsData[0].id)
+        }
+      } catch (err: any) {
+        console.error('Failed to fetch hubs:', err)
+        if (err.response?.status === 401) {
+          router.push('/login')
+        }
+      }
+    }
+    
+    loadHubs()
+  }, [router])
+
+  useEffect(() => {
+    if (!selectedHubId) {
+      setIsLoading(false)
       return
     }
 
     const loadData = async () => {
       setIsLoading(true)
+      // Load hub/areas data (device data is handled by DevicesProvider)
       await fetchHubAndAreas()
       setIsLoading(false)
     }
 
     loadData()
     
-    // Set up periodic refresh every 5 seconds
-    const interval = setInterval(async () => {
-      await fetchHubAndAreas()
-    }, 5000)
-    
-    // Cleanup interval on unmount
-    return () => clearInterval(interval)
-  }, [hubId, router])
+    // No need for periodic device refresh - handled by DevicesProvider
+  }, [selectedHubId])
 
   const handleCreateSuccess = async () => {
-    await fetchHubAndAreas()
+    // When area is created, refresh areas list and device data
+    await Promise.all([
+      fetchHubAndAreas(),
+      refreshDevices()
+    ])
   }
 
   const handleAreaUpdate = async () => {
-    await fetchHubAndAreas()
+    // When area is updated/deleted, refresh areas list and device data
+    await Promise.all([
+      fetchHubAndAreas(),
+      refreshDevices()
+    ])
   }
 
   const handleDeviceClick = (device: DeviceData, areaName?: string) => {
@@ -119,11 +149,17 @@ export default function HubAreasPage() {
     )
   }
 
-  if (!hub) {
+  if (!selectedHubId || allHubs.length === 0) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
-          <p className="text-red-400">Hub not found</p>
+          <p className="text-red-400">No hubs available. Please go to dashboard to add a hub.</p>
+          <button
+            onClick={() => router.push('/dashboard')}
+            className="btn-primary mt-4"
+          >
+            Go to Dashboard
+          </button>
         </div>
       </div>
     )
@@ -148,13 +184,21 @@ export default function HubAreasPage() {
               </div>
               <div className="ml-6 hidden md:block">
                 <span className="text-dark-400">
-                  {hub.nickname || `Hub ${hub.id.slice(0, 8)}`} Areas
+                  {hub?.nickname || `Hub ${hub?.id.slice(0, 8)}`} Areas
                 </span>
               </div>
             </div>
           </div>
         </div>
       </header>
+      
+      {/* Click outside to close hub selector */}
+      {showHubSelector && (
+        <div 
+          className="fixed inset-0 z-40"
+          onClick={() => setShowHubSelector(false)}
+        />
+      )}
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -165,21 +209,101 @@ export default function HubAreasPage() {
           </div>
         )}
 
-        {/* Hub Info */}
-        <div className="glass-card p-6 mb-8">
-          <div className="flex items-center">
-            <div className="w-12 h-12 bg-primary-600 rounded-xl flex items-center justify-center mr-4">
-              <Home className="w-6 h-6 text-white" />
+        {/* Hub Selector Card */}
+        <div className="relative mb-8">
+          <button
+            onClick={() => setShowHubSelector(!showHubSelector)}
+            className="glass-card p-6 w-full text-left hover:bg-dark-700/30 transition-all duration-200 hover:scale-[1.02] cursor-pointer border-2 border-transparent hover:border-primary-500/30"
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex items-center">
+                <div className="w-12 h-12 bg-primary-600 rounded-xl flex items-center justify-center mr-4">
+                  <Home className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h1 className="text-2xl font-bold text-white mb-1">
+                    {hub?.nickname || `Hub ${hub?.id.slice(0, 8)}`}
+                  </h1>
+                  <p className="text-dark-400">
+                    {areas.length} area{areas.length !== 1 ? 's' : ''} • {totalDeviceCount} devices total
+                  </p>
+                  {allHubs.length > 1 && (
+                    <p className="text-sm text-primary-400 mt-1 flex items-center gap-1">
+                      <span className="hidden sm:inline">Tap to switch hub</span>
+                      <span className="sm:hidden">Tap to switch</span>
+                      <ChevronDown className={`w-4 h-4 transition-transform ${showHubSelector ? 'rotate-180' : ''}`} />
+                    </p>
+                  )}
+                </div>
+              </div>
+              <div className="text-dark-400">
+                <ChevronDown className={`w-6 h-6 transition-transform ${showHubSelector ? 'rotate-180' : ''}`} />
+              </div>
             </div>
-            <div>
-              <h1 className="text-2xl font-bold text-white">
-                {hub.nickname || `Hub ${hub.id.slice(0, 8)}`}
-              </h1>
-              <p className="text-dark-400">
-                {areas.length} area{areas.length !== 1 ? 's' : ''} • {totalDeviceCount} devices total
-              </p>
+          </button>
+          
+          {/* Hub Selection Dropdown */}
+          {showHubSelector && (
+            <div className="absolute top-full left-0 right-0 mt-2 z-50">
+              <div className="bg-dark-800/90 backdrop-blur-md border border-dark-600/50 rounded-lg p-4 shadow-xl">
+                <div className="space-y-2">
+                  {allHubs.length > 1 ? (
+                    <>
+                      <h3 className="text-sm font-medium text-white mb-3">Select Hub:</h3>
+                      {allHubs.map((hubOption) => (
+                        <button
+                          key={hubOption.id}
+                          onClick={() => {
+                            setSelectedHubId(hubOption.id)
+                            setShowHubSelector(false)
+                          }}
+                          className={`w-full text-left p-3 rounded-lg transition-all duration-200 ${
+                            hubOption.id === selectedHubId 
+                              ? 'bg-primary-600/30 border border-primary-500/50 text-primary-400 scale-[1.02]' 
+                              : 'text-white hover:bg-dark-700/50 hover:scale-[1.01]'
+                          }`}
+                        >
+                          <div className="flex items-center">
+                            <div className="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center mr-3">
+                              <Home className="w-4 h-4 text-white" />
+                            </div>
+                            <div>
+                              <div className="font-medium">{hubOption.nickname || `Hub ${hubOption.id.slice(0, 8)}`}</div>
+                              <div className="text-xs text-dark-400">{hubOption.id.slice(0, 16)}...</div>
+                            </div>
+                            {hubOption.id === selectedHubId && (
+                              <div className="ml-auto">
+                                <div className="w-2 h-2 bg-primary-400 rounded-full"></div>
+                              </div>
+                            )}
+                          </div>
+                        </button>
+                      ))}
+                    </>
+                  ) : (
+                    <>
+                      <h3 className="text-sm font-medium text-white mb-3">Current Hub:</h3>
+                      <div className="p-3 rounded-lg bg-primary-600/30 border border-primary-500/50">
+                        <div className="flex items-center">
+                          <div className="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center mr-3">
+                            <Home className="w-4 h-4 text-white" />
+                          </div>
+                          <div>
+                            <div className="font-medium text-primary-400">{hub?.nickname || `Hub ${hub?.id.slice(0, 8)}`}</div>
+                            <div className="text-xs text-dark-400">{hub?.id}</div>
+                          </div>
+                          <div className="ml-auto">
+                            <div className="w-2 h-2 bg-primary-400 rounded-full"></div>
+                          </div>
+                        </div>
+                      </div>
+
+                    </>
+                  )}
+                </div>
+              </div>
             </div>
-          </div>
+          )}
         </div>
 
         {areas.length === 0 ? (
@@ -254,7 +378,7 @@ export default function HubAreasPage() {
                                   <AreaCard 
                     key={area.id} 
                     area={area} 
-                    hubId={hubId}
+                    hubId={selectedHubId!}
                     onAreaUpdate={handleAreaUpdate}
                     onDeviceClick={handleDeviceClick}
                   />
@@ -281,7 +405,7 @@ export default function HubAreasPage() {
                         key={device.id} 
                         device={device}
                         showArea={false}
-                        onDeviceUpdate={fetchHubAndAreas}
+                        onDeviceUpdate={refreshDevices}
                         onDeviceClick={handleDeviceClick}
                       />
                     ))}
@@ -298,8 +422,8 @@ export default function HubAreasPage() {
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
         onSuccess={handleCreateSuccess}
-        hubId={hubId}
-        hubName={hub.nickname || `Hub ${hub.id.slice(0, 8)}`}
+        hubId={selectedHubId!}
+        hubName={hub?.nickname || `Hub ${hub?.id.slice(0, 8)}`}
       />
 
       {/* Device Modal */}
@@ -307,9 +431,9 @@ export default function HubAreasPage() {
         device={selectedDevice}
         isOpen={isDeviceModalOpen}
         onClose={handleCloseDeviceModal}
-        onDeviceUpdate={fetchHubAndAreas}
+        onDeviceUpdate={refreshDevices}
         areaName={selectedDeviceAreaName}
-        hubId={hubId}
+        hubId={selectedHubId!}
       />
     </div>
   )

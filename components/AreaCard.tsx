@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { 
   MapPin, 
   Edit3, 
@@ -12,8 +12,9 @@ import {
 } from 'lucide-react'
 import { AreaData } from '@/types/area'
 import { DeviceData } from '@/types/device'
-import { areaApi, deviceApi } from '@/lib/api'
-import { getDevicesForArea, calculateDeviceStats } from '@/utils/deviceUtils'
+import { areaApi } from '@/lib/api'
+import { useDevicesForArea, useDevices } from '@/lib/DevicesContext'
+import { calculateDeviceStats } from '@/utils/deviceUtils'
 import DeviceCard from './DeviceCard'
 
 interface AreaCardProps {
@@ -29,34 +30,11 @@ export default function AreaCard({ area, hubId, onAreaUpdate, onDeviceClick }: A
   const [isLoading, setIsLoading] = useState(false)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [showDevices, setShowDevices] = useState(false)
-  const [devices, setDevices] = useState<DeviceData[]>([])
-  const [deviceStats, setDeviceStats] = useState({ total: 0, lastUpdate: undefined as string | undefined })
-
-  // Fetch devices for this area
-  const fetchDevices = async () => {
-    try {
-      const allDevices = await deviceApi.getDevicesLatestData()
-      const areaDevices = getDevicesForArea(allDevices, area.id)
-      const stats = calculateDeviceStats(areaDevices)
-      setDevices(areaDevices)
-      setDeviceStats({
-        total: stats.total,
-        lastUpdate: stats.lastUpdate
-      })
-    } catch (error) {
-      console.error('Failed to fetch devices for area:', error)
-    }
-  }
-
-  useEffect(() => {
-    fetchDevices()
-    
-    // Set up periodic refresh every 5 seconds
-    const interval = setInterval(fetchDevices, 5000)
-    
-    // Cleanup interval on unmount
-    return () => clearInterval(interval)
-  }, [area.id])
+  
+  // Use centralized device data
+  const { refreshDevices } = useDevices()
+  const { devices } = useDevicesForArea(area.id)
+  const deviceStats = React.useMemo(() => calculateDeviceStats(devices), [devices])
 
   const handleSaveName = async () => {
     if (!newName.trim() || newName === area.name) {
@@ -227,7 +205,7 @@ export default function AreaCard({ area, hubId, onAreaUpdate, onDeviceClick }: A
                 key={device.id} 
                 device={device}
                 showArea={false}
-                onDeviceUpdate={fetchDevices}
+                onDeviceUpdate={refreshDevices}
                 onDeviceClick={(device) => onDeviceClick?.(device, area.name)}
               />
             ))}
