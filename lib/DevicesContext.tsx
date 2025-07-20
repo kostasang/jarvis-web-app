@@ -32,6 +32,7 @@ export function DevicesProvider({ children }: DevicesProviderProps) {
   // WebSocket refs
   const wsRef = useRef<WebSocket | null>(null)
   const wsReconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const isConnectingRef = useRef(false)
   
   // Check if user is authenticated
   const isAuthenticated = () => {
@@ -74,21 +75,45 @@ export function DevicesProvider({ children }: DevicesProviderProps) {
   }
   
   const connectWebSocket = useCallback(() => {
-    if (!isAuthenticated()) return
+    if (!isAuthenticated()) {
+      console.log('WebSocket: Not authenticated, skipping connection')
+      return
+    }
+    
+    // Prevent multiple simultaneous connection attempts
+    if (isConnectingRef.current) {
+      console.log('WebSocket: Already connecting, skipping duplicate attempt')
+      return
+    }
+    
+    // Check if already connected
+    if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
+      console.log('WebSocket: Already connected, skipping')
+      return
+    }
     
     const token = localStorage.getItem('jarvis_token')
-    if (!token) return
+    if (!token) {
+      console.log('WebSocket: No token found, skipping connection')
+      return
+    }
+    
+    isConnectingRef.current = true
+    console.log('WebSocket: Starting connection attempt...')
     
     // Close existing connection if any
     if (wsRef.current) {
+      console.log('WebSocket: Closing existing connection')
       wsRef.current.close()
+      wsRef.current = null
     }
     
     try {
       const ws = new WebSocket(`${config.websocketUrl}/get_live_notifications?token=${token}`)
       
       ws.onopen = () => {
-        console.log('WebSocket connected for device notifications')
+        console.log('WebSocket: Connected successfully for device notifications')
+        isConnectingRef.current = false
         // Clear any reconnection timeout
         if (wsReconnectTimeoutRef.current) {
           clearTimeout(wsReconnectTimeoutRef.current)
@@ -98,17 +123,18 @@ export function DevicesProvider({ children }: DevicesProviderProps) {
       
       ws.onmessage = (event) => {
         // When we receive a message, fetch latest devices data
-        console.log('Received device update notification, fetching latest data')
+        console.log('WebSocket: Received device update notification, fetching latest data')
         fetchDevices()
       }
       
       ws.onclose = (event) => {
-        console.log('WebSocket disconnected', event.code, event.reason)
+        console.log(`WebSocket: Disconnected - Code: ${event.code}, Reason: ${event.reason}`)
         wsRef.current = null
+        isConnectingRef.current = false
         
         // Reconnect if still authenticated and not a clean close
         if (isAuthenticated() && event.code !== 1000) {
-          console.log('Attempting to reconnect WebSocket in 5 seconds...')
+          console.log('WebSocket: Attempting to reconnect in 5 seconds...')
           wsReconnectTimeoutRef.current = setTimeout(() => {
             connectWebSocket()
           }, 5000) // Reconnect after 5 seconds
@@ -116,16 +142,20 @@ export function DevicesProvider({ children }: DevicesProviderProps) {
       }
       
       ws.onerror = (error) => {
-        console.error('WebSocket error:', error)
+        console.error('WebSocket: Connection error:', error)
+        isConnectingRef.current = false
       }
       
       wsRef.current = ws
     } catch (error) {
-      console.error('Failed to create WebSocket connection:', error)
+      console.error('WebSocket: Failed to create connection:', error)
+      isConnectingRef.current = false
     }
   }, [])
 
   const disconnectWebSocket = useCallback(() => {
+    console.log('WebSocket: Disconnecting...')
+    
     if (wsRef.current) {
       wsRef.current.close(1000, 'User disconnected')
       wsRef.current = null
@@ -135,6 +165,8 @@ export function DevicesProvider({ children }: DevicesProviderProps) {
       clearTimeout(wsReconnectTimeoutRef.current)
       wsReconnectTimeoutRef.current = null
     }
+    
+    isConnectingRef.current = false
   }, [])
 
   const refreshDevices = useCallback(async () => {
