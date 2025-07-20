@@ -33,6 +33,12 @@ export function DevicesProvider({ children }: DevicesProviderProps) {
   const wsRef = useRef<WebSocket | null>(null)
   const wsReconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const isConnectingRef = useRef(false)
+  const lastAuthStateRef = useRef<boolean>(false)
+  
+  // Fallback polling refs
+  const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null)
+  const wsRetryCountRef = useRef(0)
+  const maxWsRetries = 3 // Try WebSocket 3 times before falling back to polling
   
   // Check if user is authenticated
   const isAuthenticated = () => {
@@ -58,6 +64,7 @@ export function DevicesProvider({ children }: DevicesProviderProps) {
       if (err.response?.status === 401) {
         console.log('Authentication failed, stopping device updates')
         disconnectWebSocket()
+        stopPolling()
         clearDeviceData()
         return
       }
@@ -73,6 +80,36 @@ export function DevicesProvider({ children }: DevicesProviderProps) {
     setError(null)
     setIsLoading(false)
   }
+  
+  const startPolling = useCallback(() => {
+    if (!isAuthenticated()) return
+    
+    // Don't start polling if WebSocket is connected
+    if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
+      return
+    }
+    
+    // Don't start if already polling
+    if (pollingIntervalRef.current) {
+      return
+    }
+    
+    console.log('WebSocket: Starting fallback polling (5 second intervals)')
+    pollingIntervalRef.current = setInterval(() => {
+      fetchDevices()
+    }, 5000)
+    
+    // Also fetch immediately
+    fetchDevices()
+  }, [])
+  
+  const stopPolling = useCallback(() => {
+    if (pollingIntervalRef.current) {
+      console.log('WebSocket: Stopping fallback polling')
+      clearInterval(pollingIntervalRef.current)
+      pollingIntervalRef.current = null
+    }
+  }, [])
   
   const connectWebSocket = useCallback(() => {
     if (!isAuthenticated()) {
@@ -99,7 +136,7 @@ export function DevicesProvider({ children }: DevicesProviderProps) {
     }
     
     isConnectingRef.current = true
-    console.log('WebSocket: Starting connection attempt...')
+    console.log(`WebSocket: Starting connection attempt... (retry ${wsRetryCountRef.current + 1}/${maxWsRetries})`)
     
     // Close existing connection if any
     if (wsRef.current) {
@@ -114,6 +151,11 @@ export function DevicesProvider({ children }: DevicesProviderProps) {
       ws.onopen = () => {
         console.log('WebSocket: Connected successfully for device notifications')
         isConnectingRef.current = false
+        wsRetryCountRef.current = 0 // Reset retry count on successful connection
+        
+        // Stop polling since WebSocket is now working
+        stopPolling()
+        
         // Clear any reconnection timeout
         if (wsReconnectTimeoutRef.current) {
           clearTimeout(wsReconnectTimeoutRef.current)
@@ -132,12 +174,20 @@ export function DevicesProvider({ children }: DevicesProviderProps) {
         wsRef.current = null
         isConnectingRef.current = false
         
-        // Reconnect if still authenticated and not a clean close
+        // Only attempt reconnection if still authenticated and not a clean close
         if (isAuthenticated() && event.code !== 1000) {
-          console.log('WebSocket: Attempting to reconnect in 5 seconds...')
-          wsReconnectTimeoutRef.current = setTimeout(() => {
-            connectWebSocket()
-          }, 5000) // Reconnect after 5 seconds
+          wsRetryCountRef.current++
+          
+          if (wsRetryCountRef.current < maxWsRetries) {
+            console.log(`WebSocket: Attempting to reconnect in 5 seconds... (attempt ${wsRetryCountRef.current + 1}/${maxWsRetries})`)
+            wsReconnectTimeoutRef.current = setTimeout(() => {
+              connectWebSocket()
+            }, 5000)
+          } else {
+            console.log('WebSocket: Max retries reached, falling back to polling')
+            wsRetryCountRef.current = 0 // Reset for future attempts
+            startPolling()
+          }
         }
       }
       
@@ -150,8 +200,21 @@ export function DevicesProvider({ children }: DevicesProviderProps) {
     } catch (error) {
       console.error('WebSocket: Failed to create connection:', error)
       isConnectingRef.current = false
+      
+      // Increment retry count and decide whether to retry or fall back
+      wsRetryCountRef.current++
+      if (wsRetryCountRef.current < maxWsRetries) {
+        console.log(`WebSocket: Retrying connection in 5 seconds... (attempt ${wsRetryCountRef.current + 1}/${maxWsRetries})`)
+        wsReconnectTimeoutRef.current = setTimeout(() => {
+          connectWebSocket()
+        }, 5000)
+      } else {
+        console.log('WebSocket: Max retries reached, falling back to polling')
+        wsRetryCountRef.current = 0
+        startPolling()
+      }
     }
-  }, [])
+  }, [startPolling, stopPolling])
 
   const disconnectWebSocket = useCallback(() => {
     console.log('WebSocket: Disconnecting...')
@@ -166,8 +229,10 @@ export function DevicesProvider({ children }: DevicesProviderProps) {
       wsReconnectTimeoutRef.current = null
     }
     
+    stopPolling()
     isConnectingRef.current = false
-  }, [])
+    wsRetryCountRef.current = 0
+  }, [stopPolling])
 
   const refreshDevices = useCallback(async () => {
     // Don't refresh if not authenticated
@@ -205,8 +270,11 @@ export function DevicesProvider({ children }: DevicesProviderProps) {
   }, [connectWebSocket])
 
   useEffect(() => {
+    const currentAuthState = isAuthenticated()
+    lastAuthStateRef.current = currentAuthState
+    
     // Initial load and setup if authenticated
-    if (isAuthenticated()) {
+    if (currentAuthState) {
       refreshDevices()
       connectWebSocket()
     } else {
@@ -217,23 +285,29 @@ export function DevicesProvider({ children }: DevicesProviderProps) {
     // Monitor authentication state changes by checking periodically
     const authCheckInterval = setInterval(() => {
       const authenticated = isAuthenticated()
+      const wasAuthenticated = lastAuthStateRef.current
       
-      if (authenticated && !wsRef.current) {
-        // User logged in, start device updates
+      // Only act on actual state changes
+      if (authenticated && !wasAuthenticated) {
+        // User just logged in
         console.log('User logged in, starting device updates via WebSocket')
         refreshDevices()
         connectWebSocket()
-      } else if (!authenticated && wsRef.current) {
-        // User logged out, stop device updates
+        lastAuthStateRef.current = true
+      } else if (!authenticated && wasAuthenticated) {
+        // User just logged out
         console.log('User logged out, stopping device updates')
         disconnectWebSocket()
+        stopPolling()
         clearDeviceData()
+        lastAuthStateRef.current = false
       }
     }, 1000) // Check every second
 
     // Cleanup on unmount
     return () => {
       disconnectWebSocket()
+      stopPolling()
       clearInterval(authCheckInterval)
       if (refreshTimeoutRef.current) {
         clearTimeout(refreshTimeoutRef.current)
