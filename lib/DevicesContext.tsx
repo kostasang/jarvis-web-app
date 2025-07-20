@@ -110,6 +110,41 @@ export function DevicesProvider({ children }: DevicesProviderProps) {
       pollingIntervalRef.current = null
     }
   }, [])
+
+  const refreshDevices = useCallback(async () => {
+    // Don't refresh if not authenticated
+    if (!isAuthenticated()) {
+      return
+    }
+    
+    // If already refreshing, don't start another refresh
+    if (isRefreshingRef.current) {
+      return
+    }
+
+    // Clear any pending refresh
+    if (refreshTimeoutRef.current) {
+      clearTimeout(refreshTimeoutRef.current)
+    }
+
+    // Debounce multiple rapid calls to 200ms for better batching
+    refreshTimeoutRef.current = setTimeout(async () => {
+      // Double-check if still needed (another call might have occurred)
+      if (isRefreshingRef.current || !isAuthenticated()) {
+        return
+      }
+      
+      isRefreshingRef.current = true
+      setIsLoading(true)
+      
+      try {
+        await fetchDevices()
+      } finally {
+        setIsLoading(false)
+        isRefreshingRef.current = false
+      }
+    }, 200)
+  }, [])
   
   const connectWebSocket = useCallback(() => {
     if (!isAuthenticated()) {
@@ -164,9 +199,9 @@ export function DevicesProvider({ children }: DevicesProviderProps) {
       }
       
       ws.onmessage = (event) => {
-        // When we receive a message, fetch latest devices data
-        console.log('WebSocket: Received device update notification, fetching latest data')
-        fetchDevices()
+        // When we receive a message, fetch latest devices data (debounced)
+        console.log('WebSocket: Received device update notification, scheduling data fetch')
+        refreshDevices()
       }
       
       ws.onclose = (event) => {
@@ -214,7 +249,7 @@ export function DevicesProvider({ children }: DevicesProviderProps) {
         startPolling()
       }
     }
-  }, [startPolling, stopPolling])
+  }, [startPolling, stopPolling, refreshDevices])
 
   const disconnectWebSocket = useCallback(() => {
     console.log('WebSocket: Disconnecting...')
@@ -233,41 +268,6 @@ export function DevicesProvider({ children }: DevicesProviderProps) {
     isConnectingRef.current = false
     wsRetryCountRef.current = 0
   }, [stopPolling])
-
-  const refreshDevices = useCallback(async () => {
-    // Don't refresh if not authenticated
-    if (!isAuthenticated()) {
-      return
-    }
-    
-    // If already refreshing, don't start another refresh
-    if (isRefreshingRef.current) {
-      return
-    }
-
-    // Clear any pending refresh
-    if (refreshTimeoutRef.current) {
-      clearTimeout(refreshTimeoutRef.current)
-    }
-
-    // Debounce multiple rapid calls to 200ms for better batching
-    refreshTimeoutRef.current = setTimeout(async () => {
-      // Double-check if still needed (another call might have occurred)
-      if (isRefreshingRef.current || !isAuthenticated()) {
-        return
-      }
-      
-      isRefreshingRef.current = true
-      setIsLoading(true)
-      
-      try {
-        await fetchDevices()
-      } finally {
-        setIsLoading(false)
-        isRefreshingRef.current = false
-      }
-    }, 200)
-  }, [connectWebSocket])
 
   useEffect(() => {
     const currentAuthState = isAuthenticated()
