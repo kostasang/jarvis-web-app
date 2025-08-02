@@ -1,7 +1,6 @@
 export function getBasePath(): string {
-  // In production, Next.js automatically sets the basePath from next.config.js
-  // return process.env.NODE_ENV === 'production' ? '/jarvis-web-app' : ''
-  return ''
+  // Mirror the basePath logic from next.config.js for manual redirects
+  return process.env.NODE_ENV === 'production' ? '/jarvis-web-app' : ''
 }
 
 export function getFullPath(path: string): string {
