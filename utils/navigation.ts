@@ -12,9 +12,9 @@ export function getFullPath(path: string): string {
   return basePath ? `${basePath}/${cleanPath}` : `/${cleanPath}`
 }
 
-// Navigation helper for router.push
+// Navigation helper for router.push (Next.js handles basePath automatically)
 export function navigateTo(path: string): string {
-  return getFullPath(path)
+  return path
 }
 
 // Navigation helper for window.location redirects
