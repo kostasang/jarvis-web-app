@@ -70,7 +70,7 @@ export default function HubCard({ hub, onHubUpdate }: HubCardProps) {
 
 
   return (
-    <div className="glass-card p-6 hover:bg-dark-700/30 transition-all duration-200 relative">
+    <div className={`glass-card p-6 hover:bg-dark-700/30 transition-all duration-200 relative ${showNavOptions ? 'z-50' : ''}`}>
       {/* Header */}
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-center">
@@ -142,7 +142,7 @@ export default function HubCard({ hub, onHubUpdate }: HubCardProps) {
       {/* Navigation Options */}
       {showNavOptions && (
         <div className="absolute top-full left-0 right-0 mt-2 z-50">
-          <div className="glass-card p-4 border border-dark-600">
+          <div className="bg-dark-800 p-4 border border-dark-600 rounded-lg shadow-2xl drop-shadow-2xl shadow-black/50">
             <div className="space-y-2">
               <h4 className="text-sm font-medium text-white mb-3">Navigate to:</h4>
               <button 

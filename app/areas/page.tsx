@@ -229,10 +229,9 @@ export default function HubAreasPage() {
                     {areas.length} area{areas.length !== 1 ? 's' : ''} • {totalDeviceCount} devices total
                   </p>
                   {allHubs.length > 1 && (
-                    <p className="text-sm text-primary-400 mt-1 flex items-center gap-1">
+                    <p className="text-sm text-primary-400 mt-1">
                       <span className="hidden sm:inline">Tap to switch hub</span>
                       <span className="sm:hidden">Tap to switch</span>
-                      <ChevronDown className={`w-4 h-4 transition-transform ${showHubSelector ? 'rotate-180' : ''}`} />
                     </p>
                   )}
                 </div>
@@ -246,7 +245,7 @@ export default function HubAreasPage() {
           {/* Hub Selection Dropdown */}
           {showHubSelector && (
             <div className="absolute top-full left-0 right-0 mt-2 z-50">
-              <div className="bg-dark-800/90 backdrop-blur-md border border-dark-600/50 rounded-lg p-4 shadow-xl">
+              <div className="bg-dark-800/90 backdrop-blur-md border border-dark-600/50 rounded-lg p-4 shadow-2xl drop-shadow-2xl shadow-black/50">
                 <div className="space-y-2">
                   {allHubs.length > 1 ? (
                     <>
