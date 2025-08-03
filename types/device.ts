@@ -8,6 +8,8 @@ export interface DeviceLatestDataApiResponse {
   device_data?: number | null
   device_state?: number | null
   time?: string | null
+  battery_level?: number | null
+  device_version?: number | null
 }
 
 // Frontend interface (normalized)
@@ -19,6 +21,8 @@ export interface DeviceData {
   hubId: string
   latestValue?: number
   latestTimestamp?: string
+  batteryLevel?: number | null
+  deviceVersion?: number | null
 }
 
 export interface DeviceFilter {

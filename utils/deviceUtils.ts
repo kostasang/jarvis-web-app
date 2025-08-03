@@ -1,5 +1,23 @@
 import { DeviceData, DeviceStats, DeviceFilter } from '@/types/device'
 import { DEVICE_TYPES } from '@/config/deviceTypes'
+import { isValidTimestamp } from './dateUtils'
+
+// Helper function to safely parse timestamps for comparison
+function parseTimestampSafely(timestamp: string): Date | null {
+  try {
+    // Handle backend timestamp formats
+    if (timestamp.includes(' EEST') || timestamp.includes(' EET')) {
+      const cleanTimestamp = timestamp.replace(/ EEST| EET/g, '')
+      const date = new Date(cleanTimestamp)
+      return isNaN(date.getTime()) ? null : date
+    } else {
+      const date = new Date(timestamp)
+      return isNaN(date.getTime()) ? null : date
+    }
+  } catch {
+    return null
+  }
+}
 
 export function getDeviceConfig(deviceType: number) {
   return DEVICE_TYPES[deviceType] || {
@@ -92,6 +110,7 @@ export function calculateDeviceStats(devices: DeviceData[]): DeviceStats {
   }
 
   let lastUpdate: string | undefined
+  console.log('calculateDeviceStats: Processing', devices.length, 'devices')
 
   devices.forEach(device => {
     // Category count
@@ -104,15 +123,38 @@ export function calculateDeviceStats(devices: DeviceData[]): DeviceStats {
     }
 
     // Track most recent update
-    if (device.latestTimestamp) {
-      if (!lastUpdate || new Date(device.latestTimestamp) > new Date(lastUpdate)) {
+    if (device.latestTimestamp && isValidTimestamp(device.latestTimestamp)) {
+      console.log('calculateDeviceStats: Processing device', device.id, 'with timestamp', device.latestTimestamp)
+      if (!lastUpdate) {
         lastUpdate = device.latestTimestamp
+        console.log('calculateDeviceStats: Set initial lastUpdate to', lastUpdate)
+      } else {
+        // Parse timestamps safely for comparison
+        try {
+          const deviceDate = parseTimestampSafely(device.latestTimestamp)
+          const lastUpdateDate = parseTimestampSafely(lastUpdate)
+          
+          if (deviceDate && lastUpdateDate && deviceDate > lastUpdateDate) {
+            console.log('calculateDeviceStats: Updating lastUpdate from', lastUpdate, 'to', device.latestTimestamp)
+            lastUpdate = device.latestTimestamp
+          } else if (deviceDate && !lastUpdateDate) {
+            console.log('calculateDeviceStats: Setting lastUpdate to', device.latestTimestamp, '(previous was invalid)')
+            lastUpdate = device.latestTimestamp
+          }
+        } catch (error) {
+          console.warn('Error comparing timestamps:', error)
+        }
       }
+    } else {
+      console.log('calculateDeviceStats: Skipping device', device.id, '- no valid timestamp (', device.latestTimestamp, ')')
     }
   })
 
   if (lastUpdate) {
     stats.lastUpdate = lastUpdate
+    console.log('calculateDeviceStats: Final lastUpdate set to', lastUpdate)
+  } else {
+    console.log('calculateDeviceStats: No valid lastUpdate found')
   }
 
   return stats

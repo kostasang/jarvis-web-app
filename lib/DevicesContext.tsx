@@ -2,15 +2,18 @@
 
 import React, { createContext, useContext, useEffect, useState, ReactNode, useCallback, useRef } from 'react'
 import { DeviceData } from '@/types/device'
-import { deviceApi } from '@/lib/api'
+import { HubReadings } from '@/types/hub'
+import { deviceApi, hubApi } from '@/lib/api'
 import { config } from '@/config/env'
 
 interface DevicesContextType {
   devices: DeviceData[]
+  hubReadings: Record<string, HubReadings>
   isLoading: boolean
   lastUpdate: string | null
   error: string | null
   refreshDevices: () => Promise<void>
+  getHubReadings: (hubId: string) => HubReadings | null
 }
 
 const DevicesContext = createContext<DevicesContextType | undefined>(undefined)
@@ -21,6 +24,7 @@ interface DevicesProviderProps {
 
 export function DevicesProvider({ children }: DevicesProviderProps) {
   const [devices, setDevices] = useState<DeviceData[]>([])
+  const [hubReadings, setHubReadings] = useState<Record<string, HubReadings>>({})
   const [isLoading, setIsLoading] = useState(true)
   const [lastUpdate, setLastUpdate] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -37,6 +41,7 @@ export function DevicesProvider({ children }: DevicesProviderProps) {
   
   // Fallback polling refs
   const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null)
+  const periodicSyncIntervalRef = useRef<NodeJS.Timeout | null>(null)
   const wsRetryCountRef = useRef(0)
   const maxWsRetries = 3 // Try WebSocket 3 times before falling back to polling
   
@@ -76,9 +81,114 @@ export function DevicesProvider({ children }: DevicesProviderProps) {
   
   const clearDeviceData = () => {
     setDevices([])
+    setHubReadings({})
     setLastUpdate(null)
     setError(null)
     setIsLoading(false)
+  }
+
+  // Update individual device from WebSocket message
+  const updateDeviceFromWebSocket = (deviceMessage: any) => {
+    console.log('WebSocket: Updating device:', deviceMessage.device_id)
+    console.log('WebSocket: Device timestamp:', deviceMessage.timestamp)
+    setDevices(prevDevices => {
+      const updatedDevices = prevDevices.map(device => {
+        if (device.id === deviceMessage.device_id) {
+          const updatedDevice = {
+            ...device,
+            latestValue: deviceMessage.device_data ?? deviceMessage.device_state ?? device.latestValue,
+            latestTimestamp: deviceMessage.timestamp,
+            batteryLevel: deviceMessage.battery_level ?? device.batteryLevel,
+            deviceVersion: deviceMessage.device_version ?? device.deviceVersion,
+          }
+          console.log('WebSocket: Updated device timestamp from', device.latestTimestamp, 'to', updatedDevice.latestTimestamp)
+          return updatedDevice
+        }
+        return device
+      })
+      return updatedDevices
+    })
+    setLastUpdate(new Date().toISOString())
+  }
+
+  // Update hub readings from WebSocket message
+  const updateHubReadingsFromWebSocket = (statusMessage: any) => {
+    console.log('WebSocket: Updating hub status:', statusMessage.hub_id)
+    setHubReadings(prev => ({
+      ...prev,
+      [statusMessage.hub_id]: {
+        hub_id: statusMessage.hub_id,
+        health: statusMessage.health,
+        power_status: statusMessage.power_status,
+        uptime: statusMessage.uptime,
+        firmware_version: statusMessage.firmware_version,
+        last_seen: statusMessage.last_seen,
+      }
+    }))
+  }
+
+  // Get hub readings for a specific hub
+  const getHubReadings = (hubId: string): HubReadings | null => {
+    return hubReadings[hubId] || null
+  }
+
+  // Fetch all hub readings
+  const fetchAllHubReadings = async () => {
+    if (!isAuthenticated()) return
+
+    try {
+      const hubIds = Array.from(new Set(devices.map(device => device.hubId)))
+      
+      if (hubIds.length === 0) {
+        console.log('No hub IDs found, skipping hub readings fetch')
+        return
+      }
+      
+      console.log('Fetching hub readings for hubs:', hubIds)
+      
+      for (const hubId of hubIds) {
+        try {
+          const readings = await hubApi.getHubReadings(hubId)
+          setHubReadings(prev => ({
+            ...prev,
+            [hubId]: readings
+          }))
+        } catch (error) {
+          console.error(`Failed to fetch readings for hub ${hubId}:`, error)
+        }
+      }
+    } catch (error) {
+      console.error('Failed to fetch hub readings:', error)
+    }
+  }
+
+  // Start periodic sync every 30 seconds
+  const startPeriodicSync = useCallback(() => {
+    if (!isAuthenticated()) return
+
+    // Clear any existing interval
+    if (periodicSyncIntervalRef.current) {
+      clearInterval(periodicSyncIntervalRef.current)
+    }
+
+    console.log('Starting periodic sync every 30 seconds')
+    
+    periodicSyncIntervalRef.current = setInterval(async () => {
+      if (isAuthenticated()) {
+        console.log('Periodic sync: Fetching devices and hub readings')
+        await fetchDevices()
+        await fetchAllHubReadings()
+      }
+    }, 30000) // 30 seconds
+  }, [devices])
+
+  // Stop periodic sync
+  const stopPeriodicSync = () => {
+    if (periodicSyncIntervalRef.current) {
+      clearInterval(periodicSyncIntervalRef.current)
+      periodicSyncIntervalRef.current = null
+      console.log('Stopped periodic sync')
+    }
   }
   
   const startPolling = useCallback(() => {
@@ -191,6 +301,9 @@ export function DevicesProvider({ children }: DevicesProviderProps) {
         // Stop polling since WebSocket is now working
         stopPolling()
         
+        // Start periodic sync for data freshness
+        startPeriodicSync()
+        
         // Clear any reconnection timeout
         if (wsReconnectTimeoutRef.current) {
           clearTimeout(wsReconnectTimeoutRef.current)
@@ -199,9 +312,28 @@ export function DevicesProvider({ children }: DevicesProviderProps) {
       }
       
       ws.onmessage = (event) => {
-        // When we receive a message, fetch latest devices data (debounced)
-        console.log('WebSocket: Received device update notification, scheduling data fetch')
-        refreshDevices()
+        console.log('WebSocket: Received message')
+        console.log('WebSocket: Message content:', event.data)
+        
+        try {
+          const message = JSON.parse(event.data)
+          
+          // Handle device updates
+          if (message.topic_description === 'devices') {
+            console.log('WebSocket: Processing device update for device:', message.device_id)
+            updateDeviceFromWebSocket(message)
+          }
+          // Handle hub status updates
+          else if (message.topic_description === 'status') {
+            console.log('WebSocket: Processing hub status update for hub:', message.hub_id)
+            updateHubReadingsFromWebSocket(message)
+          }
+          else {
+            console.log('WebSocket: Unknown topic_description:', message.topic_description)
+          }
+        } catch (error) {
+          console.error('WebSocket: Failed to parse message:', error)
+        }
       }
       
       ws.onclose = (event) => {
@@ -221,6 +353,7 @@ export function DevicesProvider({ children }: DevicesProviderProps) {
           } else {
             console.log('WebSocket: Max retries reached, falling back to polling')
             wsRetryCountRef.current = 0 // Reset for future attempts
+            stopPeriodicSync()
             startPolling()
           }
         }
@@ -246,6 +379,7 @@ export function DevicesProvider({ children }: DevicesProviderProps) {
       } else {
         console.log('WebSocket: Max retries reached, falling back to polling')
         wsRetryCountRef.current = 0
+        stopPeriodicSync()
         startPolling()
       }
     }
@@ -265,9 +399,10 @@ export function DevicesProvider({ children }: DevicesProviderProps) {
     }
     
     stopPolling()
+    stopPeriodicSync()
     isConnectingRef.current = false
     wsRetryCountRef.current = 0
-  }, [stopPolling])
+  }, [stopPolling, stopPeriodicSync])
 
   useEffect(() => {
     const currentAuthState = isAuthenticated()
@@ -275,7 +410,13 @@ export function DevicesProvider({ children }: DevicesProviderProps) {
     
     // Initial load and setup if authenticated
     if (currentAuthState) {
-      refreshDevices()
+      const initializeData = async () => {
+        console.log('Initializing app data...')
+        await fetchDevices()
+        await fetchAllHubReadings()
+        setIsLoading(false)
+      }
+      initializeData()
       connectWebSocket()
     } else {
       // Clear data if not authenticated
@@ -291,7 +432,11 @@ export function DevicesProvider({ children }: DevicesProviderProps) {
       if (authenticated && !wasAuthenticated) {
         // User just logged in
         console.log('User logged in, starting device updates via WebSocket')
-        refreshDevices()
+        const initializeData = async () => {
+          await fetchDevices()
+          await fetchAllHubReadings()
+        }
+        initializeData()
         connectWebSocket()
         lastAuthStateRef.current = true
       } else if (!authenticated && wasAuthenticated) {
@@ -299,6 +444,7 @@ export function DevicesProvider({ children }: DevicesProviderProps) {
         console.log('User logged out, stopping device updates')
         disconnectWebSocket()
         stopPolling()
+        stopPeriodicSync()
         clearDeviceData()
         lastAuthStateRef.current = false
       }
@@ -308,6 +454,7 @@ export function DevicesProvider({ children }: DevicesProviderProps) {
     return () => {
       disconnectWebSocket()
       stopPolling()
+      stopPeriodicSync()
       clearInterval(authCheckInterval)
       if (refreshTimeoutRef.current) {
         clearTimeout(refreshTimeoutRef.current)
@@ -317,10 +464,12 @@ export function DevicesProvider({ children }: DevicesProviderProps) {
 
   const value: DevicesContextType = {
     devices,
+    hubReadings,
     isLoading,
     lastUpdate,
     error,
-    refreshDevices
+    refreshDevices,
+    getHubReadings
   }
 
   return (

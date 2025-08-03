@@ -26,4 +26,13 @@ export interface ClaimHubRequest {
 export interface SetHubNicknameRequest {
   hub_id: string
   hub_nickname: string
+}
+
+export interface HubReadings {
+  hub_id: string
+  health: 'healthy' | 'unhealthy' | 'critical'
+  power_status: 'main' | 'battery'
+  uptime: number
+  firmware_version: string
+  last_seen: string
 } 

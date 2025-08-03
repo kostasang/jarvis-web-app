@@ -23,6 +23,7 @@ import { HubData } from '@/types/hub'
 import { AreaData } from '@/types/area'
 import { useDevicesForHub, useDevices } from '@/lib/DevicesContext'
 import { filterDevices, calculateDeviceStats } from '@/utils/deviceUtils'
+import { formatTimestamp } from '@/utils/dateUtils'
 import { DEVICE_CATEGORIES } from '@/config/deviceTypes'
 import DeviceCard from '@/components/DeviceCard'
 import DeviceModal from '@/components/DeviceModal'
@@ -414,7 +415,7 @@ export default function HubDevicesPage() {
                   <p className="text-dark-400">
                     {totalStats.total} total devices
                     {totalStats.lastUpdate && (
-                      <span> • Last update: {new Date(totalStats.lastUpdate).toLocaleString()}</span>
+                      <span> • Last update: {formatTimestamp(totalStats.lastUpdate)}</span>
                     )}
                   </p>
                   {allHubs.length > 1 && (

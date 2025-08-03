@@ -15,6 +15,7 @@ import { DeviceData } from '@/types/device'
 import { areaApi } from '@/lib/api'
 import { useDevicesForArea, useDevices } from '@/lib/DevicesContext'
 import { calculateDeviceStats } from '@/utils/deviceUtils'
+import { formatTimestamp } from '@/utils/dateUtils'
 import DeviceCard from './DeviceCard'
 
 interface AreaCardProps {
@@ -176,7 +177,7 @@ export default function AreaCard({ area, hubId, onAreaUpdate, onDeviceClick }: A
           <div className="text-center">
             <div className="text-sm font-bold text-secondary-400">
               {deviceStats.lastUpdate 
-                ? new Date(deviceStats.lastUpdate).toLocaleString() 
+                ? formatTimestamp(deviceStats.lastUpdate) 
                 : 'No data'
               }
             </div>

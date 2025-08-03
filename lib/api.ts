@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { LoginCredentials, SignupCredentials, ForgotPasswordRequest, ResetPasswordRequest, Token } from '@/types/auth'
-import { HubData, HubApiResponse, ClaimHubRequest, SetHubNicknameRequest } from '@/types/hub'
+import { HubData, HubApiResponse, ClaimHubRequest, SetHubNicknameRequest, HubReadings } from '@/types/hub'
 import { AreaData, AreaApiResponse, CreateAreaRequest, DeleteAreaRequest, RenameAreaRequest } from '@/types/area'
 import { DeviceData, DeviceLatestDataApiResponse, DeviceHistoryResponse } from '@/types/device'
 import { UserData, User } from '@/types/user'
@@ -122,6 +122,23 @@ export const hubApi = {
       },
     })
   },
+
+  getHubReadings: async (hubId: string): Promise<HubReadings> => {
+    const response = await apiClient.post('/get_hub_readings', null, {
+      params: {
+        hub_id: hubId,
+      },
+    })
+    return response.data
+  },
+
+  pairDevice: async (hubId: string): Promise<void> => {
+    await apiClient.post('/pair_device', null, {
+      params: {
+        hub_id: hubId,
+      },
+    })
+  },
 }
 
 export const areaApi = {
@@ -196,6 +213,8 @@ export const deviceApi = {
       hubId: device.hub_id,
       latestValue: device.device_data ?? device.device_state ?? undefined,
       latestTimestamp: device.time || undefined,
+      batteryLevel: device.battery_level ?? null,
+      deviceVersion: device.device_version ?? null,
     }))
   },
 

@@ -3,7 +3,8 @@
 import { useState } from 'react'
 import { DeviceData } from '@/types/device'
 import { getDeviceConfig, formatDeviceValue, getDeviceValueColor } from '@/utils/deviceUtils'
-import { Clock, Edit3, Check, X, Power } from 'lucide-react'
+import { formatTimestamp } from '@/utils/dateUtils'
+import { Clock, Edit3, Check, X, Power, Battery } from 'lucide-react'
 import { deviceApi } from '@/lib/api'
 
 interface DeviceCardProps {
@@ -33,6 +34,13 @@ export default function DeviceCard({ device, showArea = false, areaName, onDevic
       case 'gray': return 'text-gray-400'
       default: return 'text-white'
     }
+  }
+
+  const getBatteryColor = (level: number) => {
+    if (level > 60) return 'text-green-400'
+    if (level > 30) return 'text-yellow-400'
+    if (level > 15) return 'text-orange-400'
+    return 'text-red-400'
   }
 
   const handleSaveNickname = async () => {
@@ -175,9 +183,19 @@ export default function DeviceCard({ device, showArea = false, areaName, onDevic
         {device.latestTimestamp && (
           <div className="flex items-center gap-1 text-xs text-dark-400 mt-1">
             <Clock className="w-3 h-3" />
-            <span>{new Date(device.latestTimestamp).toLocaleString()}</span>
+            <span>{formatTimestamp(device.latestTimestamp)}</span>
           </div>
         )}
+      </div>
+
+      {/* Battery Info */}
+      <div className="mb-3">
+        <div className="flex items-center gap-1">
+          <Battery className={`w-3 h-3 ${device.batteryLevel !== null ? getBatteryColor(device.batteryLevel) : 'text-gray-400'}`} />
+          <span className={`text-xs font-medium ${device.batteryLevel !== null ? getBatteryColor(device.batteryLevel) : 'text-gray-400'}`}>
+            {device.batteryLevel !== null ? `${device.batteryLevel}%` : 'Unavailable'}
+          </span>
+        </div>
       </div>
 
       {/* Area Info */}

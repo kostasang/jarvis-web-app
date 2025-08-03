@@ -7,6 +7,7 @@ import { getDeviceConfig, formatDeviceValue, getDeviceValueColor } from '@/utils
 import { deviceApi, areaApi } from '@/lib/api'
 import { useDevice } from '@/lib/DevicesContext'
 import DeviceHistoryChart from './DeviceHistoryChart'
+import { formatTimestamp } from '@/utils/dateUtils'
 import { 
   X, 
   Edit3, 
@@ -17,7 +18,9 @@ import {
   Hash,
   Calendar,
   Activity,
-  Power
+  Power,
+  Battery,
+  Tag
 } from 'lucide-react'
 
 interface DeviceModalProps {
@@ -88,6 +91,13 @@ export default function DeviceModal({ device, isOpen, onClose, onDeviceUpdate, a
       case 'gray': return 'text-gray-400'
       default: return 'text-white'
     }
+  }
+
+  const getBatteryColor = (level: number) => {
+    if (level > 60) return 'text-green-400'
+    if (level > 30) return 'text-yellow-400'
+    if (level > 15) return 'text-orange-400'
+    return 'text-red-400'
   }
 
   const handleSaveNickname = async () => {
@@ -165,10 +175,7 @@ export default function DeviceModal({ device, isOpen, onClose, onDeviceUpdate, a
     }
   }
 
-  const formatTimestamp = (timestamp?: string) => {
-    if (!timestamp) return 'No data available'
-    return new Date(timestamp).toLocaleString()
-  }
+
 
   return (
     <>
@@ -365,16 +372,38 @@ export default function DeviceModal({ device, isOpen, onClose, onDeviceUpdate, a
                 </div>
               </div>
 
-              {/* Device Type */}
+              {/* Device Info */}
               <div className="glass-card p-4">
                 <h4 className="text-sm font-semibold text-white mb-3 flex items-center gap-2">
                   <Hash className="w-4 h-4" />
-                  Device Type
+                  Device Info
                 </h4>
-                                 <div className="space-y-2">
-                   <div className="text-white font-medium">{config.description}</div>
-                   <div className="text-xs text-dark-400">ID: {device.type}</div>
-                 </div>
+                <div className="space-y-3">
+                  <div>
+                    <div className="text-white font-medium">{config.description}</div>
+                    <div className="text-xs text-dark-400">Type ID: {device.type}</div>
+                  </div>
+                  
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Battery className={`w-4 h-4 ${currentDevice.batteryLevel !== null ? getBatteryColor(currentDevice.batteryLevel) : 'text-gray-400'}`} />
+                      <span className="text-sm text-white">Battery</span>
+                    </div>
+                    <span className={`text-sm font-medium ${currentDevice.batteryLevel !== null ? getBatteryColor(currentDevice.batteryLevel) : 'text-gray-400'}`}>
+                      {currentDevice.batteryLevel !== null ? `${currentDevice.batteryLevel}%` : 'Unavailable'}
+                    </span>
+                  </div>
+                  
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Tag className="w-4 h-4 text-dark-400" />
+                      <span className="text-sm text-white">Firmware</span>
+                    </div>
+                    <span className={`text-sm ${currentDevice.deviceVersion !== null ? 'font-mono text-dark-400' : 'font-medium text-gray-400'}`}>
+                      {currentDevice.deviceVersion !== null ? `v${currentDevice.deviceVersion}` : 'Unavailable'}
+                    </span>
+                  </div>
+                </div>
               </div>
 
               {/* Data History */}
@@ -397,6 +426,8 @@ export default function DeviceModal({ device, isOpen, onClose, onDeviceUpdate, a
                 <div>Type: {device.type}</div>
                 <div>Latest Value: {currentDevice.latestValue}</div>
                 <div>Timestamp: {currentDevice.latestTimestamp}</div>
+                <div>Battery Level: {currentDevice.batteryLevel ?? 'null'}</div>
+                <div>Device Version: {currentDevice.deviceVersion ?? 'null'}</div>
               </div>
             </div>
           </div>

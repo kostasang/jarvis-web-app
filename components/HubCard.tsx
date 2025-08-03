@@ -8,7 +8,6 @@ import {
   Edit3,
   Check,
   X,
-  ChevronDown,
   BarChart3
 } from 'lucide-react'
 import { HubData } from '@/types/hub'
@@ -16,7 +15,9 @@ import { DeviceData } from '@/types/device'
 import { hubApi } from '@/lib/api'
 import { useDevicesForHub } from '@/lib/DevicesContext'
 import { calculateDeviceStats } from '@/utils/deviceUtils'
+import { formatTimestamp } from '@/utils/dateUtils'
 import { navigateTo } from '@/utils/navigation'
+import HubModal from './HubModal'
 
 interface HubCardProps {
   hub: HubData
@@ -28,7 +29,8 @@ export default function HubCard({ hub, onHubUpdate }: HubCardProps) {
   const [isEditingNickname, setIsEditingNickname] = useState(false)
   const [nickname, setNickname] = useState(hub?.nickname || '')
   const [isLoading, setIsLoading] = useState(false)
-  const [showNavOptions, setShowNavOptions] = useState(false)
+  const [isModalOpen, setIsModalOpen] = useState(false)
+
   // Guard clause for invalid hub data
   if (!hub || !hub.id) {
     return (
@@ -67,10 +69,26 @@ export default function HubCard({ hub, onHubUpdate }: HubCardProps) {
     setIsEditingNickname(false)
   }
 
+  const handleCardClick = (e: React.MouseEvent) => {
+    // Don't open modal if clicking on buttons or input fields
+    if (
+      (e.target as HTMLElement).closest('button') ||
+      (e.target as HTMLElement).closest('input') ||
+      isEditingNickname
+    ) {
+      return
+    }
+    setIsModalOpen(true)
+  }
+
 
 
   return (
-    <div className={`glass-card p-6 hover:bg-dark-700/30 transition-all duration-200 relative ${showNavOptions ? 'z-50' : ''}`}>
+    <>
+    <div 
+      className="glass-card p-6 hover:bg-dark-700/30 transition-all duration-200 relative cursor-pointer hover:scale-[1.02]"
+      onClick={handleCardClick}
+    >
       {/* Header */}
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-center">
@@ -89,14 +107,20 @@ export default function HubCard({ hub, onHubUpdate }: HubCardProps) {
                   autoFocus
                 />
                 <button
-                  onClick={handleSaveNickname}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    handleSaveNickname()
+                  }}
                   disabled={isLoading || !nickname.trim()}
                   className="p-1 text-green-400 hover:text-green-300 disabled:opacity-50"
                 >
                   <Check className="w-4 h-4" />
                 </button>
                 <button
-                  onClick={handleCancelEdit}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    handleCancelEdit()
+                  }}
                   className="p-1 text-red-400 hover:text-red-300"
                 >
                   <X className="w-4 h-4" />
@@ -108,7 +132,10 @@ export default function HubCard({ hub, onHubUpdate }: HubCardProps) {
                   {hub.nickname || `Hub ${hub.id?.slice(0, 8) || 'Unknown'}`}
                 </h3>
                 <button
-                  onClick={() => setIsEditingNickname(true)}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    setIsEditingNickname(true)
+                  }}
                   className="p-1 text-dark-400 hover:text-dark-200 transition-colors"
                 >
                   <Edit3 className="w-4 h-4" />
@@ -131,7 +158,7 @@ export default function HubCard({ hub, onHubUpdate }: HubCardProps) {
         <div className="text-center">
           <div className="text-sm font-bold text-secondary-400">
             {deviceStats.lastUpdate 
-              ? new Date(deviceStats.lastUpdate).toLocaleString() 
+              ? formatTimestamp(deviceStats.lastUpdate) 
               : 'No data'
             }
           </div>
@@ -139,62 +166,42 @@ export default function HubCard({ hub, onHubUpdate }: HubCardProps) {
         </div>
       </div>
 
-      {/* Navigation Options */}
-      {showNavOptions && (
-        <div className="absolute top-full left-0 right-0 mt-2 z-50">
-          <div className="bg-dark-800 p-4 border border-dark-600 rounded-lg shadow-2xl drop-shadow-2xl shadow-black/50">
-            <div className="space-y-2">
-              <h4 className="text-sm font-medium text-white mb-3">Navigate to:</h4>
-              <button 
-                onClick={() => {
-                  setShowNavOptions(false)
-                  router.push(navigateTo(`/areas?hubId=${hub.id}`))
-                }}
-                className="flex items-center gap-3 p-3 rounded-lg hover:bg-dark-700/50 transition-colors text-white w-full text-left"
-              >
-                <MapPin className="w-5 h-5 text-secondary-500" />
-                <div>
-                  <div className="font-medium">Areas</div>
-                  <div className="text-xs text-dark-400">Manage rooms and locations</div>
-                </div>
-              </button>
-              <button 
-                onClick={() => {
-                  setShowNavOptions(false)
-                  router.push(navigateTo(`/devices?hubId=${hub.id}`))
-                }}
-                className="flex items-center gap-3 p-3 rounded-lg hover:bg-dark-700/50 transition-colors text-white w-full text-left"
-              >
-                <BarChart3 className="w-5 h-5 text-primary-500" />
-                <div>
-                  <div className="font-medium">Devices & Sensors</div>
-                  <div className="text-xs text-dark-400">View all devices with filtering</div>
-                </div>
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+
 
       {/* Action Buttons */}
-      <div className="w-full">
+      <div className="grid grid-cols-2 gap-3">
         <button 
-          onClick={() => setShowNavOptions(!showNavOptions)}
-          className="btn-primary flex items-center justify-center gap-2 py-3 relative w-full"
+          onClick={(e) => {
+            e.stopPropagation()
+            router.push(navigateTo(`/areas?hubId=${hub.id}`))
+          }}
+          className="bg-secondary-600/20 border border-secondary-500/30 text-secondary-400 hover:bg-secondary-600/30 hover:text-secondary-300 rounded-lg flex items-center justify-center gap-2 py-4 px-3 relative w-full transition-all duration-200"
+          title="Manage rooms and locations"
         >
-          <Home className="w-4 h-4" />
-          <span>Manage Hub</span>
-          <ChevronDown className={`w-4 h-4 transition-transform ${showNavOptions ? 'rotate-180' : ''}`} />
+          <MapPin className="w-5 h-5 text-secondary-500" />
+          <span className="hidden sm:inline font-medium">Areas</span>
+        </button>
+        <button 
+          onClick={(e) => {
+            e.stopPropagation()
+            router.push(navigateTo(`/devices?hubId=${hub.id}`))
+          }}
+          className="btn-primary flex items-center justify-center gap-2 py-4 px-3 relative w-full"
+          title="View all devices with filtering"
+        >
+          <BarChart3 className="w-5 h-5 text-white" />
+          <span className="hidden sm:inline font-medium">Devices</span>
         </button>
       </div>
-
-      {/* Click outside to close */}
-      {showNavOptions && (
-        <div 
-          className="fixed inset-0 z-40"
-          onClick={() => setShowNavOptions(false)}
-        />
-      )}
     </div>
+
+    {/* Hub Modal */}
+    <HubModal
+      hub={hub}
+      isOpen={isModalOpen}
+      onClose={() => setIsModalOpen(false)}
+      onHubUpdate={onHubUpdate}
+    />
+    </>
   )
 } 
