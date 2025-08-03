@@ -8,14 +8,19 @@ import {
   Edit3,
   Check,
   X,
-  BarChart3
+  BarChart3,
+  Wifi,
+  WifiOff,
+  Battery,
+  Power,
+  Activity
 } from 'lucide-react'
 import { HubData } from '@/types/hub'
 import { DeviceData } from '@/types/device'
 import { hubApi } from '@/lib/api'
-import { useDevicesForHub } from '@/lib/DevicesContext'
+import { useDevicesForHub, useDevices } from '@/lib/DevicesContext'
 import { calculateDeviceStats } from '@/utils/deviceUtils'
-import { formatTimestamp } from '@/utils/dateUtils'
+import { formatTimestamp, formatRelativeTime, getTimestampColorClass } from '@/utils/dateUtils'
 import { navigateTo } from '@/utils/navigation'
 import HubModal from './HubModal'
 
@@ -44,7 +49,35 @@ export default function HubCard({ hub, onHubUpdate }: HubCardProps) {
 
   // Use centralized device data
   const { devices: hubDevices } = useDevicesForHub(hub.id)
+  const { getHubReadings } = useDevices()
   const deviceStats = React.useMemo(() => calculateDeviceStats(hubDevices), [hubDevices])
+  const hubReadings = getHubReadings(hub.id)
+
+  // Determine hub status (health)
+  const getHubStatus = () => {
+    if (!hubReadings?.health) {
+      return { status: '-', icon: Activity, color: 'text-gray-400' }
+    }
+    if (hubReadings.health === 'critical') return { status: 'critical', icon: Activity, color: 'text-red-400' }
+    if (hubReadings.health === 'unhealthy') return { status: 'unhealthy', icon: Activity, color: 'text-yellow-400' }
+    if (hubReadings.health === 'healthy') return { status: 'healthy', icon: Activity, color: 'text-green-400' }
+    // Fallback for any unexpected health values
+    return { status: hubReadings.health, icon: Activity, color: 'text-gray-400' }
+  }
+
+  // Determine power status
+  const getPowerStatus = () => {
+    if (!hubReadings?.power_status) {
+      return { status: '-', icon: Power, color: 'text-gray-400' }
+    }
+    if (hubReadings.power_status === 'battery') {
+      return { status: 'battery', icon: Battery, color: 'text-orange-400' }
+    }
+    return { status: 'main', icon: Power, color: 'text-green-400' }
+  }
+
+  const hubStatus = getHubStatus()
+  const powerStatus = getPowerStatus()
 
   const handleSaveNickname = async () => {
     if (!nickname.trim() || !hub.id) return
@@ -142,28 +175,44 @@ export default function HubCard({ hub, onHubUpdate }: HubCardProps) {
                 </button>
               </div>
             )}
-            <p className="text-sm text-dark-400">ID: {hub.id?.slice(0, 8) || 'N/A'}...</p>
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-1">
+                <hubStatus.icon className={`w-3 h-3 ${hubStatus.color}`} />
+                <span className={`text-xs ${hubStatus.color} capitalize`}>{hubStatus.status}</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <powerStatus.icon className={`w-3 h-3 ${powerStatus.color}`} />
+                <span className={`text-xs ${powerStatus.color} capitalize`}>{powerStatus.status}</span>
+              </div>
+            </div>
           </div>
         </div>
-        
 
       </div>
 
       {/* Enhanced Stats */}
-      <div className="grid grid-cols-2 gap-4 mb-6">
-        <div className="text-center">
-          <div className="text-xl font-bold text-white">{deviceStats.total}</div>
-          <div className="text-xs text-dark-400">Total Devices</div>
-        </div>
-        <div className="text-center">
-          <div className="text-sm font-bold text-secondary-400">
-            {deviceStats.lastUpdate 
-              ? formatTimestamp(deviceStats.lastUpdate) 
-              : 'No data'
-            }
+      <div className="space-y-4 mb-6">
+        {/* Main stats row */}
+        <div className="grid grid-cols-2 gap-4">
+          <div className="text-center">
+            <div className="text-xl font-bold text-white">{deviceStats.total}</div>
+            <div className="text-xs text-dark-400">Total Devices</div>
           </div>
-          <div className="text-xs text-dark-400">Last Update</div>
+          <div className="text-center">
+            <div 
+              className={`text-sm font-bold ${getTimestampColorClass(hubReadings?.last_seen || hub.last_seen)} cursor-help`}
+              title={hubReadings?.last_seen || hub.last_seen ? formatTimestamp(hubReadings?.last_seen || hub.last_seen) : 'No data available'}
+            >
+              {hubReadings?.last_seen || hub.last_seen
+                ? formatRelativeTime(hubReadings?.last_seen || hub.last_seen) 
+                : 'No data'
+              }
+            </div>
+            <div className="text-xs text-dark-400">Last Seen</div>
+          </div>
         </div>
+
+
       </div>
 
 

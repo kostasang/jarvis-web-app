@@ -413,9 +413,6 @@ export default function HubModal({ hub, isOpen, onClose, onHubUpdate }: HubModal
                         </div>
                         <div className="flex-1">
                           <div className="text-white font-medium">{area.name}</div>
-                          <div className="text-sm text-dark-400">
-                            {area.deviceCount || 0} devices
-                          </div>
                         </div>
                       </div>
                     </div>
