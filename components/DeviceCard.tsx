@@ -191,9 +191,9 @@ export default function DeviceCard({ device, showArea = false, areaName, onDevic
       {/* Battery Info */}
       <div className="mb-3">
         <div className="flex items-center gap-1">
-          <Battery className={`w-3 h-3 ${device.batteryLevel !== null ? getBatteryColor(device.batteryLevel) : 'text-gray-400'}`} />
-          <span className={`text-xs font-medium ${device.batteryLevel !== null ? getBatteryColor(device.batteryLevel) : 'text-gray-400'}`}>
-            {device.batteryLevel !== null ? `${device.batteryLevel}%` : 'Unavailable'}
+          <Battery className={`w-3 h-3 ${device.batteryLevel != null ? getBatteryColor(device.batteryLevel) : 'text-gray-400'}`} />
+          <span className={`text-xs font-medium ${device.batteryLevel != null ? getBatteryColor(device.batteryLevel) : 'text-gray-400'}`}>
+            {device.batteryLevel != null ? `${device.batteryLevel}%` : 'Unavailable'}
           </span>
         </div>
       </div>

@@ -65,7 +65,7 @@ export function DevicesProvider({ children }: DevicesProviderProps) {
     } catch (err: any) {
       console.error('Failed to fetch devices data:', err)
       
-      // If it's an authentication error, stop WebSocket and clear data
+            // If it's an authentication error, stop WebSocket and clear data
       if (err.response?.status === 401) {
         console.log('Authentication failed, stopping device updates')
         disconnectWebSocket()
@@ -89,31 +89,25 @@ export function DevicesProvider({ children }: DevicesProviderProps) {
 
   // Update individual device from WebSocket message
   const updateDeviceFromWebSocket = (deviceMessage: any) => {
-    console.log('WebSocket: Updating device:', deviceMessage.device_id)
-    console.log('WebSocket: Device timestamp:', deviceMessage.timestamp)
     setDevices(prevDevices => {
-      const updatedDevices = prevDevices.map(device => {
+      return prevDevices.map(device => {
         if (device.id === deviceMessage.device_id) {
-          const updatedDevice = {
+          return {
             ...device,
             latestValue: deviceMessage.device_data ?? deviceMessage.device_state ?? device.latestValue,
             latestTimestamp: deviceMessage.timestamp,
             batteryLevel: deviceMessage.battery_level ?? device.batteryLevel,
             deviceVersion: deviceMessage.device_version ?? device.deviceVersion,
           }
-          console.log('WebSocket: Updated device timestamp from', device.latestTimestamp, 'to', updatedDevice.latestTimestamp)
-          return updatedDevice
         }
         return device
       })
-      return updatedDevices
     })
     setLastUpdate(new Date().toISOString())
   }
 
   // Update hub readings from WebSocket message
   const updateHubReadingsFromWebSocket = (statusMessage: any) => {
-    console.log('WebSocket: Updating hub status:', statusMessage.hub_id)
     setHubReadings(prev => ({
       ...prev,
       [statusMessage.hub_id]: {
@@ -312,7 +306,6 @@ export function DevicesProvider({ children }: DevicesProviderProps) {
       }
       
       ws.onmessage = (event) => {
-        console.log('WebSocket: Received message')
         console.log('WebSocket: Message content:', event.data)
         
         try {
@@ -320,16 +313,11 @@ export function DevicesProvider({ children }: DevicesProviderProps) {
           
           // Handle device updates
           if (message.topic_description === 'devices') {
-            console.log('WebSocket: Processing device update for device:', message.device_id)
             updateDeviceFromWebSocket(message)
           }
           // Handle hub status updates
           else if (message.topic_description === 'status') {
-            console.log('WebSocket: Processing hub status update for hub:', message.hub_id)
             updateHubReadingsFromWebSocket(message)
-          }
-          else {
-            console.log('WebSocket: Unknown topic_description:', message.topic_description)
           }
         } catch (error) {
           console.error('WebSocket: Failed to parse message:', error)

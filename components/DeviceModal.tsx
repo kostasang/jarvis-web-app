@@ -386,11 +386,11 @@ export default function DeviceModal({ device, isOpen, onClose, onDeviceUpdate, a
                   
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <Battery className={`w-4 h-4 ${currentDevice.batteryLevel !== null ? getBatteryColor(currentDevice.batteryLevel) : 'text-gray-400'}`} />
+                      <Battery className={`w-4 h-4 ${currentDevice.batteryLevel != null ? getBatteryColor(currentDevice.batteryLevel) : 'text-gray-400'}`} />
                       <span className="text-sm text-white">Battery</span>
                     </div>
-                    <span className={`text-sm font-medium ${currentDevice.batteryLevel !== null ? getBatteryColor(currentDevice.batteryLevel) : 'text-gray-400'}`}>
-                      {currentDevice.batteryLevel !== null ? `${currentDevice.batteryLevel}%` : 'Unavailable'}
+                    <span className={`text-sm font-medium ${currentDevice.batteryLevel != null ? getBatteryColor(currentDevice.batteryLevel) : 'text-gray-400'}`}>
+                      {currentDevice.batteryLevel != null ? `${currentDevice.batteryLevel}%` : 'Unavailable'}
                     </span>
                   </div>
                   
@@ -399,8 +399,8 @@ export default function DeviceModal({ device, isOpen, onClose, onDeviceUpdate, a
                       <Tag className="w-4 h-4 text-dark-400" />
                       <span className="text-sm text-white">Firmware</span>
                     </div>
-                    <span className={`text-sm ${currentDevice.deviceVersion !== null ? 'font-mono text-dark-400' : 'font-medium text-gray-400'}`}>
-                      {currentDevice.deviceVersion !== null ? `v${currentDevice.deviceVersion}` : 'Unavailable'}
+                    <span className={`text-sm ${currentDevice.deviceVersion != null ? 'font-mono text-dark-400' : 'font-medium text-gray-400'}`}>
+                      {currentDevice.deviceVersion != null ? `v${currentDevice.deviceVersion}` : 'Unavailable'}
                     </span>
                   </div>
                 </div>

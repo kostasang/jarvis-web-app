@@ -110,7 +110,6 @@ export function calculateDeviceStats(devices: DeviceData[]): DeviceStats {
   }
 
   let lastUpdate: string | undefined
-  console.log('calculateDeviceStats: Processing', devices.length, 'devices')
 
   devices.forEach(device => {
     // Category count
@@ -124,10 +123,8 @@ export function calculateDeviceStats(devices: DeviceData[]): DeviceStats {
 
     // Track most recent update
     if (device.latestTimestamp && isValidTimestamp(device.latestTimestamp)) {
-      console.log('calculateDeviceStats: Processing device', device.id, 'with timestamp', device.latestTimestamp)
       if (!lastUpdate) {
         lastUpdate = device.latestTimestamp
-        console.log('calculateDeviceStats: Set initial lastUpdate to', lastUpdate)
       } else {
         // Parse timestamps safely for comparison
         try {
@@ -135,26 +132,19 @@ export function calculateDeviceStats(devices: DeviceData[]): DeviceStats {
           const lastUpdateDate = parseTimestampSafely(lastUpdate)
           
           if (deviceDate && lastUpdateDate && deviceDate > lastUpdateDate) {
-            console.log('calculateDeviceStats: Updating lastUpdate from', lastUpdate, 'to', device.latestTimestamp)
             lastUpdate = device.latestTimestamp
           } else if (deviceDate && !lastUpdateDate) {
-            console.log('calculateDeviceStats: Setting lastUpdate to', device.latestTimestamp, '(previous was invalid)')
             lastUpdate = device.latestTimestamp
           }
         } catch (error) {
-          console.warn('Error comparing timestamps:', error)
+          // Handle timestamp comparison errors silently
         }
       }
-    } else {
-      console.log('calculateDeviceStats: Skipping device', device.id, '- no valid timestamp (', device.latestTimestamp, ')')
     }
   })
 
   if (lastUpdate) {
     stats.lastUpdate = lastUpdate
-    console.log('calculateDeviceStats: Final lastUpdate set to', lastUpdate)
-  } else {
-    console.log('calculateDeviceStats: No valid lastUpdate found')
   }
 
   return stats
