@@ -126,12 +126,29 @@ export function DevicesProvider({ children }: DevicesProviderProps) {
     return hubReadings[hubId] || null
   }
 
-  // Fetch all hub readings
+  // Fetch all hub readings using hub IDs from devices or hubs API
   const fetchAllHubReadings = async () => {
     if (!isAuthenticated()) return
 
     try {
-      const hubIds = Array.from(new Set(devices.map(device => device.hubId)))
+      let hubIds: string[] = []
+
+      // First try to get hub IDs from devices
+      const deviceHubIds = Array.from(new Set(devices.map(device => device.hubId)))
+      
+      if (deviceHubIds.length > 0) {
+        hubIds = deviceHubIds
+      } else {
+        // If no devices available, fetch hubs directly to get hub IDs
+        console.log('No hub IDs from devices, fetching from hubs API')
+        try {
+          const hubs = await hubApi.getHubs()
+          hubIds = hubs.map(hub => hub.id).filter(Boolean)
+        } catch (error) {
+          console.error('Failed to fetch hubs for hub readings:', error)
+          return
+        }
+      }
       
       if (hubIds.length === 0) {
         console.log('No hub IDs found, skipping hub readings fetch')
@@ -174,7 +191,7 @@ export function DevicesProvider({ children }: DevicesProviderProps) {
         await fetchAllHubReadings()
       }
     }, 30000) // 30 seconds
-  }, [devices])
+  }, [])
 
   // Stop periodic sync
   const stopPeriodicSync = () => {

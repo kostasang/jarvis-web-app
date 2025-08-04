@@ -35,6 +35,7 @@ export default function HubCard({ hub, onHubUpdate }: HubCardProps) {
   const [nickname, setNickname] = useState(hub?.nickname || '')
   const [isLoading, setIsLoading] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [currentTime, setCurrentTime] = useState(Date.now())
 
   // Guard clause for invalid hub data
   if (!hub || !hub.id) {
@@ -78,6 +79,15 @@ export default function HubCard({ hub, onHubUpdate }: HubCardProps) {
 
   const hubStatus = getHubStatus()
   const powerStatus = getPowerStatus()
+
+  // Update time display every 30 seconds to show current relative time
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTime(Date.now())
+    }, 30000) // Update every 30 seconds
+
+    return () => clearInterval(interval)
+  }, [])
 
   const handleSaveNickname = async () => {
     if (!nickname.trim() || !hub.id) return

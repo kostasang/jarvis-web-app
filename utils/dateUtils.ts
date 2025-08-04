@@ -92,21 +92,16 @@ export function formatRelativeTime(timestamp?: string | null): string {
     }
 
     const diffSeconds = Math.floor(diffMs / 1000)
-    const diffMinutes = Math.floor(diffSeconds / 60)
-    const diffHours = Math.floor(diffMinutes / 60)
-    const diffDays = Math.floor(diffHours / 24)
+    const diffMinutes = diffSeconds / 60
 
-    if (diffSeconds < 60) {
-      return diffSeconds <= 1 ? 'Just now' : `${diffSeconds}s ago`
-    } else if (diffMinutes < 60) {
-      return diffMinutes === 1 ? '1 min ago' : `${diffMinutes}m ago`
-    } else if (diffHours < 24) {
-      return diffHours === 1 ? '1 hr ago' : `${diffHours}h ago`
-    } else if (diffDays < 7) {
-      return diffDays === 1 ? '1 day ago' : `${diffDays}d ago`
+    if (diffSeconds < 30) {
+      return 'Just now'
+    } else if (diffMinutes < 1.5) {
+      return 'Less than 1 minute ago'
+    } else if (diffMinutes < 5) {
+      return 'Less than 5 minutes ago'
     } else {
-      // For older dates, show the actual date
-      return date.toLocaleDateString()
+      return 'More than 5 minutes ago'
     }
   } catch (error) {
     console.error('Error formatting relative time:', timestamp, error)
@@ -134,16 +129,17 @@ export function getTimestampColorClass(timestamp?: string | null): string {
 
     const now = new Date()
     const diffMs = now.getTime() - date.getTime()
-    const diffMinutes = Math.floor(diffMs / (1000 * 60))
+    const diffSeconds = Math.floor(diffMs / 1000)
+    const diffMinutes = diffSeconds / 60
 
-    if (diffMinutes < 5) {
-      return 'text-green-400'  // Very recent
-    } else if (diffMinutes < 30) {
-      return 'text-secondary-400'  // Recent
-    } else if (diffMinutes < 120) {
-      return 'text-yellow-400'  // Somewhat old
+    if (diffSeconds < 30) {
+      return 'text-green-400'  // Just now
+    } else if (diffMinutes < 1.5) {
+      return 'text-green-400'  // Less than a minute ago
+    } else if (diffMinutes < 5) {
+      return 'text-orange-400'  // Less than five minutes ago
     } else {
-      return 'text-red-400'  // Old
+      return 'text-red-400'  // More than 5 minutes ago
     }
   } catch {
     return 'text-red-400'
